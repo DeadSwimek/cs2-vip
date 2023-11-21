@@ -5,15 +5,24 @@ Just install [package](https://github.com/connercsbn/SimpleAdmin/releases/) to `
 
 Advantages for VIP:
 `-` Can enable noknifedamage.
+
 `-` Special VIP tag in chat.
+
 `-` Pack of guns for free.
+
 `-` Set 115 HP on RoundStart.
+
 `-` Set 100 Arrmor on RoundStart.
+
 `-` Welcome messages
+
 TODO List:
 `-` Transform CSS Permission to database.
+
 `-` Add colored skins/model.
+
 `-` Add permium Version for more info contact me.
+
 
 ## css_ak
 `Usage: /ak`
