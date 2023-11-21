@@ -23,7 +23,7 @@ TODO List:
 
 `-` Add colored skins/model.
 
-`-` Add permium Version for more info contact me.
+`-` Contact me for the premium version.
 
 
 ## css_ak
