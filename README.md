@@ -4,6 +4,7 @@ This is a very simple vipguns plugin for [CounterStrikeSharp](https://docs.cssha
 Just install [package](https://github.com/connercsbn/SimpleAdmin/releases/) to `game/csgo/addons/counterstrikesharp/plugins/` and you should be good to go. 
 
 Advantages for VIP:
+
 `-` Can enable noknifedamage.
 
 `-` Special VIP tag in chat.
@@ -17,6 +18,7 @@ Advantages for VIP:
 `-` Welcome messages
 
 TODO List:
+
 `-` Transform CSS Permission to database.
 
 `-` Add colored skins/model.
