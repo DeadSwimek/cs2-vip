@@ -15,17 +15,21 @@ Advantages for VIP:
 
 `-` Set 100 Arrmor on RoundStart.
 
-`-` Welcome messages
+`-` Welcome messages.
+
+`-` Translation file in config.
+
+`-` Connect to database.
 
 TODO List:
-
-`-` Transform CSS Permission to database.
 
 `-` Add colored skins/model.
 
 `-` Contact me for the premium version.
 
-
+## css_addvip
+`Usage: /addvip <Time In Seconds> <STEAMID32>`
+Give a VIP to player on steamid.
 ## css_ak
 `Usage: /ak`
 Give you weapon_ak47
@@ -40,7 +44,6 @@ Give you full pack of guns, M4A1, Deagle, Healthshot, Granades
 Give you full pack of guns, AK-47, Deagle, Healthshot, Granades
 ## css_guns_off
 `Usage: /guns_off`
-
 Turn of automatically weapons giving
 
 ## Required Permissions
@@ -49,6 +52,7 @@ Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.de
 
 | Command      | Permission   |
 | ------------ | ------------ |
+| `css_addvip`    | @css/root     |
 | `css_ak`    | @css/vip     |
 | `css_m4`  | @css/vip   |
 | `css_pack1`  | @css/vip   |
