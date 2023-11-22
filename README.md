@@ -28,7 +28,7 @@ TODO List:
 `-` Contact me for the premium version.
 
 ## css_addvip
-`Usage: /addvip <Time In Seconds> <STEAMID32>`
+`Usage: /addvip <Time In Seconds> <STEAMID64>`
 Give a VIP to player on steamid.
 ## css_ak
 `Usage: /ak`
