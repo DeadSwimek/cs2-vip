@@ -59,8 +59,6 @@ Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.de
 | Command      | Permission   |
 | ------------ | ------------ |
 | `css_addvip`    | @css/root     |
-| `css_ak`    | @css/vip     |
-| `css_m4`  | @css/vip   |
-| `css_pack1`  | @css/vip   |
-| `css_pack2`  | @css/vip   |
+| `css_weapon`    | Database add     |
+| `css_pack`  | Database add   |
 | `css_guns_off`  | NONE   |
