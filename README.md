@@ -30,18 +30,17 @@ TODO List:
 ## css_addvip
 `Usage: /addvip <Time In Seconds> <STEAMID64>`
 Give a VIP to player on steamid.
-## css_ak
-`Usage: /ak`
-Give you weapon_ak47
-## css_m4
-`Usage: /m4`
-Give you weapon_m4a1
-## css_pack1
-`Usage: /pack1`
-Give you full pack of guns, M4A1, Deagle, Healthshot, Granades
-## css_pack2
-`Usage: /pack2`
-Give you full pack of guns, AK-47, Deagle, Healthshot, Granades
+## css_weapon
+`Usage: /weapon <Number of weapon>`
+List of packages:
+1 - AK-47
+2 - M4A1
+3 - M4A1-S
+## css_pack
+`Usage: /pack <Number of pack>`
+List of packages:
+1 - AK-47, Deagle, Healthshot, Molotov, Smoke, He
+2 - M4A1, Deagle, Healthshot, Molotov, Smoke, He
 ## css_guns_off
 `Usage: /guns_off`
 Turn of automatically weapons giving
