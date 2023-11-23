@@ -33,14 +33,21 @@ Give a VIP to player on steamid.
 ## css_weapon
 `Usage: /weapon <Number of weapon>`
 List of packages:
+
 1 - AK-47
+
 2 - M4A1
+
 3 - M4A1-S
+
 ## css_pack
 `Usage: /pack <Number of pack>`
 List of packages:
+
 1 - AK-47, Deagle, Healthshot, Molotov, Smoke, He
+
 2 - M4A1, Deagle, Healthshot, Molotov, Smoke, He
+
 ## css_guns_off
 `Usage: /guns_off`
 Turn of automatically weapons giving
