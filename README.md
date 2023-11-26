@@ -34,6 +34,8 @@ Advantages for VIP:
 
 `-` You can take /testvip.
 
+`-` VIP can be respawned by command /respawn.
+
 TODO List:
 
 `-` Add AutoBhop for VIP.
@@ -50,6 +52,8 @@ TODO List:
 `Usage: /activator <YOUR_TOKEN>`
 ## css_addvip
 `Usage: /addvip <Time In Seconds> <STEAMID64>`
+## css_respawn
+`Usage: /respawn`
 Give a VIP to player on steamid.
 ## css_weapon
 `Usage: /weapon <Number of weapon>`
@@ -82,6 +86,7 @@ Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.de
 | `css_generatevip`    | @css/root     |
 | `css_addvip`    | @css/root     |
 | `css_weapon`    | Database add     |
+| `css_respawn`    | Database add     |
 | `css_pack`  | Database add   |
 | `css_guns_off`  | NONE   |
 | `css_activator`  | NONE   |
