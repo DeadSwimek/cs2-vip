@@ -30,6 +30,10 @@ Advantages for VIP:
 
 `-` Colored smokes.
 
+`-` VIPs can be added from keys.
+
+`-` You can take /testvip.
+
 TODO List:
 
 `-` Add AutoBhop for VIP.
@@ -38,6 +42,12 @@ TODO List:
 
 `-` Contact me for the premium version.
 
+## css_testvip
+`Usage: /testvip`
+## css_generatevip
+`Usage: css_generatevip <Time In Seconds>`
+## css_activator
+`Usage: /activator <YOUR_TOKEN>`
 ## css_addvip
 `Usage: /addvip <Time In Seconds> <STEAMID64>`
 Give a VIP to player on steamid.
@@ -69,7 +79,10 @@ Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.de
 
 | Command      | Permission   |
 | ------------ | ------------ |
+| `css_generatevip`    | @css/root     |
 | `css_addvip`    | @css/root     |
 | `css_weapon`    | Database add     |
 | `css_pack`  | Database add   |
 | `css_guns_off`  | NONE   |
+| `css_activator`  | NONE   |
+| `css_testvip`  | NONE   |
