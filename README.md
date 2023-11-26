@@ -21,7 +21,15 @@ Advantages for VIP:
 
 `-` Connect to database.
 
+`-` Doubble jump.
+
+`-` Reservation slots.
+
+`-` Colored smokes.
+
 TODO List:
+
+`-` Add AutoBhop for VIP.
 
 `-` Add colored skins/model.
 
