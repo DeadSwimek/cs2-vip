@@ -364,7 +364,6 @@ namespace VIP
                 return HookResult.Continue;
             if (IsVIP[client] == 0)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
                 return HookResult.Continue;
             }
             if (Config.KnifeDMGEnable)
