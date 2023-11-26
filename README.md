@@ -1,4 +1,7 @@
-# VIPGuns
+
+# If you wanna you can support me on this link - https://www.paypal.com/paypalme/deadswim
+
+![image](https://cdn.discordapp.com/attachments/1176537272724758648/1176537272980607138/vip.png)
 
 This is a very simple vipguns plugin for [CounterStrikeSharp](https://docs.cssharp.dev/).
 Just install [package](https://github.com/connercsbn/SimpleAdmin/releases/) to `game/csgo/addons/counterstrikesharp/plugins/` and you should be good to go. 
