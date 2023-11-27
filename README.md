@@ -77,6 +77,43 @@ List of packages:
 `Usage: /guns_off`
 Turn of automatically weapons giving
 
+```
+{
+  "Prefix": " \u0001[\u0004MadGames.eu\u0001]",
+  "GiveHPAfterKill": true, // If true, giving rewards for kills (HP)
+  "GiveMoneyAfterKill": true, // If ture, giving rewards for kill (Money)
+  "EnableVIPPrefix": true, // If true, enable VIP tag
+  "EnableVIPAcceries": true, // If true, enable start with 1200$, 100 Armor and 110 HP.
+  "EnableVIPColoredSmokes": true, // If true, enable colored smokes for VIP
+  "EnableFalldamage": false, // If false, VIP dosen't giving fall damage
+  "RespawnAllowed": true, // If true, enable command to /respawn
+  "EnableDoubbleJump": true, // If true, give VIP player doubble jump
+  "KnifeDMGEnable": false, // If false, VIP player dosen't give DMG from knife
+  "WelcomeMessageEnable": true, // If true, type in the chat welcome message
+  "ReservedSlotsForVIP": 1, // Work only with reservedmethod1, reservation slots from max players
+  "ReservedMethod": 1, // 0 = Disable, 1 = Reservation slots from max player, 2 = kicking non vip players
+  "WelcomeMessage": "Welcom on server you are BEST VIP!", 
+  "DBDatabase": "306106_mysql_db",
+  "DBUser": "306106_mysql_db",
+  "DBPassword": "12345688",
+  "DBHost": "epsi.fakaheda.eu",
+  "DBPort": 3306,
+  "translation": {
+    "OnceUse": " This command you can use \u0007only once\u0001 on round!",
+    "MustBeVIP": " This command are allowed only for \u0006VIP\u0001!",
+    "MustBeThird": " Must be a \u0007Third\u0001 round, to use this command!",
+    "Pack1": " You got a Packages number one.",
+    "Pack2": " You got a Packages number two.",
+    "WeaponAK": " You got a weapon AK-47.",
+    "WeaponM4A1": " You got a weapon M4A1.",
+    "WeaponM4A1S": " You got a weapon M4A1-S.",
+    "WeaponAWP": " You got a weapon AWP.",
+    "Autoguns": " \u003Cfont color:\u0027green\u0027\u003EIf you wanna turn off automaticall weapon type\u003C/font\u003E\u003Cfont color:\u0027red\u0027\u003E /guns_off\u003C/font\u003E"
+  },
+  "ConfigVersion": 1
+}
+```
+
 ## Required Permissions
 
 Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.dev/features/admin-framework/)
