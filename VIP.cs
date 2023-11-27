@@ -26,6 +26,7 @@ using CounterStrikeSharp.API.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using CounterStrikeSharp.API.Modules.Entities;
 using System.Text;
+using CounterStrikeSharp.API.Modules.Timers;
 
 namespace VIP;
 [MinimumApiVersion(55)]
@@ -39,11 +40,13 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("EnableVIPColoredSmokes")] public bool EnableVIPColoredSmokes { get; set; } = true;
     [JsonPropertyName("EnableFalldamage")] public bool EnableFalldamage { get; set; } = false;
     [JsonPropertyName("RespawnAllowed")] public bool RespawnAllowed { get; set; } = true;
+    [JsonPropertyName("DetonateRewards")] public bool DetonateRewards { get; set; } = true;
     [JsonPropertyName("EnableDoubbleJump")] public bool EnableDoubbleJump { get; set; } = true;
     [JsonPropertyName("KnifeDMGEnable")] public bool KnifeDMGEnable { get; set; } = false;
     [JsonPropertyName("WelcomeMessageEnable")] public bool WelcomeMessageEnable { get; set; } = true;
     [JsonPropertyName("ReservedSlotsForVIP")] public int ReservedSlotsForVIP { get; set; } = 1;
     [JsonPropertyName("ReservedMethod")] public int ReservedMethod { get; set; } = 1;
+    [JsonPropertyName("Bombinfo")] public bool Bombinfo { get; set; } = true;
 
 
     [JsonPropertyName("WelcomeMessage")] public string WelcomeMessage { get; set; } = $"Welcom on server you are BEST VIP!";
@@ -53,8 +56,19 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("DBHost")] public string DBHost { get; set; } = "localhost";
     [JsonPropertyName("DBPort")] public int DBPort { get; set; } = 3306;
 
-    [JsonPropertyName("translation")]
-    public TranslationClass TranslationClass { get; set; } = new TranslationClass();
+    [JsonPropertyName("translation")] public TranslationClass TranslationClass { get; set; } = new TranslationClass();
+    [JsonPropertyName("money")] public RewardsClass RewardsClass { get; set; } = new RewardsClass();
+
+}
+public class RewardsClass
+{
+    [JsonPropertyName("FirstSpawnMoney")] public int FirstSpawnMoney { get; set; } = 1200;
+    [JsonPropertyName("SpawnArmor")] public int SpawnArmor { get; set; } = 100;
+    [JsonPropertyName("SpawnHP")] public int SpawnHP { get; set; } = 110;
+    [JsonPropertyName("KillHP")] public int KillHP { get; set; } = 10;
+    [JsonPropertyName("KillMoney")] public int KillMoney { get; set; } = 300;
+    [JsonPropertyName("DetonateMoney")] public int DetonateMoney { get; set; } = 300;
+
 
 }
 public class TranslationClass
@@ -88,7 +102,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.1.1";
+    public override string ModuleVersion => "V. 1.1.2";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] Used = new int?[65];
@@ -106,6 +120,8 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public int ConnectedPlayers;
     public bool Bombplanted;
     public bool DisableGiving;
+    public bool Bomb;
+    public float bombtime;
 
     public void OnConfigParsed(ConfigVIP config)
     {
@@ -173,6 +189,35 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 if (client == null || !client.IsValid)
                     continue;
 
+                if (IsVIP[client.EntityIndex!.Value.Value] == 0)
+                    return;
+                if (Bomb)
+                {
+                    if (bombtime >= 25)
+                    {
+                        client.PrintToCenterHtml(
+                        $"<font color='gray'>Bomb detonating</font> <font class='fontSize-l' color='green'>{bombtime}</font><br>" +
+                        $"<font color='white'>Tik</font> <font color='orange'>tak</font>");
+                    }
+                    else if (bombtime >= 10)
+                    {
+                        client.PrintToCenterHtml(
+                        $"<font color='green'>Bomb detonating</font> <font class='fontSize-l' color='orange'>{bombtime}</font><br>" +
+                        $"<font color='orange'>Timer is</font> <font color='white'>smaller</font>");
+                    }
+                    else if (bombtime >= 5)
+                    {
+                        client.PrintToCenterHtml(
+                        $"<font color='gold'>Bomb detonating</font> <font class='fontSize-l' color='red'>{bombtime}</font><br>" +
+                        $"<font color='white'>Last change</font> <font color='orange'>TO DEFUSE!</font>");
+                    }
+                    else if (bombtime >= 0)
+                    {
+                        client.PrintToCenterHtml(
+                        $"<font color='gold'>Bomb detonating</font> <font class='fontSize-l' color='red'>{bombtime}</font><br>" +
+                        $"<font color='white'>All on site is</font> <font color='orange'>DEAD!</font>");
+                    }
+                }
                 OnTick(client);
             }
         });
@@ -210,6 +255,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
 
         if (IsVIP[client] == 0)
             return;
+
         if (HaveDoubble[client] == 0)
             return;
 
@@ -277,11 +323,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         {
             if (weapon is { IsValid: true, Value.IsValid: true })
             {
-                if (!weapon.Value.DesignerName.Contains("weapon_knife") || !weapon.Value.DesignerName.Contains("weapon_c4"))
-                {
+                if(!weapon.Value.DesignerName.Contains("bayonet") || !weapon.Value.DesignerName.Contains("knife"))
+                { continue; } 
                     weapon.Value.Remove();
                     Server.PrintToConsole($"{player.PlayerName} remove weapon {weapon.Value.DesignerName}");
-                }
             }
         }
     }
@@ -354,12 +399,12 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         {
             if (Config.EnableVIPAcceries)
             {
-                PawnValue.Health += 15;
-                PawnValue.ArmorValue = 100;
+                PawnValue.Health += Config.RewardsClass.SpawnHP;
+                PawnValue.ArmorValue = Config.RewardsClass.SpawnArmor;
 
                 if (moneyServices.Account <= 800)
                 {
-                    moneyServices.Account = 1200;
+                    moneyServices.Account = Config.RewardsClass.FirstSpawnMoney;
                 }
             }
         }
