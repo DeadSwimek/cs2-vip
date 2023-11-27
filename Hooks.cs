@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -25,6 +25,8 @@ using System.Runtime.ExceptionServices;
 using CounterStrikeSharp.API.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Timers;
+
 namespace VIP
 {
     public partial class VIP
@@ -220,7 +222,6 @@ namespace VIP
                         if(player.TeamNum == ((byte)CsTeam.Terrorist))
                         {
                             player.GiveNamedItem("weapon_glock");
-                            player.GiveNamedItem("weapon_knife");
                             if (HaveC4[client] == 1)
                             {
                                 player.GiveNamedItem("weapon_c4");
@@ -230,7 +231,6 @@ namespace VIP
                         if (player.TeamNum == ((byte)CsTeam.CounterTerrorist))
                         {
                             player.GiveNamedItem("weapon_hkp2000");
-                            player.GiveNamedItem("weapon_knife");
                         }
                     }
                 }
@@ -239,6 +239,7 @@ namespace VIP
             Round++;
             Server.PrintToConsole($"VIP Plugins - Added new round count, now is {ConsoleColor.Yellow} {Round}.");
             Bombplanted = false;
+            Bomb = false;
             if (Round < 2)
             {
                 DisableGiving = false;
@@ -382,11 +383,33 @@ namespace VIP
         [GameEventHandler]
         public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
         {
+            var c4list = Utilities.FindAllEntitiesByDesignerName<CC4>("weapon_c4");
+            var c4 = c4list.FirstOrDefault();
+
             var player = @event.Userid;
+            Bomb = true;
+            bombtime = 40.0f;
+            if (Config.Bombinfo)
+            {
+                var timer = AddTimer(1.0f, () =>
+                {
+                    if (bombtime == 0)
+                    {
+                        return;
+                    }
+
+                    bombtime = bombtime - 1.0f;
+                }, TimerFlags.REPEAT);
+            }
             AddTimer(35.0f, () =>
             {
                 Bombplanted = true;
                 Server.PrintToConsole("VIP Plugin - Now you cannot get rewards from kills..");
+                if(Config.DetonateRewards)
+                {
+                    var moneyServices = player.InGameMoneyServices;
+                    moneyServices.Account = moneyServices.Account + Config.RewardsClass.DetonateMoney;
+                }
             });
 
             return HookResult.Continue;
@@ -419,16 +442,16 @@ namespace VIP
                     if (Config.GiveHPAfterKill)
                     {
                         // Sometimes giving, sometimes no, Valve :)
-                        PawnValueAttacker.Health += 10;
+                        PawnValueAttacker.Health += Config.RewardsClass.KillHP;
                         Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
-                        attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+10 HP{ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
+                        attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillHP} HP{ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
                         return HookResult.Continue;
                     }
                     if (Config.GiveMoneyAfterKill)
                     {
                         var AttackerMoneys = MoneyValueAttacker.Account;
-                        MoneyValueAttacker.Account = AttackerMoneys + 300;
-                        attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+300 ${ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
+                        MoneyValueAttacker.Account = AttackerMoneys + Config.RewardsClass.KillMoney;
+                        attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillMoney} ${ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
                         return HookResult.Continue;
                     }
                 
