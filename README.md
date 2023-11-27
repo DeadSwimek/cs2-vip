@@ -95,10 +95,7 @@ Turn of automatically weapons giving
   "ReservedMethod": 1, // 0 = Disable, 1 = Reservation slots from max player, 2 = kicking non vip players
   "Bombinfo": true, // If true, show for VIPs players detonation time
   "WelcomeMessage": "Welcom on server you are BEST VIP!", 
-  "DBDatabase": "306106_mysql_db",
-  "DBUser": "306106_mysql_db",
-  "DBPassword": "12345688",
-  "DBHost": "epsi.fakaheda.eu",
+
   "DBPort": 3306,
   "translation": {
     "OnceUse": " This command you can use \u0007only once\u0001 on round!",
