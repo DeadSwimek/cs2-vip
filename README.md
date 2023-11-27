@@ -87,11 +87,13 @@ Turn of automatically weapons giving
   "EnableVIPColoredSmokes": true, // If true, enable colored smokes for VIP
   "EnableFalldamage": false, // If false, VIP dosen't giving fall damage
   "RespawnAllowed": true, // If true, enable command to /respawn
+  "DetonateRewards": true, // If true, VIPs player get rewards for detonation
   "EnableDoubbleJump": true, // If true, give VIP player doubble jump
   "KnifeDMGEnable": false, // If false, VIP player dosen't give DMG from knife
   "WelcomeMessageEnable": true, // If true, type in the chat welcome message
   "ReservedSlotsForVIP": 1, // Work only with reservedmethod1, reservation slots from max players
   "ReservedMethod": 1, // 0 = Disable, 1 = Reservation slots from max player, 2 = kicking non vip players
+  "Bombinfo": true, // If true, show for VIPs players detonation time
   "WelcomeMessage": "Welcom on server you are BEST VIP!", 
   "DBDatabase": "306106_mysql_db",
   "DBUser": "306106_mysql_db",
@@ -109,6 +111,14 @@ Turn of automatically weapons giving
     "WeaponM4A1S": " You got a weapon M4A1-S.",
     "WeaponAWP": " You got a weapon AWP.",
     "Autoguns": " \u003Cfont color:\u0027green\u0027\u003EIf you wanna turn off automaticall weapon type\u003C/font\u003E\u003Cfont color:\u0027red\u0027\u003E /guns_off\u003C/font\u003E"
+  },
+  "money": {
+    "FirstSpawnMoney": 1200,
+    "SpawnArmor": 100,
+    "SpawnHP": 110,
+    "KillHP": 10,
+    "KillMoney": 300,
+    "DetonateMoney": 300
   },
   "ConfigVersion": 1
 }
