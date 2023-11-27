@@ -5,6 +5,7 @@
 
 This is a very simple vipguns plugin for [CounterStrikeSharp](https://docs.cssharp.dev/).
 Just install [package](https://github.com/connercsbn/SimpleAdmin/releases/) to `game/csgo/addons/counterstrikesharp/plugins/` and you should be good to go. 
+[Detonation viewer](https://madgames.eu/YcXJ.webm)
 
 Advantages for VIP:
 
