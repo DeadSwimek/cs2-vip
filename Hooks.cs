@@ -33,9 +33,11 @@ namespace VIP
     {
         private HookResult OnPlayerChat(CCSPlayerController? player, CommandInfo info)
         {
-            if (Config.EnableVIPPrefix)
+            if (!Config.EnableVIPPrefix)
             {
-                var client = player.EntityIndex!.Value.Value;
+                return HookResult.Continue;
+            }
+            var client = player.EntityIndex!.Value.Value;
                 var message = info.GetArg(1);
                 string message_first = info.GetArg(1);
 
@@ -47,23 +49,19 @@ namespace VIP
                 if (IsVIP[client] == 1)
                 {
                     GetTag = $" {ChatColors.Lime}VIP {ChatColors.Default}»";
+                    var isAlive = player.PawnIsAlive ? "" : "-DEAD-";
+
+                    Server.PrintToChatAll(ReplaceTags($"{isAlive} {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
                 }
-
-                var isAlive = player.PawnIsAlive ? "" : "-DEAD-";
-
-                Server.PrintToChatAll(ReplaceTags($"{isAlive} {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
                 return HookResult.Handled;
-            }
-            else
-            {
-                return HookResult.Continue;
-            }
         }
         private HookResult OnPlayerChatTeam(CCSPlayerController? player, CommandInfo info)
         {
-            if (Config.EnableVIPPrefix)
+            if (!Config.EnableVIPPrefix)
             {
-                var client = player.EntityIndex!.Value.Value;
+                return HookResult.Continue;
+            }
+            var client = player.EntityIndex!.Value.Value;
                 var message = info.GetArg(1);
                 string message_first = info.GetArg(1);
 
@@ -75,21 +73,15 @@ namespace VIP
                 if (IsVIP[client] == 1)
                 {
                     GetTag = $" {ChatColors.Lime}VIP {ChatColors.Default}»";
-                }
-
-                var isAlive = player.PawnIsAlive ? "" : "-DEAD-";
-                for (int i = 1; i <= Server.MaxPlayers; i++)
-                {
-                    CCSPlayerController? pc = Utilities.GetPlayerFromIndex(i);
-                    if (pc == null || !pc.IsValid || pc.IsBot || pc.TeamNum != player.TeamNum) continue;
-                    pc.PrintToChat(ReplaceTags($"{isAlive}(TEAM) {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
+                    var isAlive = player.PawnIsAlive ? "" : "-DEAD-";
+                    for (int i = 1; i <= Server.MaxPlayers; i++)
+                    {
+                        CCSPlayerController? pc = Utilities.GetPlayerFromIndex(i);
+                        if (pc == null || !pc.IsValid || pc.IsBot || pc.TeamNum != player.TeamNum) continue;
+                        pc.PrintToChat(ReplaceTags($"{isAlive}(TEAM) {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
+                    }
                 }
                 return HookResult.Handled;
-            }
-            else
-            {
-                return HookResult.Continue;
-            }
         }
         [GameEventHandler]
         public HookResult OnClientConnect(EventPlayerConnectFull @event, GameEventInfo info)
@@ -131,11 +123,11 @@ namespace VIP
                     foreach (var l_player in Utilities.GetPlayers().Where(player => IsVIP[client] == 0 || AdminManager.PlayerHasPermissions(player, "@css/chat")))
                     {
                         var el_player = l_player.EntityIndex!.Value.Value;
-                        if (l_player == null || !l_player.IsValid || l_player.IsBot)
+                        if (l_player == null || !l_player.IsValid)
                             return HookResult.Continue;
                         if (l_player.IsValid)
                         {
-                            if (IsVIP[el_player] == 0)
+                            if (IsVIP[el_player] != 1)
                             {
                                 Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{l_player.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
                                 Server.ExecuteCommand($"kickid {l_player.UserId} 'VIP Access!'");
@@ -185,6 +177,12 @@ namespace VIP
                 {
                     RespawnUsed[client] = 0;
                 }
+            }
+            if (Config.DisablePackWeaponAfter20Sec)
+            {
+                AddTimer(20.0f, () =>
+                        Disabled20Sec = true
+                );
             }
 
             if (GameRules().WarmupPeriod)
@@ -240,6 +238,7 @@ namespace VIP
             Server.PrintToConsole($"VIP Plugins - Added new round count, now is {ConsoleColor.Yellow} {Round}.");
             Bombplanted = false;
             Bomb = false;
+            Disabled20Sec = false;
             if (Round < 2)
             {
                 DisableGiving = false;
@@ -437,7 +436,10 @@ namespace VIP
             {
                     if (Config.GiveHPAfterKill || Config.GiveMoneyAfterKill)
                     {
-                        Server.PrintToChatAll($" {Config.Prefix} Player {ChatColors.Lime}{player.PlayerName}{ChatColors.Default} is killed by {ChatColors.Lime}{attacker.PlayerName}{ChatColors.Default}.");
+                        if (Config.AllowKillMessages)
+                        {
+                            Server.PrintToChatAll($" {Config.Prefix} Player {ChatColors.Lime}{player.PlayerName}{ChatColors.Default} is killed by {ChatColors.Lime}{attacker.PlayerName}{ChatColors.Default}.");
+                        }
                     }
                     if (Config.GiveHPAfterKill)
                     {
@@ -483,7 +485,7 @@ namespace VIP
                     }
                     else
                     {
-                        player.PlayerPawn.Value.Health = player.PlayerPawn.Value.Health += @event.DmgHealth + 1;
+                        player.PlayerPawn.Value.Health = player.PlayerPawn.Value.Health += @event.DmgHealth;
                         Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} registred a FallDamage (Weapon: {@event.Weapon} HiTG: {@event.Hitgroup})!");
                     }
                 }
