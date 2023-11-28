@@ -26,11 +26,17 @@ using CounterStrikeSharp.API.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Timers;
+using CounterStrikeSharp.API.Modules.Memory;
+using System.Security.Cryptography;
+using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
+
 
 namespace VIP
 {
     public partial class VIP
     {
+        private readonly nint Handle;
+        public CHandle<CBaseEntity> EndEntity => Schema.GetDeclaredClass<CHandle<CBaseEntity>>(this.Handle, "CBeam", "m_hEndEntity");
         private HookResult OnPlayerChat(CCSPlayerController? player, CommandInfo info)
         {
             if (!Config.EnableVIPPrefix)
@@ -52,6 +58,10 @@ namespace VIP
                     var isAlive = player.PawnIsAlive ? "" : "-DEAD-";
 
                     Server.PrintToChatAll(ReplaceTags($"{isAlive} {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
+                }
+                else
+                {
+                return HookResult.Continue;
                 }
                 return HookResult.Handled;
         }
@@ -81,7 +91,11 @@ namespace VIP
                         pc.PrintToChat(ReplaceTags($"{isAlive}(TEAM) {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
                     }
                 }
-                return HookResult.Handled;
+                else
+                {
+                    return HookResult.Continue;
+                }
+            return HookResult.Handled;
         }
         [GameEventHandler]
         public HookResult OnClientConnect(EventPlayerConnectFull @event, GameEventInfo info)
@@ -97,6 +111,8 @@ namespace VIP
             LastUsed[client] = 0;
             IsVIP[client] = 0;
             ConnectedPlayers++;
+            LoadPlayerData(player);
+
 
             var slots = Server.MaxPlayers;
             slots = slots - Config.ReservedSlotsForVIP;
@@ -141,7 +157,6 @@ namespace VIP
                 return HookResult.Continue;
             }
               
-            LoadPlayerData(player);
             if (IsVIP[client] == 1)
             {
                 IsVIP[client] = 1;
@@ -384,12 +399,22 @@ namespace VIP
         {
             var c4list = Utilities.FindAllEntitiesByDesignerName<CC4>("weapon_c4");
             var c4 = c4list.FirstOrDefault();
+            var planted = new CBombTarget(NativeAPI.GetEntityFromIndex(@event.Site));
+
 
             var player = @event.Userid;
             Bomb = true;
             bombtime = 40.0f;
             if (Config.Bombinfo)
             {
+                if(planted.IsBombSiteB)
+                {
+                    SitePlant = "B";
+                }
+                else
+                {
+                    SitePlant = "A";
+                }
                 var timer = AddTimer(1.0f, () =>
                 {
                     if (bombtime == 0)
@@ -434,7 +459,9 @@ namespace VIP
                 return HookResult.Continue;
             if (player != attacker)
             {
-                    if (Config.GiveHPAfterKill || Config.GiveMoneyAfterKill)
+                
+
+                if (Config.GiveHPAfterKill || Config.GiveMoneyAfterKill)
                     {
                         if (Config.AllowKillMessages)
                         {
@@ -468,6 +495,7 @@ namespace VIP
             CCSPlayerController attacker = @event.Attacker;
 
             var client = player.EntityIndex!.Value.Value;
+
 
             if (player.Connected != PlayerConnectedState.PlayerConnected || !player.PlayerPawn.IsValid || !@event.Userid.IsValid)
                 return HookResult.Continue;
