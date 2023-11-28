@@ -46,7 +46,7 @@ namespace VIP
         {
             if (AdminManager.PlayerHasPermissions(player, "@css/root"))
             {
-                Round = 2;
+                Round = 5;
                 Server.PrintToConsole($"You successful add new round on server/debugmode. Now are round {Round}");
             }
         }
@@ -272,7 +272,7 @@ namespace VIP
                 status_i = 1;
                 if (result.Get<int>(0, "end") != 0)
                 {
-                    status = $" {ChatColors.Red}Expirated";
+                    status = $" {ChatColors.Green}Active";
                 }
                 if (result.Get<int>(0, "end") == 0)
                 {
@@ -285,15 +285,19 @@ namespace VIP
                 status = $" {ChatColors.Red} Inactive";
                 status_i = 0;
             }
-            player.PrintToChat($" {ChatColors.LightRed}<----->{ChatColors.Lime} /vip {ChatColors.LightRed}<----->");
-            player.PrintToChat($" {ChatColors.Grey}You have {status}{ChatColors.Grey} VIP Status.");
+            player.PrintToChat($" {ChatColors.Green}==!-!=={ChatColors.Lime} VIP {ChatColors.Default}Status {ChatColors.Green}==!-!==");
+            player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}You have {status}{ChatColors.Default} VIP Status.");
             if(status_i == 1)
             {
-                player.PrintToChat($" {ChatColors.Grey}Your VIP have time {formating}{ChatColors.Grey}.");
-                player.PrintToChat($" {ChatColors.Grey}Yours VIPs commands are{ChatColors.Grey}:");
-                player.PrintToChat($" {ChatColors.Lime}/vip, /pack, /weapon, /respawn, /guns_off");
+                player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Your {ChatColors.Lime}VIP have time {formating}{ChatColors.Default}.");
+                player.PrintToChat($" {ChatColors.Gold}▼ {ChatColors.Lime}Yours command available for you{ChatColors.Gold} ▼");
+                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/weapon {ChatColors.Default}1,2,3,4,5{ChatColors.Gold} ◄");
+                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/pack {ChatColors.Default}1,2{ChatColors.Gold} ◄");
+                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/respawn{ChatColors.Gold} ◄");
+                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/guns_off{ChatColors.Gold} ◄");
+
             }
-            player.PrintToChat($" {ChatColors.LightRed}<----->{ChatColors.Lime} /vip {ChatColors.LightRed}<----->");
+            player.PrintToChat($" {ChatColors.Green}==!-!=={ChatColors.Lime} VIP {ChatColors.Default}Status {ChatColors.Green}==!-!==");
 
 
         }
@@ -367,9 +371,19 @@ namespace VIP
             {
                 return;
             }
+            if (!player.PawnIsAlive)
+            {
+                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeAlive}");
+                return;
+            }
             if (IsVIP[client] == 0)
             {
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                return;
+            }
+            if(Disabled20Sec)
+            {
+                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustFirst20Sec}");
                 return;
             }
 
@@ -450,9 +464,19 @@ namespace VIP
             {
                 return;
             }
+            if (!player.PawnIsAlive)
+            {
+                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeAlive}");
+                return;
+            }
             if (IsVIP[client] == 0)
             {
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                return;
+            }
+            if (Disabled20Sec)
+            {
+                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustFirst20Sec}");
                 return;
             }
 
@@ -472,31 +496,31 @@ namespace VIP
                 LastUsed[client] = 2;
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack1}");
                 // Weapons
-                if (CheckIsHaveWeapon("deagle", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Pistol}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_deagle");
+                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Pistol}");
                 }
-                if (CheckIsHaveWeapon("ak47", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Gun}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_ak47");
+                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Gun}");
                 }
-                if (CheckIsHaveWeapon("healthshot", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_healthshot");
+                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies}");
 
                 }
                 // Granades
-                if (CheckIsHaveWeapon("molotov", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_2}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_molotov");
+                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_2}");
                 }
-                if (CheckIsHaveWeapon("smokegrenade", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_3}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_smokegrenade");
+                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_3}");
                 }
-                if (CheckIsHaveWeapon("hegrenade", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_4}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_hegrenade");
+                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_4}");
                 }
             }
             else if (Convert.ToInt32(PackagesID) == 2)
@@ -505,31 +529,31 @@ namespace VIP
                 LastUsed[client] = 3;
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack2}");
                 // Weapons
-                if (CheckIsHaveWeapon("deagle", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Pistol}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_deagle");
+                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Pistol}");
                 }
-                if (CheckIsHaveWeapon("m4a1", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Gun}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_m4a1");
+                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Gun}");
                 }
-                if (CheckIsHaveWeapon("healthshot", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_healthshot");
+                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies}");
 
                 }
                 // Granades
-                if (CheckIsHaveWeapon("molotov", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_2}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_molotov");
+                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_2}");
                 }
-                if (CheckIsHaveWeapon("smokegrenade", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_3}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_smokegrenade");
+                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_3}");
                 }
-                if (CheckIsHaveWeapon("hegrenade", player) == false)
+                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_4}", player) == false)
                 {
-                    player.GiveNamedItem("weapon_hegrenade");
+                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_4}");
                 }
             }
             else
