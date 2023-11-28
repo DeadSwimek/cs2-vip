@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using CounterStrikeSharp.API.Modules.Entities;
 using System.Text;
 using CounterStrikeSharp.API.Modules.Timers;
+using System.Security.Cryptography;
 
 namespace VIP;
 [MinimumApiVersion(55)]
@@ -35,6 +36,7 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("Prefix")] public string Prefix { get; set; } = $" {ChatColors.Default}[{ChatColors.Green}MadGames.eu{ChatColors.Default}]";
     [JsonPropertyName("GiveHPAfterKill")] public bool GiveHPAfterKill { get; set; } = true;
     [JsonPropertyName("GiveMoneyAfterKill")] public bool GiveMoneyAfterKill { get; set; } = true;
+    [JsonPropertyName("AllowKillMessages")] public bool AllowKillMessages { get; set; } = true;
     [JsonPropertyName("EnableVIPPrefix")] public bool EnableVIPPrefix { get; set; } = true;
     [JsonPropertyName("EnableVIPAcceries")] public bool EnableVIPAcceries { get; set; } = true;
     [JsonPropertyName("EnableVIPColoredSmokes")] public bool EnableVIPColoredSmokes { get; set; } = true;
@@ -47,6 +49,7 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("ReservedSlotsForVIP")] public int ReservedSlotsForVIP { get; set; } = 1;
     [JsonPropertyName("ReservedMethod")] public int ReservedMethod { get; set; } = 1;
     [JsonPropertyName("Bombinfo")] public bool Bombinfo { get; set; } = true;
+    [JsonPropertyName("DisablePackWeaponAfter20Sec")] public bool DisablePackWeaponAfter20Sec { get; set; } = false;
 
 
     [JsonPropertyName("WelcomeMessage")] public string WelcomeMessage { get; set; } = $"Welcom on server you are BEST VIP!";
@@ -58,6 +61,9 @@ public class ConfigVIP : BasePluginConfig
 
     [JsonPropertyName("translation")] public TranslationClass TranslationClass { get; set; } = new TranslationClass();
     [JsonPropertyName("money")] public RewardsClass RewardsClass { get; set; } = new RewardsClass();
+
+    [JsonPropertyName("pack1")] public Pack1Settings Pack1Settings { get; set; } = new Pack1Settings();
+    [JsonPropertyName("pack2")] public Pack2Settings Pack2Settings { get; set; } = new Pack2Settings();
 
 }
 public class RewardsClass
@@ -71,20 +77,43 @@ public class RewardsClass
 
 
 }
+public class Pack1Settings
+{
+    [JsonPropertyName("Gun")] public string Gun { get; set; } = "ak47";
+    [JsonPropertyName("Pistol")] public string Pistol { get; set; } = "deagle";
+    [JsonPropertyName("Acceroies")] public string Acceroies { get; set; } = "healthshot";
+    [JsonPropertyName("Acceroies_2")] public string Acceroies_2 { get; set; } = "molotov";
+    [JsonPropertyName("Acceroies_3")] public string Acceroies_3 { get; set; } = "smokegrenade";
+    [JsonPropertyName("Acceroies_4")] public string Acceroies_4 { get; set; } = "hegrenade";
+
+}
+public class Pack2Settings
+{
+    [JsonPropertyName("Gun")] public string Gun { get; set; } = "m4a1";
+    [JsonPropertyName("Pistol")] public string Pistol { get; set; } = "deagle";
+    [JsonPropertyName("Acceroies")] public string Acceroies { get; set; } = "healthshot";
+    [JsonPropertyName("Acceroies_2")] public string Acceroies_2 { get; set; } = "molotov";
+    [JsonPropertyName("Acceroies_3")] public string Acceroies_3 { get; set; } = "smokegrenade";
+    [JsonPropertyName("Acceroies_4")] public string Acceroies_4 { get; set; } = "hegrenade";
+
+
+}
 public class TranslationClass
 {
     [JsonPropertyName("OnceUse")] public string OnceUse { get; set; } = $" This command you can use {ChatColors.Red}only once{ChatColors.Default} on round!";
     [JsonPropertyName("MustBeVIP")] public string MustBeVIP { get; set; } = $" This command are allowed only for {ChatColors.Lime}VIP{ChatColors.Default}!";
     [JsonPropertyName("MustBeThird")] public string MustBeThird { get; set; } = $" Must be a {ChatColors.Red}Third{ChatColors.Default} round, to use this command!";
 
-    [JsonPropertyName("Pack1")] public string Pack1 { get; set; } = $" You got a Packages number one.";
-    [JsonPropertyName("Pack2")] public string Pack2 { get; set; } = $" You got a Packages number two.";
+    [JsonPropertyName("Pack1")] public string Pack1 { get; set; } = $" You got a Packages {ChatColors.Lime}number one{ChatColors.Default}.";
+    [JsonPropertyName("Pack2")] public string Pack2 { get; set; } = $" You got a Packages {ChatColors.Lime}number two{ChatColors.Default}.";
 
-    [JsonPropertyName("WeaponAK")] public string WeaponAK { get; set; } = $" You got a weapon AK-47.";
-    [JsonPropertyName("WeaponM4A1")] public string WeaponM4A1 { get; set; } = $" You got a weapon M4A1.";
-    [JsonPropertyName("WeaponM4A1S")] public string WeaponM4A1S { get; set; } = $" You got a weapon M4A1-S.";
-    [JsonPropertyName("WeaponAWP")] public string WeaponAWP { get; set; } = $" You got a weapon AWP.";
+    [JsonPropertyName("WeaponAK")] public string WeaponAK { get; set; } = $" You got a weapon {ChatColors.Lime}AK-47{ChatColors.Default}.";
+    [JsonPropertyName("WeaponM4A1")] public string WeaponM4A1 { get; set; } = $" You got a weapon {ChatColors.Lime}M4A1{ChatColors.Default}.";
+    [JsonPropertyName("WeaponM4A1S")] public string WeaponM4A1S { get; set; } = $" You got a weapon {ChatColors.Lime}M4A1-S{ChatColors.Default}.";
+    [JsonPropertyName("WeaponAWP")] public string WeaponAWP { get; set; } = $" You got a weapon {ChatColors.Lime}AWP{ChatColors.Default}.";
     [JsonPropertyName("Autoguns")] public string Autoguns { get; set; } = $" <font color:'green'>If you wanna turn off automaticall weapon type</font><font color:'red'> /guns_off</font>";
+    [JsonPropertyName("MustFirst20Sec")] public string MustFirst20Sec { get; set; } = $" You can use this command only in {ChatColors.Red}first 20 Seconds{ChatColors.Default}.";
+    [JsonPropertyName("MustBeAlive")] public string MustBeAlive { get; set; } = $" You can use this command only when {ChatColors.Red}you are alive{ChatColors.Default}!";
 
 }
 public static class GetUnixTime
@@ -102,7 +131,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.1.2";
+    public override string ModuleVersion => "V. 1.1.3";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] Used = new int?[65];
@@ -122,6 +151,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public bool DisableGiving;
     public bool Bomb;
     public float bombtime;
+    public bool Disabled20Sec;
 
     public void OnConfigParsed(ConfigVIP config)
     {
@@ -188,8 +218,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 var client = new CCSPlayerController(ent);
                 if (client == null || !client.IsValid)
                     continue;
-
+                OnTick(client);
                 if (IsVIP[client.EntityIndex!.Value.Value] == 0)
+                    return;
+                if (!Config.Bombinfo)
                     return;
                 if (Bomb)
                 {
@@ -218,7 +250,6 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                         $"<font color='white'>All on site is</font> <font color='orange'>DEAD!</font>");
                     }
                 }
-                OnTick(client);
             }
         });
 
@@ -405,6 +436,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 if (moneyServices.Account <= 800)
                 {
                     moneyServices.Account = Config.RewardsClass.FirstSpawnMoney;
+                }
+                if (LastUsed[client] != 2 || LastUsed[client] != 3)
+                {
+                    controller.GiveNamedItem("weapon_healthshot");
                 }
             }
         }
