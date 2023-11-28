@@ -28,6 +28,9 @@ using CounterStrikeSharp.API.Modules.Entities;
 using System.Text;
 using CounterStrikeSharp.API.Modules.Timers;
 using System.Security.Cryptography;
+using CounterStrikeSharp.API.Modules.Memory;
+using System.Threading.Channels;
+using System.Reflection.Metadata;
 
 namespace VIP;
 [MinimumApiVersion(55)]
@@ -131,7 +134,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.1.4";
+    public override string ModuleVersion => "V. 1.1.5";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] Used = new int?[65];
@@ -152,6 +155,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public bool Bomb;
     public float bombtime;
     public bool Disabled20Sec;
+    public string SitePlant;
 
     public void OnConfigParsed(ConfigVIP config)
     {
@@ -229,25 +233,29 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                     {
                         client.PrintToCenterHtml(
                         $"<font color='gray'>Bomb detonating</font> <font class='fontSize-l' color='green'>{bombtime}</font><br>" +
-                        $"<font color='white'>Tik</font> <font color='orange'>tak</font>");
+                        $"<font color='gray'>Planted on site</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>"
+                        );
                     }
                     else if (bombtime >= 10)
                     {
                         client.PrintToCenterHtml(
                         $"<font color='green'>Bomb detonating</font> <font class='fontSize-l' color='orange'>{bombtime}</font><br>" +
-                        $"<font color='orange'>Timer is</font> <font color='white'>smaller</font>");
+                        $"<font color='orange'>Timer is</font> <font color='white'>smaller</font><br>" +
+                        $"<font color='gray'>Planted on site</font> <font class='fontSize-m' color='orange'>[{SitePlant}]</font>");
                     }
                     else if (bombtime >= 5)
                     {
                         client.PrintToCenterHtml(
                         $"<font color='gold'>Bomb detonating</font> <font class='fontSize-l' color='red'>{bombtime}</font><br>" +
-                        $"<font color='white'>Last change</font> <font color='orange'>TO DEFUSE!</font>");
+                        $"<font color='white'>Last change</font> <font color='orange'>TO DEFUSE!</font><br>" +
+                        $"<font color='gold'>Planted on site</font> <font class='fontSize-m' color='red'>[{SitePlant}]</font>");
                     }
                     else if (bombtime >= 0)
                     {
                         client.PrintToCenterHtml(
                         $"<font color='gold'>Bomb detonating</font> <font class='fontSize-l' color='red'>{bombtime}</font><br>" +
-                        $"<font color='white'>All on site is</font> <font color='orange'>DEAD!</font>");
+                        $"<font color='white'>All on site is</font> <font color='orange'>DEAD!</font><br>" +
+                        $"<font color='gold'>Planted on site</font> <font class='fontSize-m' color='red'>[{SitePlant}]</font>");
                     }
                 }
             }
@@ -424,18 +432,16 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             return;
 
         var client = controller.EntityIndex!.Value.Value;
-        var PawnValue = controller.PlayerPawn.Value;
-        var moneyServices = controller.InGameMoneyServices;
         if (IsVIP[client] == 1)
         {
             if (Config.EnableVIPAcceries)
             {
-                PawnValue.Health += Config.RewardsClass.SpawnHP;
-                PawnValue.ArmorValue = Config.RewardsClass.SpawnArmor;
+                controller.PlayerPawn.Value.Health = Config.RewardsClass.SpawnHP;
+                set_armor(controller, Config.RewardsClass.SpawnArmor);
 
-                if (moneyServices.Account <= 800)
+                if (get_money(controller) <= 800)
                 {
-                    moneyServices.Account = Config.RewardsClass.FirstSpawnMoney;
+                    set_money(controller, Config.RewardsClass.FirstSpawnMoney);
                 }
                 if (LastUsed[client] != 2 || LastUsed[client] != 3)
                 {
