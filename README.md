@@ -40,6 +40,10 @@ Advantages for VIP:
 
 `-` VIP can be respawned by command /respawn.
 
+`-` Rewards after bomb detonate.
+
+`-` Configurated packages.
+
 TODO List:
 
 `-` Add AutoBhop for VIP.
@@ -73,9 +77,9 @@ List of packages:
 `Usage: /pack <Number of pack>`
 List of packages:
 
-1 - AK-47, Deagle, Healthshot, Molotov, Smoke, He
+1 - AK-47, Deagle, Healthshot, Molotov, Smoke, He `Can be edited`
 
-2 - M4A1, Deagle, Healthshot, Molotov, Smoke, He
+2 - M4A1, Deagle, Healthshot, Molotov, Smoke, He `Can be edited`
 
 ## css_guns_off
 `Usage: /guns_off`
@@ -86,6 +90,7 @@ Turn of automatically weapons giving
   "Prefix": " \u0001[\u0004MadGames.eu\u0001]",
   "GiveHPAfterKill": true, // If true, giving rewards for kills (HP)
   "GiveMoneyAfterKill": true, // If ture, giving rewards for kill (Money)
+  "AllowKillMessages": true, // If true, send messages after player kill player.
   "EnableVIPPrefix": true, // If true, enable VIP tag
   "EnableVIPAcceries": true, // If true, enable start with 1200$, 100 Armor and 110 HP.
   "EnableVIPColoredSmokes": true, // If true, enable colored smokes for VIP
