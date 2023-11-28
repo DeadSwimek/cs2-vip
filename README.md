@@ -8,7 +8,7 @@ Just install [package](https://github.com/connercsbn/SimpleAdmin/releases/) to `
 
 ### Videos/Images shows
 
-[Detonation viewer](https://madgames.eu/YcXJ.webm) [/vip Design](https://cdn.discordapp.com/attachments/1176537272724758648/1178973044069380116/image.png?ex=65781735&is=6565a235&hm=e3ee076c344ca2a812c9ad486122aa21d734e369f6651ef197cda31711b821e5&)
+[Detonation viewer](https://madgames.eu/YcXJ.webm) [/vip Design](https://cdn.discordapp.com/attachments/1140558464599470170/1178973482843906098/image.png)
 
 Advantages for VIP:
 
