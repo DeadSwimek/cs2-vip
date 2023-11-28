@@ -98,6 +98,7 @@ Turn of automatically weapons giving
   "ReservedSlotsForVIP": 1, // Work only with reservedmethod1, reservation slots from max players
   "ReservedMethod": 1, // 0 = Disable, 1 = Reservation slots from max player, 2 = kicking non vip players
   "Bombinfo": true, // If true, show for VIPs players detonation time
+  "DisablePackWeaponAfter20Sec": false, // If false, VIPs players can take anytime guns/packs
   "WelcomeMessage": "Welcom on server you are BEST VIP!", 
   "DBDatabase": "database",
   "DBUser": "user",
@@ -114,7 +115,9 @@ Turn of automatically weapons giving
     "WeaponM4A1": " You got a weapon M4A1.",
     "WeaponM4A1S": " You got a weapon M4A1-S.",
     "WeaponAWP": " You got a weapon AWP.",
-    "Autoguns": " \u003Cfont color:\u0027green\u0027\u003EIf you wanna turn off automaticall weapon type\u003C/font\u003E\u003Cfont color:\u0027red\u0027\u003E /guns_off\u003C/font\u003E"
+    "Autoguns": " \u003Cfont color:\u0027green\u0027\u003EIf you wanna turn off automaticall weapon type\u003C/font\u003E\u003Cfont color:\u0027red\u0027\u003E /guns_off\u003C/font\u003E",
+    "MustFirst20Sec": " You can use this command only in \u0007first 20 Seconds\u0001.",
+    "MustBeAlive": " You can use this command only when \u0007you are alive\u0001!"
   },
   "money": {
     "FirstSpawnMoney": 1200,
@@ -123,6 +126,22 @@ Turn of automatically weapons giving
     "KillHP": 10,
     "KillMoney": 300,
     "DetonateMoney": 300
+  },
+  "pack1": {
+    "Gun": "ak47",
+    "Pistol": "deagle",
+    "Acceroies": "healthshot",
+    "Acceroies_2": "molotov",
+    "Acceroies_3": "smokegrenade",
+    "Acceroies_4": "hegrenade"
+  },
+  "pack2": {
+    "Gun": "m4a1",
+    "Pistol": "deagle",
+    "Acceroies": "healthshot",
+    "Acceroies_2": "molotov",
+    "Acceroies_3": "smokegrenade",
+    "Acceroies_4": "hegrenade"
   },
   "ConfigVersion": 1
 }
