@@ -272,6 +272,10 @@ namespace VIP
                 Used[client] = 0;
                 if (Config.EnableDoubbleJump)
                 {
+                    if (Config.CommandOnGroup.DoubbleJump > get_vip_group(player))
+                    {
+                        return HookResult.Continue;
+                    }
                     HaveDoubble[client] = 1;
                 }
                 else
@@ -302,62 +306,62 @@ namespace VIP
                 {
 
                     // Weapons
-                    if (CheckIsHaveWeapon("deagle", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack1Settings.Pistol}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_deagle");
+                        player.GiveNamedItem($"weapon_{Config.Pack1Settings.Pistol}");
                     }
-                    if (CheckIsHaveWeapon("ak47", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack1Settings.Gun}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_ak47");
+                        player.GiveNamedItem($"weapon_{Config.Pack1Settings.Gun}");
                     }
-                    if (CheckIsHaveWeapon("healthshot", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_healthshot");
+                        player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies}");
 
                     }
                     // Granades
-                    if (CheckIsHaveWeapon("molotov", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_2}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_molotov");
+                        player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_2}");
                     }
-                    if (CheckIsHaveWeapon("smokegrenade", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_3}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_smokegrenade");
+                        player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_3}");
                     }
-                    if (CheckIsHaveWeapon("hegrenade", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_4}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_hegrenade");
+                        player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_4}");
                     }
                     player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack1}");
                     Used[client] = 1;
                 }
                 else if (LastUsed[client] == 3)
                 {
-                    if (CheckIsHaveWeapon("deagle", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack2Settings.Pistol}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_deagle");
+                        player.GiveNamedItem($"weapon_{Config.Pack2Settings.Pistol}");
                     }
-                    if (CheckIsHaveWeapon("m4a1", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack2Settings.Gun}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_m4a1");
+                        player.GiveNamedItem($"weapon_{Config.Pack2Settings.Gun}");
                     }
-                    if (CheckIsHaveWeapon("healthshot", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_healthshot");
+                        player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies}");
 
                     }
                     // Granades
-                    if (CheckIsHaveWeapon("molotov", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_2}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_molotov");
+                        player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_2}");
                     }
-                    if (CheckIsHaveWeapon("smokegrenade", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_3}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_smokegrenade");
+                        player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_3}");
                     }
-                    if (CheckIsHaveWeapon("hegrenade", player) == false)
+                    if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_4}", player) == false)
                     {
-                        player.GiveNamedItem("weapon_hegrenade");
+                        player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_4}");
                     }
                     player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack2}");
                     Used[client] = 1;
@@ -407,7 +411,11 @@ namespace VIP
             bombtime = 40.0f;
             if (Config.Bombinfo)
             {
-                if(planted.IsBombSiteB)
+                if (Config.CommandOnGroup.BombInfo > get_vip_group(player))
+                {
+                    return HookResult.Continue;
+                }
+                if (planted.IsBombSiteB)
                 {
                     SitePlant = "B";
                 }
