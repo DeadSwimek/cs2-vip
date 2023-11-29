@@ -6,6 +6,9 @@
 This is a very simple vipguns plugin for [CounterStrikeSharp](https://docs.cssharp.dev/).
 Just install [package](https://github.com/connercsbn/SimpleAdmin/releases/) to `game/csgo/addons/counterstrikesharp/plugins/` and you should be good to go. 
 
+## Donators
+`GreeNyTM` Value `200 CZK`
+
 ### Videos/Images shows
 
 [Detonation viewer](https://madgames.eu/YcXJ.webm) [/vip Design](https://cdn.discordapp.com/attachments/1140558464599470170/1178973482843906098/image.png)
@@ -170,7 +173,7 @@ Turn of automatically weapons giving
 
 ## Required Permissions
 
-Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.dev/features/admin-framework/)
+Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.dev/admin-framework/defining-admins/)
 
 | Command      | Permission   |
 | ------------ | ------------ |
