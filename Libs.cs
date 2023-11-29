@@ -38,6 +38,53 @@ namespace VIP
 {
     public partial class VIP
     {
+        static public bool is_vip(CCSPlayerController? player)
+        {
+            if(player == null)
+            {
+                Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get a player");
+                return false;
+            }
+            var client = player.EntityIndex!.Value.Value;
+            if (IsVIP[client] == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        static public int get_vip_group(CCSPlayerController? player)
+        {
+            if(player == null)
+            {
+                Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get a player");
+                return -1;
+            }
+            var client = player.EntityIndex!.Value.Value;
+            if (IsVIP[client] == 0)
+            {
+                return -1;
+            }
+            var vip_group = HaveGroup[client];
+            return (int)vip_group;
+        }
+        
+        public string get_name_group(CCSPlayerController? player)
+        {
+            if (player == null)
+            {
+                Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get a player");
+                return "ERROR";
+            }
+            if (get_vip_group(player) == 0)
+            {
+                return Config.GroupsNames.Group1;
+            }
+            else if (get_vip_group(player) == 1)
+            {
+                return Config.GroupsNames.Group2;
+            }
+            return "Not Exist";
+        }
         static public int get_hp(CCSPlayerController? player)
         {
             if (player == null || !player.PawnIsAlive)
