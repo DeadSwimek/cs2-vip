@@ -154,7 +154,7 @@ Turn of automatically weapons giving
 
 ## Required Permissions
 
-Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.dev/features/admin-framework/)
+Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.dev/admin-framework/defining-admins/)
 
 | Command      | Permission   |
 | ------------ | ------------ |
