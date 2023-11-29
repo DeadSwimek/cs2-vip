@@ -44,6 +44,8 @@ Advantages for VIP:
 
 `-` Configurated packages.
 
+`-` 2 VIPs groups.
+
 TODO List:
 
 `-` Add AutoBhop for VIP.
@@ -54,12 +56,13 @@ TODO List:
 
 ## css_testvip
 `Usage: /testvip`
+Automatical giving group 0 (GROUP 1)
 ## css_generatevip
-`Usage: css_generatevip <Time In Seconds>`
+`Usage: css_generatevip <Time In Seconds> <Group 0,1>`
 ## css_activator
 `Usage: /activator <YOUR_TOKEN>`
 ## css_addvip
-`Usage: /addvip <Time In Seconds> <STEAMID64>`
+`Usage: /addvip <Time In Seconds> <STEAMID64> <Group 0,1>`
 ## css_respawn
 `Usage: /respawn`
 Give a VIP to player on steamid.
@@ -147,6 +150,19 @@ Turn of automatically weapons giving
     "Acceroies_2": "molotov",
     "Acceroies_3": "smokegrenade",
     "Acceroies_4": "hegrenade"
+  },
+  "GroupsNames": {
+    "Group1": "VIP",
+    "Group2": "VIP II"
+  },
+  "CommandOnGroup": {
+    "Respawn": 0, // Id of group 0,1 (0 is Group1, 1 is Group2)
+    "Pack": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2)
+    "Weapons": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2)
+    "Acceries": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2)
+    "Smoke": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2)
+    "DoubbleJump": 1,  // Id of group 0,1 (0 is Group1, 1 is Group2)
+    "BombInfo": 0  // Id of group 0,1 (0 is Group1, 1 is Group2)
   },
   "ConfigVersion": 1
 }
