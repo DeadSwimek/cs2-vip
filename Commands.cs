@@ -74,7 +74,8 @@ namespace VIP
 
                 MySqlQueryValue values = new MySqlQueryValue()
                 .Add("steam_id", $"{player.SteamID}")
-                .Add("end", $"{timeofvip}");
+                .Add("end", $"{timeofvip}")
+                .Add("`group`", $"0");
                 MySql.Table("users").Insert(values);
                 var client = player.EntityIndex!.Value.Value;
                 IsVIP[client] = 1;
@@ -105,6 +106,11 @@ namespace VIP
             var token = info.ArgByIndex(1);
             if (token == null || token == "" || IsInt(token))
                 return;
+            if (is_vip(player))
+            {
+                player.PrintToChat($" {Config.Prefix} You are {ChatColors.Lime}VIP{ChatColors.Default}, you {ChatColors.Red}cannot activate{ChatColors.Default} this VIP!");
+                return;
+            }
 
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
@@ -115,6 +121,7 @@ namespace VIP
 
                 var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(result.Get<int>(0, "end"))).GetUnixEpoch();
                 var timeofvip = result.Get<int>(0, "end");
+                var group_int = result.Get<int>(0, "group");
                 if (result.Get<int>(0, "end") == 0)
                 {
                     timeofvip = 0;
@@ -130,7 +137,8 @@ namespace VIP
 
                 MySqlQueryValue _Tvalues = new MySqlQueryValue()
                 .Add("steam_id", $"{player.SteamID}")
-                .Add("end", $"{timeofvip}");
+                .Add("end", $"{timeofvip}")
+                .Add("`group`", $"{group_int}");
                 MySql.Table("users").Insert(_Tvalues);
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 player.PrintToChat($" {Config.Prefix} You activated the {ChatColors.Lime}VIP{ChatColors.Default}.");
@@ -156,11 +164,16 @@ namespace VIP
         {
             if (player != null) return;
             var TimeSec = info.ArgByIndex(1);
-            if (TimeSec == null || TimeSec == "" || !IsInt(TimeSec))
+            var Group = info.ArgByIndex(2);
+            if (TimeSec == null || TimeSec == "" || !IsInt(TimeSec) || Group == null || Group == "" || !IsInt(Group))
             {
                 Server.PrintToConsole($"==========================================");
-                Server.PrintToConsole($" {Config.Prefix} You must add seconds: css_generatevip <SECONDS>, must be added in int.");
-                Server.PrintToConsole($" {Config.Prefix} If you wanna give forever VIP: css_generatevip 0");
+                Server.PrintToConsole($" {Config.Prefix} You must add seconds: css_generatevip <SECONDS> <GROUP>, must be added in int.");
+                Server.PrintToConsole($" {Config.Prefix} If you wanna give forever VIP: css_generatevip 0 0");
+                Server.PrintToConsole($" {Config.Prefix} <------------> List's of Groups <------------>");
+                Server.PrintToConsole($" {Config.Prefix} < Group '0' > {Config.GroupsNames.Group1} < Group '0' >");
+                Server.PrintToConsole($" {Config.Prefix} < Group '1' > {Config.GroupsNames.Group2} < Group '1' >");
+                Server.PrintToConsole($" {Config.Prefix} <------------> List's of Groups <------------>");
                 Server.PrintToConsole($"==========================================");
 
                 return;
@@ -177,6 +190,7 @@ namespace VIP
             }
 
             var token = CreatePassword(20);
+            var group_int = Group;
 
             var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
                 var timeRemainingFormatted =
@@ -185,13 +199,15 @@ namespace VIP
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
             MySqlQueryValue values = new MySqlQueryValue()
             .Add("token", token)
-            .Add("end", $"{timeofvip}");
+            .Add("end", $"{timeofvip}")
+            .Add("`group`", group_int);
             MySql.Table("users_key_vip").Insert(values);
 
             Server.PrintToConsole($"==========================================");
             Server.PrintToConsole($"You generate new VIP Token");
             Server.PrintToConsole($"Token: {token}");
             Server.PrintToConsole($"Ending: {timeRemainingFormatted}");
+            Server.PrintToConsole($"Group ID: {Group}");
             Server.PrintToConsole($"==========================================");
 
 
@@ -200,6 +216,7 @@ namespace VIP
         [ConsoleCommand("css_addvip", "Add new VIP")]
         public void CommandAddVIP(CCSPlayerController? player, CommandInfo info)
         {
+            var Group = info.ArgByIndex(3);
             var SteamIDC = info.ArgByIndex(2);
             var TimeSec = info.ArgByIndex(1);
             if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
@@ -209,14 +226,26 @@ namespace VIP
             }
             else if (SteamIDC == null || SteamIDC == "" || !IsInt(SteamIDC))
             {
-                player.PrintToChat($" {Config.Prefix} You must add SteamID. Example {ChatColors.Lime}/addvip <Time in seconds> 77777777{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} You must add SteamID. Example {ChatColors.Lime}/addvip <Time in seconds> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
                 player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777{ChatColors.Default}.");
                 return;
             }
             else if (TimeSec == null || TimeSec == "" || !IsInt(TimeSec))
             {
-                player.PrintToChat($" {Config.Prefix} You must add Time in seconds. Example {ChatColors.Lime}/addvip <Time in seconds> 77777777{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} You must add Time in seconds. Example {ChatColors.Lime}/addvip <Time in seconds> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
                 player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777{ChatColors.Default}.");
+
+                return;
+            }
+            else if (Group == null || Group == "" || !IsInt(Group))
+            {
+                player.PrintToChat($" {Config.Prefix} You must add Group (Exist: 0, 1). Example {ChatColors.Lime}/addvip <Time in seconds> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777 0{ChatColors.Default}.");
+                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
+                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '0' >{ChatColors.Default} {Config.GroupsNames.Group1} {ChatColors.Lime}< Group '0' >");
+                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '1' >{ChatColors.Default} {Config.GroupsNames.Group2} {ChatColors.Lime}< Group '1' >");
+                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
+
 
                 return;
             }
@@ -240,7 +269,8 @@ namespace VIP
                 MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
                 MySqlQueryValue values = new MySqlQueryValue()
                 .Add("steam_id", SteamIDC)
-                .Add("end", $"{timeofvip}");
+                .Add("end", $"{timeofvip}")
+                .Add("`group`", Group);
                 MySql.Table("users").Insert(values);
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 player.PrintToChat($" {Config.Prefix} Player with steamid {ChatColors.Lime}{SteamIDC}{ChatColors.Default} has been added.");
@@ -290,6 +320,7 @@ namespace VIP
             if(status_i == 1)
             {
                 player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Your {ChatColors.Lime}VIP have time {formating}{ChatColors.Default}.");
+                player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Your {ChatColors.Lime}VIP {ChatColors.Default}group {ChatColors.Green}{get_name_group(player)}{ChatColors.Default}.");
                 player.PrintToChat($" {ChatColors.Gold}▼ {ChatColors.Lime}Yours command available for you{ChatColors.Gold} ▼");
                 player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/weapon {ChatColors.Default}1,2,3,4,5{ChatColors.Gold} ◄");
                 player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/pack {ChatColors.Default}1,2{ChatColors.Gold} ◄");
@@ -303,6 +334,7 @@ namespace VIP
         }
         [ConsoleCommand("css_respawn", "Command to respawn player")]
 
+        
         public void CommandRespawn(CCSPlayerController? player, CommandInfo info)
         {
             var client = player.EntityIndex!.Value.Value;
@@ -311,6 +343,11 @@ namespace VIP
             if (IsVIP[client] == 0)
             {
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                return;
+            }
+            if (Config.CommandOnGroup.Respawn > get_vip_group(player))
+            {
+                player.PrintToChat($" {Config.Prefix} You must have VIP group {get_name_group(player)}");
                 return;
             }
             if (Round < 3)
@@ -381,7 +418,12 @@ namespace VIP
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
                 return;
             }
-            if(Disabled20Sec)
+            if (Config.CommandOnGroup.Weapons > get_vip_group(player))
+            {
+                player.PrintToChat($" {Config.Prefix} You must have VIP group {get_name_group(player)}");
+                return;
+            }
+            if (Disabled20Sec)
             {
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustFirst20Sec}");
                 return;
@@ -472,6 +514,11 @@ namespace VIP
             if (IsVIP[client] == 0)
             {
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                return;
+            }
+            if (Config.CommandOnGroup.Pack > get_vip_group(player))
+            {
+                player.PrintToChat($" {Config.Prefix} You must have VIP group {get_name_group(player)}");
                 return;
             }
             if (Disabled20Sec)
