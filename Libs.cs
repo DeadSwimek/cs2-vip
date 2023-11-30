@@ -45,7 +45,7 @@ namespace VIP
                 Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get a player");
                 return false;
             }
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
             if (IsVIP[client] == 0)
             {
                 return false;
@@ -57,15 +57,28 @@ namespace VIP
             if(player == null)
             {
                 Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get a player");
-                return -1;
+                return 100;
             }
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
+
+            if (HaveGroup[client] == null)
+            {
+                Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get player group, his group is null.");
+                return 100;
+            }
             if (IsVIP[client] == 0)
             {
                 return -1;
             }
-            var vip_group = HaveGroup[client];
-            return (int)vip_group;
+            if (HaveGroup[client] == 0)
+            {
+                return 0;
+            }
+            if (HaveGroup[client] == 1)
+            {
+                return 1;
+            }
+            return 100;
         }
         
         public string get_name_group(CCSPlayerController? player)
@@ -103,11 +116,15 @@ namespace VIP
         }
         static public bool is_alive (CCSPlayerController? player)
         {
-            if (player == null || !player.PawnIsAlive)
+            if (!player.PawnIsAlive)
             {
                 return false;
             }
-            return true;
+            else
+            {
+                return true;
+            }
+            return false;
         }
         static public void set_hp (CCSPlayerController? player, int hp)
         {
@@ -115,7 +132,7 @@ namespace VIP
             {
                 return;
             }
-            player.PlayerPawn.Value.Health += hp;
+            player.PlayerPawn.Value.Health = hp;
             Server.PrintToConsole($"Iam setting up {hp} to player {player.PlayerName}");
         }
         static public void set_armor(CCSPlayerController? player, int armor)
