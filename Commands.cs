@@ -77,7 +77,7 @@ namespace VIP
                 .Add("end", $"{timeofvip}")
                 .Add("`group`", $"0");
                 MySql.Table("users").Insert(values);
-                var client = player.EntityIndex!.Value.Value;
+                var client = player.Index;
                 IsVIP[client] = 1;
 
 
@@ -130,7 +130,7 @@ namespace VIP
                 {
                     timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(result.Get<int>(0, "end"))).GetUnixEpoch();
                 }
-                var client = player.EntityIndex!.Value.Value;
+                var client = player.Index;
                 var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
                 var timeRemainingFormatted =
                 $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
@@ -291,7 +291,7 @@ namespace VIP
             int status_i = 0;
             if (result.Rows == 1)
             {
-                var client = player.EntityIndex!.Value.Value;
+                var client = player.Index;
                 var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "end")) - DateTimeOffset.UtcNow;
                 var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 var timeRemainingFormatted =
@@ -322,10 +322,19 @@ namespace VIP
                 player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Your {ChatColors.Lime}VIP have time {formating}{ChatColors.Default}.");
                 player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Your {ChatColors.Lime}VIP {ChatColors.Default}group {ChatColors.Green}{get_name_group(player)}{ChatColors.Default}.");
                 player.PrintToChat($" {ChatColors.Gold}▼ {ChatColors.Lime}Yours command available for you{ChatColors.Gold} ▼");
-                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/weapon {ChatColors.Default}1,2,3,4,5{ChatColors.Gold} ◄");
-                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/pack {ChatColors.Default}1,2{ChatColors.Gold} ◄");
-                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/respawn{ChatColors.Gold} ◄");
-                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Lime}/guns_off{ChatColors.Gold} ◄");
+                if (get_vip_group(player) >= Config.CommandOnGroup.Weapons)
+                {
+                    player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Selecting weapons : {ChatColors.Lime}/weapon {ChatColors.Default}1,2,3,4,5{ChatColors.Gold} ◄");
+                }
+                if (get_vip_group(player) >= Config.CommandOnGroup.Pack )
+                {
+                    player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Selecting package : {ChatColors.Lime}/pack {ChatColors.Default}1,2{ChatColors.Gold} ◄");
+                }
+                if (get_vip_group(player) >= Config.CommandOnGroup.Respawn || Config.RespawnAllowed)
+                {
+                    player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Respawn on spawn  : {ChatColors.Lime}/respawn{ChatColors.Gold} ◄");
+                }
+                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Turn of auto wep. : {ChatColors.Lime}/guns_off{ChatColors.Gold} ◄");
 
             }
             player.PrintToChat($" {ChatColors.Green}==!-!=={ChatColors.Lime} VIP {ChatColors.Default}Status {ChatColors.Green}==!-!==");
@@ -337,7 +346,7 @@ namespace VIP
         
         public void CommandRespawn(CCSPlayerController? player, CommandInfo info)
         {
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
             if (Config.RespawnAllowed == false)
                 return;
             if (IsVIP[client] == 0)
@@ -372,7 +381,7 @@ namespace VIP
 
         public void CommandGUNS_off(CCSPlayerController? player, CommandInfo info)
         {
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
             if (!player.IsValid || !player.PlayerPawn.IsValid)
             {
                 return;
@@ -394,7 +403,7 @@ namespace VIP
         public void SelectWeapon(CCSPlayerController? player, CommandInfo info)
         {
             var PackagesID = info.ArgByIndex(1);
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
             if (PackagesID == null || PackagesID == "" || !IsInt(PackagesID))
             {
                 player.PrintToChat($" {Config.Prefix} Please select the weapon. Must be added in int.");
@@ -496,7 +505,7 @@ namespace VIP
         public void PackagesWeapons(CCSPlayerController? player, CommandInfo info)
         {
             var PackagesID = info.ArgByIndex(1);
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
             if (PackagesID == null || PackagesID == "" || !IsInt(PackagesID))
             {
                 player.PrintToChat($" {Config.Prefix} Current packages ids is {ChatColors.Lime}1{ChatColors.Default},{ChatColors.Lime}2{ChatColors.Default}. {ChatColors.Lime}/pack ID_PACK{ChatColors.Default}, must be added in int.");
