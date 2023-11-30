@@ -43,7 +43,7 @@ namespace VIP
             {
                 return HookResult.Continue;
             }
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
                 var message = info.GetArg(1);
                 string message_first = info.GetArg(1);
 
@@ -71,7 +71,7 @@ namespace VIP
             {
                 return HookResult.Continue;
             }
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
                 var message = info.GetArg(1);
                 string message_first = info.GetArg(1);
 
@@ -106,10 +106,11 @@ namespace VIP
                 return HookResult.Continue;
 
 
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
             Used[client] = 0;
             LastUsed[client] = 0;
             IsVIP[client] = 0;
+            HaveGroup[client] = 0;
             ConnectedPlayers++;
             LoadPlayerData(player);
 
@@ -138,7 +139,7 @@ namespace VIP
                 {
                     foreach (var l_player in Utilities.GetPlayers().Where(player => IsVIP[client] == 0 || AdminManager.PlayerHasPermissions(player, "@css/chat")))
                     {
-                        var el_player = l_player.EntityIndex!.Value.Value;
+                        var el_player = l_player.Index;
                         if (l_player == null || !l_player.IsValid)
                             return HookResult.Continue;
                         if (l_player.IsValid)
@@ -187,7 +188,7 @@ namespace VIP
             foreach (var l_player in Utilities.GetPlayers())
             {
                 CCSPlayerController player = l_player;
-                var client = player.EntityIndex!.Value.Value;
+                var client = player.Index;
                 if (IsVIP[client] == 1)
                 {
                     RespawnUsed[client] = 0;
@@ -220,7 +221,7 @@ namespace VIP
                 foreach (var l_player in Utilities.GetPlayers())
                 {
                     CCSPlayerController player = l_player;
-                    var client = player.EntityIndex!.Value.Value;
+                    var client = player.Index;
                     
                     if (IsVIP[client] == 1)
                     {
@@ -265,14 +266,18 @@ namespace VIP
         public HookResult OnClientSpawn(EventPlayerSpawn @event, GameEventInfo info)
         {
             CCSPlayerController player = @event.Userid;
-            if (player.UserId != null)
+            if (player == null || !player.IsValid || player.TeamNum == 1)
             {
-                var client = player.EntityIndex!.Value.Value;
+                return HookResult.Continue;
+            }
+            else
+            {
+                var client = player.Index;
+
                 Give_Values(player);
-                Used[client] = 0;
                 if (Config.EnableDoubbleJump)
                 {
-                    if (Config.CommandOnGroup.DoubbleJump > get_vip_group(player))
+                    if (Config.CommandOnGroup.DoubbleJump > HaveGroup[client])
                     {
                         return HookResult.Continue;
                     }
@@ -395,7 +400,6 @@ namespace VIP
                 }
                 //player.PrintToChat($"{Config.Prefix} You can use /ak for give AK47 or /m4 for give M4A1");
             }
-
             return HookResult.Continue;
         }
         [GameEventHandler]
@@ -457,8 +461,8 @@ namespace VIP
             CCSPlayerController attacker = @event.Attacker;
             var PawnValueAttacker = attacker.PlayerPawn.Value;
             var MoneyValueAttacker = attacker.InGameMoneyServices;
-            var attacker_entity = attacker.EntityIndex!.Value.Value;
-            var player_entity = player.EntityIndex!.Value.Value;
+            var attacker_entity = attacker.Index;
+            var player_entity = player.Index;
             if (player == null || !player.IsValid)
                 return HookResult.Continue;
             if (attacker == null || !attacker.IsValid)
@@ -478,8 +482,8 @@ namespace VIP
                     }
                     if (Config.GiveHPAfterKill)
                     {
-                        // Sometimes giving, sometimes no, Valve :)
-                        PawnValueAttacker.Health += Config.RewardsClass.KillHP;
+                    // Sometimes giving, sometimes no, Valve :)
+                    set_hp(attacker, 10);
                         Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
                         attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillHP} HP{ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
                         return HookResult.Continue;
@@ -502,7 +506,7 @@ namespace VIP
             CCSPlayerController player = @event.Userid;
             CCSPlayerController attacker = @event.Attacker;
 
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
 
 
             if (player.Connected != PlayerConnectedState.PlayerConnected || !player.PlayerPawn.IsValid || !@event.Userid.IsValid)
