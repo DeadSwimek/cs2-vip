@@ -50,7 +50,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.2.0";
+    public override string ModuleVersion => "V. 1.2.2";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -143,9 +143,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 var client = new CCSPlayerController(ent);
                 if (client == null || !client.IsValid)
                     continue;
-                if (IsVIP[client.EntityIndex!.Value.Value] == 0)
+                if (IsVIP[client.Index] == 0)
                     return;
                 OnTick(client);
+                //TryBhop(client); Still finding way to found autobhop.
                 if (!Config.Bombinfo)
                     return;
                 if (Bomb)
@@ -204,13 +205,38 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         }
         return res.ToString();
     }
+
+    public static void TryBhop(CCSPlayerController controller)
+    {
+        if (!controller.PawnIsAlive)
+            return;
+        var pawn = controller.Pawn.Value;
+        var flags = (PlayerFlags)pawn.Flags;
+        var client = controller.Index;
+        var buttons = controller.Buttons;
+
+        if (IsVIP[client] == 0)
+            return;
+
+        //LF[client] = flags;
+        //LB[client] = buttons;
+
+        if (buttons == PlayerButtons.Jump && (flags & PlayerFlags.FL_ONGROUND) != 0)
+        {
+
+            Server.PrintToConsole($"Client {controller.PlayerName} : {PlayerButtons.Jump} {flags & PlayerFlags.FL_ONGROUND}");
+            Server.PrintToConsole($"Client {controller.PlayerName} : Button : {buttons} / {buttons}");
+            //LB[client] = PlayerButtons.Jump;
+            //buttons = PlayerButtons.Jump;
+        }
+    }
     public static void OnTick(CCSPlayerController controller)
     {
         if (!controller.PawnIsAlive)
             return;
         var pawn = controller.Pawn.Value;
         var flags = (PlayerFlags)pawn.Flags;
-        var client = controller.EntityIndex.Value.Value;
+        var client = controller.Index;
         var buttons = controller.Buttons;
 
         if (IsVIP[client] == 0)
@@ -248,9 +274,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         MySqlQueryResult result = MySql!.Table("users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
         if (result.Rows == 1)
         {
-            var client = player.EntityIndex!.Value.Value;
+            var client = player.Index;
             IsVIP[client] = 1;
             HaveGroup[client] = result.Get<int>(0, "group");
+            player.Clan = get_name_group(player); 
             player.PrintToCenter("Congratulation! You have VIP");
             var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "end")) - DateTimeOffset.UtcNow;
             var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -316,7 +343,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
 
         Server.NextFrame(() =>
         {
-            var entityIndex = smokeGrenadeEntity.Thrower.Value.Controller.Value.EntityIndex!.Value.Value;
+            var entityIndex = smokeGrenadeEntity.Thrower.Value.Controller.Value.Index;
 
             if (entityIndex == null) return;
             if (IsVIP[entityIndex] == 0) return;
@@ -352,13 +379,13 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         if (controller == null || !controller.IsValid || controller.IsBot)
             return;
 
-        var client = controller.EntityIndex!.Value.Value;
+        var client = controller.Index;
         if (IsVIP[client] == 1)
         {
             if (Config.EnableVIPAcceries)
             {
                 if (Config.CommandOnGroup.Acceries > get_vip_group(controller)) return;
-                controller.PlayerPawn.Value.Health = Config.RewardsClass.SpawnHP;
+                //controller.PlayerPawn.Value.Health = Config.RewardsClass.SpawnHP;
                 set_armor(controller, Config.RewardsClass.SpawnArmor);
 
                 if (get_money(controller) <= 800)
