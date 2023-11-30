@@ -480,22 +480,20 @@ namespace VIP
                             Server.PrintToChatAll($" {Config.Prefix} Player {ChatColors.Lime}{player.PlayerName}{ChatColors.Default} is killed by {ChatColors.Lime}{attacker.PlayerName}{ChatColors.Default}.");
                         }
                     }
-                    if (Config.GiveHPAfterKill)
-                    {
-                    // Sometimes giving, sometimes no, Valve :)
-                    set_hp(attacker, 10);
-                        Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
-                        attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillHP} HP{ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
-                        return HookResult.Continue;
-                    }
                     if (Config.GiveMoneyAfterKill)
                     {
                         var AttackerMoneys = MoneyValueAttacker.Account;
                         MoneyValueAttacker.Account = AttackerMoneys + Config.RewardsClass.KillMoney;
                         attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillMoney} ${ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
-                        return HookResult.Continue;
                     }
-                
+                    if (Config.GiveHPAfterKill)
+                    {
+                        var health_attacker = attacker.PlayerPawn.Value.Health;
+                        @event.Attacker.PlayerPawn.Value.Health = @event.Attacker.PlayerPawn.Value.Health + Config.RewardsClass.KillHP;
+                        Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
+                        attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillHP} HP{ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
+                    }
+
             }
             return HookResult.Continue;
         }
