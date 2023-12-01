@@ -294,7 +294,7 @@ namespace VIP
                 {
                     HaveDoubble[client] = 0;
                 }
-                if (Round < 3 && LastUsed[client] >= 1)
+                if (Round < Config.MinimumRoundToUseCommands && LastUsed[client] >= 1)
                 {
                     player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
                     return HookResult.Stop;
