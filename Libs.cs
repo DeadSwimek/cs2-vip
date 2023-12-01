@@ -34,15 +34,37 @@ using CounterStrikeSharp.API.Modules.Admin;
 using System.Drawing;
 
 
+
+
 namespace VIP
 {
     public partial class VIP
     {
+        static void WriteColor(string message, ConsoleColor color)
+        {
+            var pieces = Regex.Split(message, @"(\[[^\]]*\])");
+
+            for (int i = 0; i < pieces.Length; i++)
+            {
+                string piece = pieces[i];
+
+                if (piece.StartsWith("[") && piece.EndsWith("]"))
+                {
+                    Console.ForegroundColor = color;
+                    piece = piece.Substring(1, piece.Length - 2);
+                }
+
+                Console.Write(piece);
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+        }
         static public bool is_vip(CCSPlayerController? player)
         {
             if(player == null)
             {
-                Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get a player");
+                Server.PrintToConsole($"VIP Plugin - [ERROR] Canno't get a player");
                 return false;
             }
             var client = player.Index;
@@ -56,14 +78,14 @@ namespace VIP
         {
             if(player == null)
             {
-                Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get a player");
+                WriteColor("VIP Plugin - *[ERROR - get_vip_group]* Cannot get a player index..", ConsoleColor.Red);
                 return 100;
             }
             var client = player.Index;
 
             if (HaveGroup[client] == null)
             {
-                Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get player group, his group is null.");
+                WriteColor("VIP Plugin - *[ERROR  - get_vip_group]* Cannot get a player index..", ConsoleColor.Red);
                 return 100;
             }
             if (IsVIP[client] == 0)
@@ -78,6 +100,10 @@ namespace VIP
             {
                 return 1;
             }
+            if (HaveGroup[client] == 2)
+            {
+                return 2;
+            }
             return 100;
         }
         
@@ -85,17 +111,25 @@ namespace VIP
         {
             if (player == null)
             {
-                Server.PrintToConsole($"VIP Plugin - {ConsoleColor.Red}[ERROR] Canno't get a player");
+                WriteColor("VIP Plugin - *[ERROR - get_name_group]* Cannot get a player index..", ConsoleColor.Red);
                 return "ERROR";
             }
             if (get_vip_group(player) == 0)
             {
+                WriteColor($"VIP Plugin - *[SUCCESS]* Set to player {player.PlayerName} VIP group [{Config.GroupsNames.Group1}]", ConsoleColor.Green);
                 return Config.GroupsNames.Group1;
             }
             else if (get_vip_group(player) == 1)
             {
+                WriteColor($"VIP Plugin - *[SUCCESS]* Set to player {player.PlayerName} VIP group [{Config.GroupsNames.Group2}]", ConsoleColor.Green);
                 return Config.GroupsNames.Group2;
             }
+            else if (get_vip_group(player) == 2)
+            {
+                WriteColor($"VIP Plugin - *[SUCCESS]* Set to player {player.PlayerName} VIP group [{Config.GroupsNames.Group3}]", ConsoleColor.Green);
+                return Config.GroupsNames.Group3;
+            }
+            WriteColor("VIP Plugin - *[ERROR  - get_name_group]* Cannot get a player index..", ConsoleColor.Red);
             return "Not Exist";
         }
         static public int get_hp(CCSPlayerController? player)
