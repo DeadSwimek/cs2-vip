@@ -32,6 +32,7 @@ using CounterStrikeSharp.API.Modules.Memory;
 using System.Threading.Channels;
 using System.Reflection.Metadata;
 
+
 namespace VIP;
 [MinimumApiVersion(55)]
 
@@ -50,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.2.3";
+    public override string ModuleVersion => "V. 1.2.4";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -58,10 +59,12 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     private static readonly int?[] LastUsed = new int?[65];
     private static readonly int?[] RespawnUsed = new int?[64];
     private static readonly int?[] HaveDoubble = new int?[64];
+    private static readonly int?[] HaveReservation = new int?[64];
 
     private static readonly int[] J = new int[Server.MaxPlayers];
     private static readonly PlayerFlags[] LF = new PlayerFlags[Server.MaxPlayers];
     private static readonly PlayerButtons[] LB = new PlayerButtons[Server.MaxPlayers];
+
 
     public ConfigVIP Config { get; set; }
 
@@ -80,6 +83,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         if (config.DBHost.Length < 1 || Config.DBUser.Length < 1 || Config.DBPassword.Length < 1)
         {
             throw new Exception("You need to setup Database credentials in config!");
+
         }
     }
     private bool IsInt(string sVal)
@@ -103,14 +107,15 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
 
 
 
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, UNIQUE (`steam_id`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users_test_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `used` INT(11) NOT NULL, UNIQUE (`steam_id`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, UNIQUE (`token`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users_test_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `used` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
 
             MySql.ExecuteNonQueryAsync(@"ALTER TABLE `users_key_vip` ADD `group` INT(11) NOT NULL;");
             MySql.ExecuteNonQueryAsync(@"ALTER TABLE `users` ADD `group` INT(11) NOT NULL;");
 
-            Server.PrintToConsole($"MySQL {Config.DBHost} Connected");
+            WriteColor($"VIP Plugin - *[MySQL {Config.DBHost} Connected]", ConsoleColor.Green);
+
 
         }
         catch (Exception ex)
@@ -277,31 +282,44 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             var client = player.Index;
             IsVIP[client] = 1;
             HaveGroup[client] = result.Get<int>(0, "group");
+            if(Config.CommandOnGroup.ReservedSlots > get_vip_group(player))
+            {
+                HaveReservation[client] = 0;
+            }
+            else
+            {
+                HaveReservation[client] = 1;
+            }
             player.Clan = get_name_group(player); 
-            player.PrintToCenter("Congratulation! You have VIP");
+
             var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "end")) - DateTimeOffset.UtcNow;
             var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var timeRemainingFormatted =
             $"{timeRemaining.Days}d {timeRemaining.Hours}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
-            Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} ({player.SteamID}) have VIP. Remaining time of VIP {timeRemainingFormatted}");
+            WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] have VIP. Remaining time of VIP [{timeRemainingFormatted}]", ConsoleColor.Green);
+            if (Config.WelcomeMessageEnable)
+            {
+                player.PrintToChat($" {Config.WelcomeMessage}");
+            }
             // Checking if is still time to VIP
             if (result.Get<int>(0, "end") != 0)
             {
                 if (result.Get<int>(0, "end") < nowtimeis)
                 {
-                    Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} ({player.SteamID}) exp. VIP today..");
+                    WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] exp. VIP today..", ConsoleColor.Red);
+
                     MySql.Table("users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Delete();
                     IsVIP[client] = 0;
                 }
             }
             else
             {
-                Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} ({player.SteamID}) have VIP forever");
+                WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] have VIP forever.", ConsoleColor.Green);
             }
         }
         else
         {
-            Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} ({player.SteamID}) is not VIP");
+            WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] is not VIP.", ConsoleColor.Yellow);
         }
     }
     public static void RemoveWeapons(CCSPlayerController? player)
@@ -325,8 +343,8 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             {
                 if (weapon.Value.DesignerName.Contains($"{weapon_name}"))
                 {
-                    Server.PrintToConsole($"VIP Plugin - Requested weapon is weapon_{weapon_name}");
-                    Server.PrintToConsole($"VIP Plugin - {pc.PlayerName} have weapon with name {weapon.Value.DesignerName}");
+                    WriteColor($"VIP Plugin - Requested weapon is [weapon_{weapon_name}]", ConsoleColor.Cyan);
+                    WriteColor($"VIP Plugin - {pc.PlayerName} have weapon with name [{weapon.Value.DesignerName}]", ConsoleColor.Cyan);
                     return true;
                 }
             }
@@ -394,7 +412,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 }
                 if (LastUsed[client] != 2 || LastUsed[client] != 3)
                 {
-                    controller.GiveNamedItem("weapon_healthshot");
+                    if (CheckIsHaveWeapon("healthshot", controller) == false)
+                    {
+                        controller.GiveNamedItem("weapon_healthshot");
+                    }
                 }
             }
         }
