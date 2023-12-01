@@ -267,12 +267,13 @@ namespace VIP
                 var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
                 var timeRemainingFormatted =
                 $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+                var group_int = Group;
 
                 MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
                 MySqlQueryValue values = new MySqlQueryValue()
-                .Add("steam_id", SteamIDC)
+                .Add("steam_id", $"{SteamIDC}")
                 .Add("end", $"{timeofvip}")
-                .Add("`group`", Group);
+                .Add("`group`", group_int);
                 MySql.Table("users").Insert(values);
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 player.PrintToChat($" {Config.Prefix} Player with steamid {ChatColors.Lime}{SteamIDC}{ChatColors.Default} has been added.");
