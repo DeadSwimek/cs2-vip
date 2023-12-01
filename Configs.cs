@@ -70,9 +70,18 @@ public class ConfigVIP : BasePluginConfig
 
     [JsonPropertyName("pack1")] public Pack1Settings Pack1Settings { get; set; } = new Pack1Settings();
     [JsonPropertyName("pack2")] public Pack2Settings Pack2Settings { get; set; } = new Pack2Settings();
+    [JsonPropertyName("pack3")] public Pack3Settings Pack3Settings { get; set; } = new Pack3Settings();
+
     [JsonPropertyName("GroupsNames")] public GroupsNames GroupsNames { get; set; } = new GroupsNames();
 
     [JsonPropertyName("CommandOnGroup")] public CommandOnGroup CommandOnGroup { get; set; } = new CommandOnGroup();
+    [JsonPropertyName("Messages")] public Messages Messages { get; set; } = new Messages();
+
+}
+public class Messages
+{
+    [JsonPropertyName("AllowCenterMessages")] public bool AllowCenterMessages { get; set; } = true;
+    [JsonPropertyName("Group2")] public string Group2 { get; set; } = "VIP II";
 
 }
 public class RewardsClass
@@ -90,6 +99,7 @@ public class GroupsNames
 {
     [JsonPropertyName("Group1")] public string Group1 { get; set; } = "VIP";
     [JsonPropertyName("Group2")] public string Group2 { get; set; } = "VIP II";
+    [JsonPropertyName("Group3")] public string Group3 { get; set; } = "VIP III";
 
 }
 public class CommandOnGroup
@@ -101,6 +111,8 @@ public class CommandOnGroup
     [JsonPropertyName("Smoke")] public int Smoke { get; set; } = 0;
     [JsonPropertyName("DoubbleJump")] public int DoubbleJump { get; set; } = 0;
     [JsonPropertyName("BombInfo")] public int BombInfo { get; set; } = 0;
+
+    [JsonPropertyName("ReservedSlots")] public int ReservedSlots { get; set; } = 0;
 
 }
 public class Pack1Settings
@@ -124,6 +136,19 @@ public class Pack2Settings
 
 
 }
+
+public class Pack3Settings
+{
+    [JsonPropertyName("Allowed")] public bool Allowed { get; set; } = false;
+    [JsonPropertyName("Gun")] public string Gun { get; set; } = "m4a1";
+    [JsonPropertyName("Pistol")] public string Pistol { get; set; } = "deagle";
+    [JsonPropertyName("Acceroies")] public string Acceroies { get; set; } = "healthshot";
+    [JsonPropertyName("Acceroies_2")] public string Acceroies_2 { get; set; } = "molotov";
+    [JsonPropertyName("Acceroies_3")] public string Acceroies_3 { get; set; } = "smokegrenade";
+    [JsonPropertyName("Acceroies_4")] public string Acceroies_4 { get; set; } = "hegrenade";
+
+
+}
 public class TranslationClass
 {
     [JsonPropertyName("OnceUse")] public string OnceUse { get; set; } = $" This command you can use {ChatColors.Red}only once{ChatColors.Default} on round!";
@@ -132,6 +157,8 @@ public class TranslationClass
 
     [JsonPropertyName("Pack1")] public string Pack1 { get; set; } = $" You got a Packages {ChatColors.Lime}number one{ChatColors.Default}.";
     [JsonPropertyName("Pack2")] public string Pack2 { get; set; } = $" You got a Packages {ChatColors.Lime}number two{ChatColors.Default}.";
+    [JsonPropertyName("Pack3")] public string Pack3 { get; set; } = $" You got a Packages {ChatColors.Lime}number three{ChatColors.Default}.";
+
 
     [JsonPropertyName("WeaponAK")] public string WeaponAK { get; set; } = $" You got a weapon {ChatColors.Lime}AK-47{ChatColors.Default}.";
     [JsonPropertyName("WeaponM4A1")] public string WeaponM4A1 { get; set; } = $" You got a weapon {ChatColors.Lime}M4A1{ChatColors.Default}.";
