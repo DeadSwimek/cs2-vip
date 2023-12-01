@@ -56,6 +56,7 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("ReservedMethod")] public int ReservedMethod { get; set; } = 1;
     [JsonPropertyName("Bombinfo")] public bool Bombinfo { get; set; } = true;
     [JsonPropertyName("DisablePackWeaponAfter20Sec")] public bool DisablePackWeaponAfter20Sec { get; set; } = false;
+    [JsonPropertyName("MinimumRoundToUseCommands")] public int MinimumRoundToUseCommands { get; set; } = 3;
 
 
     [JsonPropertyName("WelcomeMessage")] public string WelcomeMessage { get; set; } = $"Welcom on server you are BEST VIP!";
