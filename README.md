@@ -112,6 +112,7 @@ Turn of automatically weapons giving
   "ReservedMethod": 1, // 0 = Disable, 1 = Reservation slots from max player, 2 = kicking non vip players
   "Bombinfo": true, // If true, show for VIPs players detonation time
   "DisablePackWeaponAfter20Sec": false, // If false, VIPs players can take anytime guns/packs
+  "MinimumRoundToUseCommands": 3, // Minimum round to use VIPs commands
   "WelcomeMessage": "Welcom on server you are BEST VIP!", 
   "DBDatabase": "database",
   "DBUser": "user",
