@@ -361,7 +361,7 @@ namespace VIP
                 player.PrintToChat($" {Config.Prefix} You must have VIP group {get_name_group(player)}");
                 return;
             }
-            if (Round < 3)
+            if (Round < Config.MinimumRoundToUseCommands)
             {
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
                 return;
@@ -460,7 +460,7 @@ namespace VIP
                 return;
             }
 
-            if (Round < 3)
+            if (Round < Config.MinimumRoundToUseCommands)
             {
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
                 return;
@@ -558,7 +558,7 @@ namespace VIP
                 return;
             }
 
-            if (Round < 3)
+            if (Round < Config.MinimumRoundToUseCommands)
             {
                 player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
                 return;
