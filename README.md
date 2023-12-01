@@ -182,6 +182,9 @@ Turn of automatically weapons giving
     "BombInfo": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
     "ReservedSlots": 0  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
   },
+  "Messages": {
+    "AllowCenterMessages": true // If is true, server print to center messages
+  },
   "ConfigVersion": 1
 }
 ```
