@@ -123,12 +123,20 @@ namespace VIP
                 {
                     if (IsVIP[client] == 1)
                     {
-                        Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} use the Reservated slot!");
-                        return HookResult.Continue;
+                        if (HaveReservation[client] == 1)
+                        {
+                            Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} use the Reservated slot!");
+                            return HookResult.Continue;
+                        }
+                        else
+                        {
+                            Server.ExecuteCommand($"kick {player.UserId}");
+                            Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP GROUP!");
+                        }
                     }
                     else
                     {
-                        Server.ExecuteCommand($"kickid {player.UserId} 'Server is full, this slot(s) is reserved for VIP!'");
+                        Server.ExecuteCommand($"kick {player.UserId}");
                         Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP!");
                     }
                 }
@@ -142,12 +150,15 @@ namespace VIP
                         var el_player = l_player.Index;
                         if (l_player == null || !l_player.IsValid)
                             return HookResult.Continue;
-                        if (l_player.IsValid)
+                        if (HaveReservation[client] == 1)
                         {
-                            if (IsVIP[el_player] != 1)
+                            if (l_player.IsValid)
                             {
-                                Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{l_player.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
-                                Server.ExecuteCommand($"kickid {l_player.UserId} 'VIP Access!'");
+                                if (IsVIP[el_player] != 1)
+                                {
+                                    Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{l_player.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
+                                    Server.ExecuteCommand($"kick {l_player.UserId}");
+                                }
                             }
                         }
                     }
@@ -157,15 +168,7 @@ namespace VIP
             {
                 return HookResult.Continue;
             }
-              
-            if (IsVIP[client] == 1)
-            {
-                IsVIP[client] = 1;
-                if (Config.WelcomeMessageEnable)
-                {
-                    player.PrintToChat($" {Config.WelcomeMessage}");
-                }
-            }
+             
 
             return HookResult.Continue;
         }
@@ -203,19 +206,22 @@ namespace VIP
 
             if (GameRules().WarmupPeriod)
             {
-                Server.PrintToConsole("VIP Plugins - Warmup dosen't real Round, set on 0.");
+                WriteColor($"VIP Plugin - *[GAMERULES]* Warmup dosen't real Round, set on 0.", ConsoleColor.Yellow);
+
                 Round = 0;
             }
             if (GameRules().OvertimePlaying == 1)
             {
-                Server.PrintToConsole("VIP Plugins - Overtime dosen't real Round, set on 0.");
+                WriteColor($"VIP Plugin - *[GAMERULES]* Overtime dosen't real Round, set on 0.", ConsoleColor.Yellow);
+
                 Round = 0;
             }
             if (GameRules().SwitchingTeamsAtRoundReset)
             {
-                Server.PrintToConsole("VIP Plugins - Halftime/switch sites dosen't real Round, set on 0.");
-                Server.PrintToConsole("VIP Plugins - Restarting rounds number to zero..");
-                Server.PrintToConsole("VIP Plugins - Removing all weapons to players and giving C4, Knife, Glock, HKP2000.");
+                WriteColor($"VIP Plugin - *[GAMERULES]* Halftime/switch sites dosen't real Round, set on 0.", ConsoleColor.Yellow);
+                WriteColor($"VIP Plugin - *[GAMERULES]* Restarting rounds number to zero..", ConsoleColor.Yellow);
+                WriteColor($"VIP Plugin - *[GAMERULES]* Removing all weapons to players and giving C4, Knife, Glock, HKP2000.", ConsoleColor.Yellow);
+
                 Round = 0;
                 DisableGiving = true;
                 foreach (var l_player in Utilities.GetPlayers())
@@ -251,7 +257,8 @@ namespace VIP
             }
 
             Round++;
-            Server.PrintToConsole($"VIP Plugins - Added new round count, now is {ConsoleColor.Yellow} {Round}.");
+            WriteColor($"VIP Plugin - Added new round count, now is [{Round}].", ConsoleColor.Magenta);
+
             Bombplanted = false;
             Bomb = false;
             Disabled20Sec = false;
@@ -294,9 +301,16 @@ namespace VIP
                 }
                 if (LastUsed[client] >= 1)
                 {
-                    AddTimer(2.0f, () =>
-                    player.PrintToCenterHtml($" {Config.TranslationClass.Autoguns}")
-                    );
+                    if (Config.Messages.AllowCenterMessages)
+                    {
+                        AddTimer(2.0f, () =>
+                        player.PrintToCenterHtml($" {Config.TranslationClass.Autoguns}")
+                        );
+                    }
+                    if (!Config.Messages.AllowCenterMessages)
+                    {
+                        player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Autoguns}");
+                    }
                 }
                 if (LastUsed[client] == 1)
                 {
@@ -371,6 +385,37 @@ namespace VIP
                     player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack2}");
                     Used[client] = 1;
                 }
+                else if (LastUsed[client] == 10)
+                {
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Pistol}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Pistol}");
+                    }
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Gun}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Gun}");
+                    }
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies}");
+
+                    }
+                    // Granades
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_2}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_2}");
+                    }
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_3}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_3}");
+                    }
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_4}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_4}");
+                    }
+                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack3}");
+                    Used[client] = 1;
+                }
                 else if (LastUsed[client] == 4)
                 {
                     if (CheckIsHaveWeapon("m4a1", player) == false)
@@ -440,8 +485,8 @@ namespace VIP
             AddTimer(35.0f, () =>
             {
                 Bombplanted = true;
-                Server.PrintToConsole("VIP Plugin - Now you cannot get rewards from kills..");
-                if(Config.DetonateRewards)
+                WriteColor("VIP Plugin - *[WARNING]* Now players canno't get rewards form kills..", ConsoleColor.Yellow);
+                if (Config.DetonateRewards)
                 {
                     var moneyServices = player.InGameMoneyServices;
                     moneyServices.Account = moneyServices.Account + Config.RewardsClass.DetonateMoney;
@@ -519,12 +564,13 @@ namespace VIP
                 {
                     if (@event.DmgHealth >= 100)
                     {
-                        Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} died on map drop or bomb detonate (Weapon: {@event.Weapon} HiTG: {@event.Hitgroup}).");
+                        WriteColor($"VIP Plugin - *[WARNING]* Player {player.PlayerName} died on map drop or bomb detonate (Weapon: {@event.Weapon} HiTG: {@event.Hitgroup}).", ConsoleColor.Yellow);
+
                     }
                     else
                     {
                         player.PlayerPawn.Value.Health = player.PlayerPawn.Value.Health += @event.DmgHealth;
-                        Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} registred a FallDamage (Weapon: {@event.Weapon} HiTG: {@event.Hitgroup})!");
+                        WriteColor($"VIP Plugin - *[WARNING]* Player {player.PlayerName} registred a FallDamage (Weapon: {@event.Weapon} HiTG: {@event.Hitgroup})!", ConsoleColor.Yellow);
                     }
                 }
             }
