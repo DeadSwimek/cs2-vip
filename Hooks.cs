@@ -98,23 +98,12 @@ namespace VIP
             return HookResult.Handled;
         }
         [GameEventHandler]
-        public HookResult OnClientConnect(EventPlayerConnectFull @event, GameEventInfo info)
+
+        public HookResult OnClientConnectNotFull(EventPlayerConnect @event, GameEventInfo info)
         {
             CCSPlayerController player = @event.Userid;
-
-            if (player == null || !player.IsValid || player.IsBot)
-                return HookResult.Continue;
-
-
             var client = player.Index;
-            Used[client] = 0;
-            LastUsed[client] = 0;
-            IsVIP[client] = 0;
-            HaveGroup[client] = 0;
-            ConnectedPlayers++;
-            LoadPlayerData(player);
-
-
+                
             var slots = Server.MaxPlayers;
             slots = slots - Config.ReservedSlotsForVIP;
             if (Config.ReservedMethod == 1)
@@ -157,7 +146,7 @@ namespace VIP
                                 if (IsVIP[el_player] != 1)
                                 {
                                     Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{l_player.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
-                                    Server.ExecuteCommand($"kick {l_player.UserId}");
+                                    Server.ExecuteCommand($"kickid {l_player.UserId}");
                                 }
                             }
                         }
@@ -168,7 +157,25 @@ namespace VIP
             {
                 return HookResult.Continue;
             }
-             
+            return HookResult.Continue;
+
+        }
+        [GameEventHandler]
+        public HookResult OnClientConnect(EventPlayerConnectFull @event, GameEventInfo info)
+        {
+            CCSPlayerController player = @event.Userid;
+
+            if (player == null || !player.IsValid || player.IsBot)
+                return HookResult.Continue;
+
+
+            var client = player.Index;
+            Used[client] = 0;
+            LastUsed[client] = 0;
+            IsVIP[client] = 0;
+            HaveGroup[client] = 0;
+            ConnectedPlayers++;
+            LoadPlayerData(player);
 
             return HookResult.Continue;
         }
