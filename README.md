@@ -61,11 +61,11 @@ TODO List:
 `Usage: /testvip`
 Automatical giving group 0 (GROUP 1)
 ## css_generatevip
-`Usage: css_generatevip <Time In Seconds> <Group 0,1>`
+`Usage: css_generatevip <Time In Seconds> <Group 0,1,2>`
 ## css_activator
 `Usage: /activator <YOUR_TOKEN>`
 ## css_addvip
-`Usage: /addvip <Time In Seconds> <STEAMID64> <Group 0,1>`
+`Usage: /addvip <Time In Seconds> <STEAMID64> <Group 0,1,2>`
 ## css_respawn
 `Usage: /respawn`
 Give a VIP to player on steamid.
@@ -86,6 +86,8 @@ List of packages:
 1 - AK-47, Deagle, Healthshot, Molotov, Smoke, He `Can be edited`
 
 2 - M4A1, Deagle, Healthshot, Molotov, Smoke, He `Can be edited`
+
+3 - M4A1, Deagle, Healthshot, Molotov, Smoke, He `Can be edited - Default disabled`
 
 ## css_guns_off
 `Usage: /guns_off`
@@ -122,6 +124,7 @@ Turn of automatically weapons giving
     "MustBeThird": " Must be a \u0007Third\u0001 round, to use this command!",
     "Pack1": " You got a Packages number one.",
     "Pack2": " You got a Packages number two.",
+    "Pack3": " You got a Packages number three.",
     "WeaponAK": " You got a weapon AK-47.",
     "WeaponM4A1": " You got a weapon M4A1.",
     "WeaponM4A1S": " You got a weapon M4A1-S.",
@@ -154,18 +157,29 @@ Turn of automatically weapons giving
     "Acceroies_3": "smokegrenade",
     "Acceroies_4": "hegrenade"
   },
+  "pack3": {
+    "Allowed": false,
+    "Gun": "m4a1",
+    "Pistol": "deagle",
+    "Acceroies": "healthshot",
+    "Acceroies_2": "molotov",
+    "Acceroies_3": "smokegrenade",
+    "Acceroies_4": "hegrenade"
+  },
   "GroupsNames": {
     "Group1": "VIP",
-    "Group2": "VIP II"
+    "Group2": "VIP II",
+    "Group3": "VIP III"
   },
   "CommandOnGroup": {
-    "Respawn": 0, // Id of group 0,1 (0 is Group1, 1 is Group2)
-    "Pack": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2)
-    "Weapons": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2)
-    "Acceries": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2)
-    "Smoke": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2)
-    "DoubbleJump": 1,  // Id of group 0,1 (0 is Group1, 1 is Group2)
-    "BombInfo": 0  // Id of group 0,1 (0 is Group1, 1 is Group2)
+    "Respawn": 0, // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "Pack": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "Weapons": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "Acceries": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "Smoke": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "DoubbleJump": 1,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "BombInfo": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "ReservedSlots": 0  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
   },
   "ConfigVersion": 1
 }
