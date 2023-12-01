@@ -82,7 +82,6 @@ public class ConfigVIP : BasePluginConfig
 public class Messages
 {
     [JsonPropertyName("AllowCenterMessages")] public bool AllowCenterMessages { get; set; } = true;
-    [JsonPropertyName("Group2")] public string Group2 { get; set; } = "VIP II";
 
 }
 public class RewardsClass
