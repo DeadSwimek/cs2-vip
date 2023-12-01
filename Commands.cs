@@ -173,6 +173,7 @@ namespace VIP
                 Server.PrintToConsole($" {Config.Prefix} <------------> List's of Groups <------------>");
                 Server.PrintToConsole($" {Config.Prefix} < Group '0' > {Config.GroupsNames.Group1} < Group '0' >");
                 Server.PrintToConsole($" {Config.Prefix} < Group '1' > {Config.GroupsNames.Group2} < Group '1' >");
+                Server.PrintToConsole($" {Config.Prefix} < Group '2' > {Config.GroupsNames.Group3} < Group '2' >");
                 Server.PrintToConsole($" {Config.Prefix} <------------> List's of Groups <------------>");
                 Server.PrintToConsole($"==========================================");
 
@@ -244,6 +245,7 @@ namespace VIP
                 player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
                 player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '0' >{ChatColors.Default} {Config.GroupsNames.Group1} {ChatColors.Lime}< Group '0' >");
                 player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '1' >{ChatColors.Default} {Config.GroupsNames.Group2} {ChatColors.Lime}< Group '1' >");
+                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '2' >{ChatColors.Default} {Config.GroupsNames.Group3} {ChatColors.Lime}< Group '2' >");
                 player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
 
 
@@ -366,10 +368,24 @@ namespace VIP
             }
             if (RespawnUsed[client] == 1)
             {
-                player.PrintToCenterHtml($" <font color='red'>You canno't use /respawn at this time</font>");
+                if (Config.Messages.AllowCenterMessages)
+                {
+                    player.PrintToCenterHtml($" <font color='red'>You canno't use /respawn at this time</font>");
+                }
+                else
+                {
+                    player.PrintToChat($" {Config.Prefix} You canno't use {ChatColors.Lime}/respawn{ChatColors.Red} at this time!");
+                }
                 return;
             }
+            if (Config.Messages.AllowCenterMessages)
+            {
                 player.PrintToCenterHtml($" <font color='green'>You used /respawn</font>");
+            }
+            else
+            {
+                player.PrintToChat($" {Config.Prefix} You used {ChatColors.Lime}/respawn");
+            }
                 Server.NextFrame(() =>
                 {
                     player!.Respawn();
@@ -395,7 +411,13 @@ namespace VIP
             if (LastUsed[client] >= 1)
             {
                 LastUsed[client] = 0;
-                player.PrintToCenter($"You turn off automatically weapon..");
+                if (Config.Messages.AllowCenterMessages)
+                {
+                    player.PrintToCenter($"You turn off automatically weapon..");
+                }else
+                {
+                    player.PrintToChat($" {Config.Prefix} You turn off automatically weapons..");
+                }
             }
         }
         [ConsoleCommand("css_weapon", "Select a Weapon from commands")]
@@ -610,6 +632,42 @@ namespace VIP
                 if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_4}", player) == false)
                 {
                     player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_4}");
+                }
+            }
+            else if (Convert.ToInt32(PackagesID) == 3)
+            {
+                if (Config.Pack3Settings.Allowed)
+                {
+                    Used[client] = 1;
+                    LastUsed[client] = 10;
+                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack3}");
+                    // Weapons
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Pistol}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Pistol}");
+                    }
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Gun}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Gun}");
+                    }
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies}");
+
+                    }
+                    // Granades
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_2}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_2}");
+                    }
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_3}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_3}");
+                    }
+                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_4}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_4}");
+                    }
                 }
             }
             else
