@@ -98,69 +98,6 @@ namespace VIP
             return HookResult.Handled;
         }
         [GameEventHandler]
-
-        public HookResult OnClientConnectNotFull(EventPlayerConnect @event, GameEventInfo info)
-        {
-            CCSPlayerController player = @event.Userid;
-            var client = player.Index;
-                
-            var slots = Server.MaxPlayers;
-            slots = slots - Config.ReservedSlotsForVIP;
-            if (Config.ReservedMethod == 1)
-            {
-                if (ConnectedPlayers >= slots)
-                {
-                    if (IsVIP[client] == 1)
-                    {
-                        if (HaveReservation[client] == 1)
-                        {
-                            Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} use the Reservated slot!");
-                            return HookResult.Continue;
-                        }
-                        else
-                        {
-                            Server.ExecuteCommand($"kick {player.UserId}");
-                            Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP GROUP!");
-                        }
-                    }
-                    else
-                    {
-                        Server.ExecuteCommand($"kick {player.UserId}");
-                        Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP!");
-                    }
-                }
-            }
-            else if (Config.ReservedMethod == 2)
-            {
-                if (ConnectedPlayers == Server.MaxPlayers)
-                {
-                    foreach (var l_player in Utilities.GetPlayers().Where(player => IsVIP[client] == 0 || AdminManager.PlayerHasPermissions(player, "@css/chat")))
-                    {
-                        var el_player = l_player.Index;
-                        if (l_player == null || !l_player.IsValid)
-                            return HookResult.Continue;
-                        if (HaveReservation[client] == 1)
-                        {
-                            if (l_player.IsValid)
-                            {
-                                if (IsVIP[el_player] != 1)
-                                {
-                                    Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{l_player.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
-                                    Server.ExecuteCommand($"kickid {l_player.UserId}");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else if (Config.ReservedMethod == 0)
-            {
-                return HookResult.Continue;
-            }
-            return HookResult.Continue;
-
-        }
-        [GameEventHandler]
         public HookResult OnClientConnect(EventPlayerConnectFull @event, GameEventInfo info)
         {
             CCSPlayerController player = @event.Userid;
