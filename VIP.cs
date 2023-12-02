@@ -389,6 +389,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         }
         else
         {
+            var client = player.Index;
+            HaveReservation[client] = 0;
+            IsVIP[client] = 0;
+            HaveGroup[client] = null;
             WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] is not VIP.", ConsoleColor.Yellow);
         }
     }
