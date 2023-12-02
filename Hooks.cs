@@ -226,6 +226,8 @@ namespace VIP
 
             Bombplanted = false;
             Bomb = false;
+            timer_ex?.Kill();
+            timer_twenty?.Kill();
             Disabled20Sec = false;
             if (Round < 2)
             {
@@ -246,16 +248,18 @@ namespace VIP
             }
             else
             {
+                timer_ex?.Kill();
                 var client = player.Index;
                 Used[client] = 0;
                 Give_Values(player);
                 if (Config.DisablePackWeaponAfter20Sec)
                 {
+                    timer_twenty?.Kill();
                     Disabled20Sec = false;
                 }
                 if (Config.DisablePackWeaponAfter20Sec)
                 {
-                    AddTimer(20.0f, () =>
+                    timer_twenty = AddTimer(20.0f, () =>
                             Disabled20Sec = true
                     );
                 }
@@ -428,12 +432,14 @@ namespace VIP
         public HookResult OnBombDetonate(EventBombDefused @event, GameEventInfo info)
         {
             Bomb = false;
+            timer_ex?.Kill();
             return HookResult.Continue;
         }
         [GameEventHandler]
         public HookResult OnBombDefused(EventBombDefused @event, GameEventInfo info)
         {
             Bomb = false;
+            timer_ex?.Kill();
             return HookResult.Continue;
         }
         [GameEventHandler]
@@ -461,10 +467,11 @@ namespace VIP
                 {
                     SitePlant = "A";
                 }
-                var timer = AddTimer(1.0f, () =>
+                timer_ex = AddTimer(1.0f, () =>
                 {
                     if (bombtime == 0)
                     {
+                        timer_ex?.Kill();
                         return;
                     }
 
@@ -484,6 +491,15 @@ namespace VIP
 
             return HookResult.Continue;
         }
+        public void Explosive()
+        {
+            if (bombtime == 0)
+            {
+                timer_ex?.Kill();
+                return;
+            }
+            bombtime = bombtime - 1.0f;
+        }
         [GameEventHandler]
         public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
         {
@@ -493,7 +509,6 @@ namespace VIP
             }
             CCSPlayerController player = @event.Userid;
             CCSPlayerController attacker = @event.Attacker;
-            var PawnValueAttacker = attacker.PlayerPawn.Value;
             var MoneyValueAttacker = attacker.InGameMoneyServices;
             var attacker_entity = attacker.Index;
             var player_entity = player.Index;
