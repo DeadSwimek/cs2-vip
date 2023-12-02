@@ -280,13 +280,9 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         {
             if (ConnectedPlayers == Server.MaxPlayers)
             {
-                foreach (var l_player in Utilities.GetPlayers().Where(player => AdminManager.PlayerHasPermissions(player, "@css/chat")))
+                foreach (var l_player in Utilities.GetPlayers())
                 {
                     var el_player = l_player.Index;
-                    if (l_player == null || !l_player.IsValid)
-                        return;
-                    if (HaveReservation[client] == 1)
-                    {
                         WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
                         if (l_player.IsValid)
                         {
@@ -296,7 +292,6 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                                 Server.ExecuteCommand($"kickid {l_player.UserId}");
                             }
                         }
-                    }
                 }
             }
         }
