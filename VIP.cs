@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.2.9";
+    public override string ModuleVersion => "V. 1.3.0";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -282,16 +282,15 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             {
                 foreach (var l_player in Utilities.GetPlayers())
                 {
-                    var el_player = l_player.Index;
+                    CCSPlayerController player_res = l_player;
+
+                    var el_player = player_res.Index;
                         WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
-                        if (l_player.IsValid)
-                        {
                             if (IsVIP[el_player] != 1)
                             {
-                                Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{l_player.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
-                                Server.ExecuteCommand($"kickid {l_player.UserId}");
+                                Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{player_res.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
+                                Server.ExecuteCommand($"kickid {player_res.UserId}");
                             }
-                        }
                 }
             }
         }
