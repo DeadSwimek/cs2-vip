@@ -201,7 +201,6 @@ namespace VIP
             }
 
             Round++;
-            WriteColor($"VIP Plugin - Added new round count, now is [{Round}].", ConsoleColor.Magenta);
 
             Bombplanted = false;
             Bomb = false;
@@ -210,6 +209,8 @@ namespace VIP
             {
                 DisableGiving = false;
             }
+            WriteColor($"VIP Plugin - Added new round count, now is [{Round}] {Bomb}.", ConsoleColor.Magenta);
+
 
             return HookResult.Continue;
         }
