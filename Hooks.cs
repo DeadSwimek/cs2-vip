@@ -33,6 +33,7 @@ using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
 namespace VIP
 {
+    
     public partial class VIP
     {
         private readonly nint Handle;
@@ -390,6 +391,18 @@ namespace VIP
                 }
                 //player.PrintToChat($"{Config.Prefix} You can use /ak for give AK47 or /m4 for give M4A1");
             }
+            return HookResult.Continue;
+        }
+        [GameEventHandler]
+        public HookResult OnBombDetonate(EventBombDefused @event, GameEventInfo info)
+        {
+            Bomb = false;
+            return HookResult.Continue;
+        }
+        [GameEventHandler]
+        public HookResult OnBombDefused(EventBombDefused @event, GameEventInfo info)
+        {
+            Bomb = false;
             return HookResult.Continue;
         }
         [GameEventHandler]
