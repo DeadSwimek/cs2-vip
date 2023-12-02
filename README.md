@@ -1,99 +1,73 @@
+> If you wanna you can support me on this link - **https://www.paypal.com/paypalme/deadswim**
+![](https://camo.githubusercontent.com/6f4dcc3ce2ec908ab308be1f42581be46c9bb46cc9958637cc6044f640ed835f/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f6174746163686d656e74732f313137363533373237323732343735383634382f313137363533373237323938303630373133382f7669702e706e67)
 
-# If you wanna you can support me on this link - https://www.paypal.com/paypalme/deadswim
+### Features
 
-![image](https://cdn.discordapp.com/attachments/1176537272724758648/1176537272980607138/vip.png)
+- Can enable noknifedamage.
+- Special VIP tag in chat. 
+- Pack of guns for free.
+- Set 115 HP on RoundStart.
+- Set 100 Arrmor on RoundStart.
+- Welcome messages.
+- Translation file in config.
+- Connect to database.
+- Doubble jump.
+- Reservation slots.
+- Colored smokes.
+- VIPs can be added from keys.
+- You can take /testvip.
+- VIP can be respawned by command /respawn.
+- Rewards after bomb detonate.
+- Configurated packages.
+- 3 VIPs groups.
 
-This is a very simple vipguns plugin for [CounterStrikeSharp](https://docs.cssharp.dev/).
-Just install [package](https://github.com/connercsbn/SimpleAdmin/releases/) to `game/csgo/addons/counterstrikesharp/plugins/` and you should be good to go. 
 
-## Donators
-`GreeNyTM` Value `200 CZK`
+# Donators
+***GreeNyTM*** Value **200 CZK**
 
-### Videos/Images shows
 
-[Detonation viewer](https://madgames.eu/YcXJ.webm) [/vip Design](https://cdn.discordapp.com/attachments/1140558464599470170/1178973482843906098/image.png)
+**Table of Contents**
 
-Advantages for VIP:
-
-`-` Can enable noknifedamage.
-
-`-` Special VIP tag in chat.
-
-`-` Pack of guns for free.
-
-`-` Set 115 HP on RoundStart.
-
-`-` Set 100 Arrmor on RoundStart.
-
-`-` Welcome messages.
-
-`-` Translation file in config.
-
-`-` Connect to database.
-
-`-` Doubble jump.
-
-`-` Reservation slots.
-
-`-` Colored smokes.
-
-`-` VIPs can be added from keys.
-
-`-` You can take /testvip.
-
-`-` VIP can be respawned by command /respawn.
-
-`-` Rewards after bomb detonate.
-
-`-` Configurated packages.
-
-`-` 2 VIPs groups.
-
-TODO List:
-
-`-` Add AutoBhop for VIP.
-
-`-` Add colored skins/model.
-
-`-` Contact me for the premium version.
-
-## css_testvip
-`Usage: /testvip`
-Automatical giving group 0 (GROUP 1)
-## css_generatevip
+# Commands
+**css_testvip**
+`Usage: /testvip` Automatical giving group 0 (GROUP 1)
+**css_generatevip**
 `Usage: css_generatevip <Time In Seconds> <Group 0,1,2>`
-## css_activator
+**css_activator**
 `Usage: /activator <YOUR_TOKEN>`
-## css_addvip
+**css_addvip**
 `Usage: /addvip <Time In Seconds> <STEAMID64> <Group 0,1,2>`
-## css_respawn
-`Usage: /respawn`
-Give a VIP to player on steamid.
-## css_weapon
-`Usage: /weapon <Number of weapon>`
-List of packages:
+**css_respawn**
+`Usage: /respawn` Give a VIP to player on steamid.
+**css_weapon**
+`Usage: /weapon <Number of weapon>` List of packages:
 
-1 - AK-47
+| ID      | Weapon   |
+| ------------ | ------------ |
+| `1`    | AK-47     |
+| `2`    | M4A1     |
+| `3`    | M4A1-S     |
+| `4`    | AWP     |
 
-2 - M4A1
+**css_pack**
+`Usage: /pack <Number of pack>` Configuration in config
+**css_guns_off**
+`Usage: /guns_off` Turn of automatically weapons giving
 
-3 - M4A1-S
+| Command      | Permission   |
+| ------------ | ------------ |
+| `css_generatevip`    | @css/root     |
+| `css_addvip`    | @css/root     |
+| `css_weapon`    | Database add     |
+| `css_respawn`    | Database add     |
+| `css_pack`  | Database add   |
+| `css_guns_off`  | NONE   |
+| `css_activator`  | NONE   |
+| `css_testvip`  | NONE   |
 
-## css_pack
-`Usage: /pack <Number of pack>`
-List of packages:
+#Config
 
-1 - AK-47, Deagle, Healthshot, Molotov, Smoke, He `Can be edited`
-
-2 - M4A1, Deagle, Healthshot, Molotov, Smoke, He `Can be edited`
-
-3 - M4A1, Deagle, Healthshot, Molotov, Smoke, He `Can be edited - Default disabled`
-
-## css_guns_off
-`Usage: /guns_off`
-Turn of automatically weapons giving
-
-```
+```JSON
 {
   "Prefix": " \u0001[\u0004MadGames.eu\u0001]",
   "GiveHPAfterKill": true, // If true, giving rewards for kills (HP)
@@ -189,17 +163,3 @@ Turn of automatically weapons giving
 }
 ```
 
-## Required Permissions
-
-Permissions using CounterStrikeSharp's [admin framework](https://docs.cssharp.dev/admin-framework/defining-admins/)
-
-| Command      | Permission   |
-| ------------ | ------------ |
-| `css_generatevip`    | @css/root     |
-| `css_addvip`    | @css/root     |
-| `css_weapon`    | Database add     |
-| `css_respawn`    | Database add     |
-| `css_pack`  | Database add   |
-| `css_guns_off`  | NONE   |
-| `css_activator`  | NONE   |
-| `css_testvip`  | NONE   |
