@@ -31,14 +31,19 @@
 # Commands
 **css_testvip**
 `Usage: /testvip` Automatical giving group 0 (GROUP 1)
+
 **css_generatevip**
 `Usage: css_generatevip <Time In Seconds> <Group 0,1,2>`
+
 **css_activator**
 `Usage: /activator <YOUR_TOKEN>`
+
 **css_addvip**
 `Usage: /addvip <Time In Seconds> <STEAMID64> <Group 0,1,2>`
+
 **css_respawn**
 `Usage: /respawn` Give a VIP to player on steamid.
+
 **css_weapon**
 `Usage: /weapon <Number of weapon>` List of packages:
 
@@ -51,6 +56,7 @@
 
 **css_pack**
 `Usage: /pack <Number of pack>` Configuration in config
+
 **css_guns_off**
 `Usage: /guns_off` Turn of automatically weapons giving
 
