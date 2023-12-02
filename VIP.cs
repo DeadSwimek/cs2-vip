@@ -31,7 +31,7 @@ using System.Security.Cryptography;
 using CounterStrikeSharp.API.Modules.Memory;
 using System.Threading.Channels;
 using System.Reflection.Metadata;
-
+using System.Net;
 
 namespace VIP;
 [MinimumApiVersion(55)]
@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.2.6";
+    public override string ModuleVersion => "V. 1.2.7";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -137,6 +137,13 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
 
         // Load Smoke colors
         RegisterListener<Listeners.OnEntitySpawned>(OnEntitySpawned);
+        RegisterListener<Listeners.OnClientAuthorized>((index, id) =>
+        {
+            var player = Utilities.GetPlayerFromSlot(index);
+
+            Authorization_Client(player);
+        });
+
         RegisterListener<Listeners.OnTick>(() =>
         {
             for (int i = 1; i < Server.MaxPlayers; i++)
@@ -233,6 +240,66 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             Server.PrintToConsole($"Client {controller.PlayerName} : Button : {buttons} / {buttons}");
             //LB[client] = PlayerButtons.Jump;
             //buttons = PlayerButtons.Jump;
+        }
+    }
+    public void Authorization_Client(CCSPlayerController player)
+    {
+        var client = player.Index;
+
+
+
+        var slots = Server.MaxPlayers;
+        slots = slots - Config.ReservedSlotsForVIP;
+        if (Config.ReservedMethod == 1)
+        {
+            if (ConnectedPlayers >= slots)
+            {
+                if (IsVIP[client] == 1)
+                {
+                    if (HaveReservation[client] == 1)
+                    {
+                        Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} use the Reservated slot!");
+                        return;
+                    }
+                    else
+                    {
+                        Server.ExecuteCommand($"kick {player.UserId}");
+                        Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP GROUP!");
+                    }
+                }
+                else
+                {
+                    Server.ExecuteCommand($"kick {player.UserId}");
+                    Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP!");
+                }
+            }
+        }
+        else if (Config.ReservedMethod == 2)
+        {
+            if (ConnectedPlayers == Server.MaxPlayers)
+            {
+                foreach (var l_player in Utilities.GetPlayers().Where(player => IsVIP[client] == 0 || AdminManager.PlayerHasPermissions(player, "@css/chat")))
+                {
+                    var el_player = l_player.Index;
+                    if (l_player == null || !l_player.IsValid)
+                        return;
+                    if (HaveReservation[client] == 1)
+                    {
+                        if (l_player.IsValid)
+                        {
+                            if (IsVIP[el_player] != 1)
+                            {
+                                Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{l_player.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
+                                Server.ExecuteCommand($"kickid {l_player.UserId}");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (Config.ReservedMethod == 0)
+        {
+            return;
         }
     }
     public static void OnTick(CCSPlayerController controller)
