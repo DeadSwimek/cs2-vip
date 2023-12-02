@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.3.0";
+    public override string ModuleVersion => "V. 1.3.1";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -76,6 +76,8 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public float bombtime;
     public bool Disabled20Sec;
     public string SitePlant;
+    public CounterStrikeSharp.API.Modules.Timers.Timer? timer_ex;
+    public CounterStrikeSharp.API.Modules.Timers.Timer? timer_twenty;
 
     public void OnConfigParsed(ConfigVIP config)
     {
@@ -157,8 +159,6 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                     continue;
                 if (IsVIP[client.Index] == 0)
                     return;
-                OnTick(client);
-                //TryBhop(client); Still finding way to found autobhop.
                 if (!Config.Bombinfo)
                     return;
                 if (Bomb)
@@ -191,7 +191,13 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                         $"<font color='white'>All on site is</font> <font color='orange'>DEAD!</font><br>" +
                         $"<font color='gold'>Planted on site</font> <font class='fontSize-m' color='red'>[{SitePlant}]</font>");
                     }
+                    else if (bombtime == 0)
+                    {
+                        Bomb = false;
+                    }
                 }
+                OnTick(client);
+                //TryBhop(client); Still finding way to found autobhop.
             }
         });
 
