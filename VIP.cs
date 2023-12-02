@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.2.7";
+    public override string ModuleVersion => "V. 1.2.8";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -247,7 +247,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         var client = player.Index;
 
 
-
+        WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server.", ConsoleColor.Green);
         var slots = Server.MaxPlayers;
         slots = slots - Config.ReservedSlotsForVIP;
         if (Config.ReservedMethod == 1)
@@ -256,6 +256,8 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             {
                 if (IsVIP[client] == 1)
                 {
+                    WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
+
                     if (HaveReservation[client] == 1)
                     {
                         Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} use the Reservated slot!");
@@ -278,13 +280,14 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         {
             if (ConnectedPlayers == Server.MaxPlayers)
             {
-                foreach (var l_player in Utilities.GetPlayers().Where(player => IsVIP[client] == 0 || AdminManager.PlayerHasPermissions(player, "@css/chat")))
+                foreach (var l_player in Utilities.GetPlayers().Where(player => AdminManager.PlayerHasPermissions(player, "@css/chat")))
                 {
                     var el_player = l_player.Index;
                     if (l_player == null || !l_player.IsValid)
                         return;
                     if (HaveReservation[client] == 1)
                     {
+                        WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
                         if (l_player.IsValid)
                         {
                             if (IsVIP[el_player] != 1)
