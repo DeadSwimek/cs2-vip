@@ -105,6 +105,7 @@ namespace VIP
 
             if (player == null || !player.IsValid || player.IsBot)
                 return HookResult.Continue;
+            ConnectedPlayers++;
 
 
             var client = player.Index;
@@ -112,7 +113,6 @@ namespace VIP
             LastUsed[client] = 0;
             IsVIP[client] = 0;
             HaveGroup[client] = 0;
-            ConnectedPlayers++;
             LoadPlayerData(player);
 
             return HookResult.Continue;
@@ -157,40 +157,67 @@ namespace VIP
             }
             if (GameRules().SwitchingTeamsAtRoundReset)
             {
-                WriteColor($"VIP Plugin - *[GAMERULES]* Halftime/switch sites dosen't real Round, set on 0.", ConsoleColor.Yellow);
-                WriteColor($"VIP Plugin - *[GAMERULES]* Restarting rounds number to zero..", ConsoleColor.Yellow);
-                WriteColor($"VIP Plugin - *[GAMERULES]* Removing all weapons to players and giving C4, Knife, Glock, HKP2000.", ConsoleColor.Yellow);
-
-                Round = 0;
+                Round = -1;
                 DisableGiving = true;
                 foreach (var l_player in Utilities.GetPlayers())
                 {
                     CCSPlayerController player = l_player;
+                    if (player == null && !player.IsValid)
+                    {
+                        return HookResult.Continue;
+                    }
                     var client = player.Index;
                     
                     if (IsVIP[client] == 1)
                     {
+                        Round = -1;
+                        Used[client] = 0;
                         LastUsed[client] = 0;
-                        int?[] HaveC4 = new int?[65];
+                    }
+                }
+                WriteColor($"VIP Plugin - *[GAMERULES]* Halftime/switch sites dosen't real Round, set on {Round}.", ConsoleColor.Yellow);
+                WriteColor($"VIP Plugin - *[GAMERULES]* Restarting rounds number to zero..", ConsoleColor.Yellow);
+                WriteColor($"VIP Plugin - *[GAMERULES]* Removing all weapons to players and giving C4, Knife, Glock, HKP2000.", ConsoleColor.Yellow);
+            }
+            if(Round == 0 || Round == -1)
+            {
+                foreach (var l_player in Utilities.GetPlayers())
+                {
+                    int?[] HaveC4 = new int?[65];
 
-                        if (CheckIsHaveWeapon("c4", player) == true)
+                    CCSPlayerController player = l_player;
+                    if(player == null && !player.IsValid)
+                    {
+                        return HookResult.Continue;
+                    }
+                    var client = player.Index;
+                    if (CheckIsHaveWeapon("c4", player) == true)
+                    {
+                        HaveC4[client] = 1;
+                    }
+                    foreach (var weapon in player.PlayerPawn.Value.WeaponServices!.MyWeapons)
+                    {
+                        if (weapon is { IsValid: true, Value.IsValid: true })
                         {
-                            HaveC4[client] = 1;
-                        }
-                        RemoveWeapons(player);
-                        if(player.TeamNum == ((byte)CsTeam.Terrorist))
-                        {
-                            player.GiveNamedItem("weapon_glock");
-                            if (HaveC4[client] == 1)
+                            if (weapon.Value.DesignerName.Contains("bayonet") || weapon.Value.DesignerName.Contains("knife"))
                             {
-                                player.GiveNamedItem("weapon_c4");
-                                HaveC4[client] = 0;
+                                continue;
                             }
+                            weapon.Value.Remove();
                         }
-                        if (player.TeamNum == ((byte)CsTeam.CounterTerrorist))
+                    }
+                    if (player.TeamNum == ((byte)CsTeam.Terrorist))
+                    {
+                        player.GiveNamedItem("weapon_glock");
+                        if (HaveC4[client] == 1)
                         {
-                            player.GiveNamedItem("weapon_hkp2000");
+                            player.GiveNamedItem("weapon_c4");
+                            HaveC4[client] = 0;
                         }
+                    }
+                    if (player.TeamNum == ((byte)CsTeam.CounterTerrorist))
+                    {
+                        player.GiveNamedItem("weapon_hkp2000");
                     }
                 }
             }
@@ -220,8 +247,12 @@ namespace VIP
             else
             {
                 var client = player.Index;
-
+                Used[client] = 0;
                 Give_Values(player);
+                if (Config.DisablePackWeaponAfter20Sec)
+                {
+                    Disabled20Sec = false;
+                }
                 if (Config.DisablePackWeaponAfter20Sec)
                 {
                     AddTimer(20.0f, () =>
@@ -240,9 +271,9 @@ namespace VIP
                 {
                     HaveDoubble[client] = 0;
                 }
-                if (Round < Config.MinimumRoundToUseCommands && LastUsed[client] >= 1)
+                if (Round < Config.MinimumRoundToUseCommands || LastUsed[client] >= 1)
                 {
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
+                    //player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
                     return HookResult.Stop;
                 }
                 if (LastUsed[client] >= 1)
@@ -475,10 +506,6 @@ namespace VIP
             if (player != attacker)
             {
                 
-                if(Config.DisablePackWeaponAfter20Sec)
-                {
-                    Disabled20Sec = false;
-                }
                 if (Config.GiveHPAfterKill || Config.GiveMoneyAfterKill)
                     {
                         if (Config.AllowKillMessages)
