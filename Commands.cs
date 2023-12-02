@@ -411,6 +411,7 @@ namespace VIP
 
             if (LastUsed[client] >= 1)
             {
+                Used[client] = 0;
                 LastUsed[client] = 0;
                 if (Config.Messages.AllowCenterMessages)
                 {
