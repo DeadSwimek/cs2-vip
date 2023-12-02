@@ -58,9 +58,11 @@
 | `4`    | AWP     |
 
 **css_pack**
+
 `Usage: /pack <Number of pack>` Configuration in config
 
 **css_guns_off**
+
 `Usage: /guns_off` Turn of automatically weapons giving
 
 | Command      | Permission   |
