@@ -142,12 +142,6 @@ namespace VIP
                     RespawnUsed[client] = 0;
                 }
             }
-            if (Config.DisablePackWeaponAfter20Sec)
-            {
-                AddTimer(20.0f, () =>
-                        Disabled20Sec = true
-                );
-            }
 
             if (GameRules().WarmupPeriod)
             {
@@ -228,6 +222,12 @@ namespace VIP
                 var client = player.Index;
 
                 Give_Values(player);
+                if (Config.DisablePackWeaponAfter20Sec)
+                {
+                    AddTimer(20.0f, () =>
+                            Disabled20Sec = true
+                    );
+                }
                 if (Config.EnableDoubbleJump)
                 {
                     if (Config.CommandOnGroup.DoubbleJump > HaveGroup[client])
@@ -475,7 +475,10 @@ namespace VIP
             if (player != attacker)
             {
                 
-
+                if(Config.DisablePackWeaponAfter20Sec)
+                {
+                    Disabled20Sec = false;
+                }
                 if (Config.GiveHPAfterKill || Config.GiveMoneyAfterKill)
                     {
                         if (Config.AllowKillMessages)
