@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.2.8";
+    public override string ModuleVersion => "V. 1.2.9";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -245,9 +245,9 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public void Authorization_Client(CCSPlayerController player)
     {
         var client = player.Index;
+        LoadPlayerData(player);
 
-
-        WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server.", ConsoleColor.Green);
+        WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, player on server: [{ConnectedPlayers}].", ConsoleColor.Green);
         var slots = Server.MaxPlayers;
         slots = slots - Config.ReservedSlotsForVIP;
         if (Config.ReservedMethod == 1)
@@ -265,13 +265,13 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                     }
                     else
                     {
-                        Server.ExecuteCommand($"kick {player.UserId}");
+                        Server.ExecuteCommand($"kickid {player.UserId} \"This slot are for VIP\"");
                         Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP GROUP!");
                     }
                 }
                 else
                 {
-                    Server.ExecuteCommand($"kick {player.UserId}");
+                    Server.ExecuteCommand($"kickid {player.UserId} \"This slot are for VIP\"");
                     Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP!");
                 }
             }
