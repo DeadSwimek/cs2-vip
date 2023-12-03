@@ -45,7 +45,11 @@
 
 **css_respawn**
 
-`Usage: /respawn` Give a VIP to player on steamid.
+`Usage: /respawn` Respawn a player.
+
+**css_vips**
+
+`Usage: /vips` Type you all online VIPs players.
 
 **css_weapon**
 
