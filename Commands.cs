@@ -119,7 +119,6 @@ namespace VIP
             if (result.Rows == 1)
             {
 
-                var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(result.Get<int>(0, "end"))).GetUnixEpoch();
                 var timeofvip = result.Get<int>(0, "end");
                 var group_int = result.Get<int>(0, "group");
                 if (result.Get<int>(0, "end") == 0)
@@ -128,12 +127,9 @@ namespace VIP
                 }
                 else
                 {
-                    timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(result.Get<int>(0, "end"))).GetUnixEpoch();
+                    timeofvip = result.Get<int>(0, "end");
                 }
                 var client = player.Index;
-                var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
-                var timeRemainingFormatted =
-                $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
 
                 MySqlQueryValue _Tvalues = new MySqlQueryValue()
                 .Add("steam_id", $"{player.SteamID}")
@@ -146,9 +142,9 @@ namespace VIP
                 {
                     player.PrintToChat($" {Config.Prefix} Your VIP is {ChatColors.Lime}Forever{ChatColors.Default}.");
                 }
-                player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 IsVIP[client] = 1;
+                LoadPlayerData(player);
                 MySql.Table("users_key_vip").Where($"token = '{token}'").Delete();
             }
             else
@@ -168,7 +164,7 @@ namespace VIP
             if (TimeSec == null || TimeSec == "" || !IsInt(TimeSec) || Group == null || Group == "" || !IsInt(Group))
             {
                 Server.PrintToConsole($"==========================================");
-                Server.PrintToConsole($" {Config.Prefix} You must add seconds: css_generatevip <SECONDS> <GROUP>, must be added in int.");
+                Server.PrintToConsole($" {Config.Prefix} You must add days: css_generatevip <DAYS> <GROUP>, must be added in int.");
                 Server.PrintToConsole($" {Config.Prefix} If you wanna give forever VIP: css_generatevip 0 0");
                 Server.PrintToConsole($" {Config.Prefix} <------------> List's of Groups <------------>");
                 Server.PrintToConsole($" {Config.Prefix} < Group '0' > {Config.GroupsNames.Group1} < Group '0' >");
@@ -179,7 +175,7 @@ namespace VIP
 
                 return;
             }
-            var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+            var TimeToUTC = DateTime.UtcNow.AddDays(Convert.ToInt32(TimeSec)).GetUnixEpoch();
             var timeofvip = 0;
             if (TimeSec == "0")
             {
@@ -187,7 +183,7 @@ namespace VIP
             }
             else
             {
-                timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                timeofvip = DateTime.UtcNow.AddDays(Convert.ToInt32(TimeSec)).GetUnixEpoch();
             }
 
             var token = CreatePassword(20);
@@ -207,7 +203,7 @@ namespace VIP
             Server.PrintToConsole($"==========================================");
             Server.PrintToConsole($"You generate new VIP Token");
             Server.PrintToConsole($"Token: {token}");
-            Server.PrintToConsole($"Ending: {timeRemainingFormatted}");
+            Server.PrintToConsole($"Ending (days): {TimeSec}");
             Server.PrintToConsole($"Group ID: {Group}");
             Server.PrintToConsole($"==========================================");
 
@@ -227,20 +223,20 @@ namespace VIP
             }
             else if (SteamIDC == null || SteamIDC == "" || !IsInt(SteamIDC))
             {
-                player.PrintToChat($" {Config.Prefix} You must add SteamID. Example {ChatColors.Lime}/addvip <Time in seconds> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} You must add SteamID. Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
                 player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777{ChatColors.Default}.");
                 return;
             }
             else if (TimeSec == null || TimeSec == "" || !IsInt(TimeSec))
             {
-                player.PrintToChat($" {Config.Prefix} You must add Time in seconds. Example {ChatColors.Lime}/addvip <Time in seconds> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} You must add Time in days. Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
                 player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777{ChatColors.Default}.");
 
                 return;
             }
             else if (Group == null || Group == "" || !IsInt(Group))
             {
-                player.PrintToChat($" {Config.Prefix} You must add Group (Exist: 0, 1). Example {ChatColors.Lime}/addvip <Time in seconds> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} You must add Group (Exist: 0, 1). Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
                 player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777 0{ChatColors.Default}.");
                 player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
                 player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '0' >{ChatColors.Default} {Config.GroupsNames.Group1} {ChatColors.Lime}< Group '0' >");
@@ -253,7 +249,7 @@ namespace VIP
             }
             else
             {
-                var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                var TimeToUTC = DateTime.UtcNow.AddDays(Convert.ToInt32(TimeSec)).GetUnixEpoch();
                 var timeofvip = 0;
                 if(TimeSec == "0")
                 {
@@ -261,9 +257,10 @@ namespace VIP
                 }
                 else
                 {
-                    timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                    timeofvip = DateTime.UtcNow.AddDays(Convert.ToInt32(TimeSec)).GetUnixEpoch();
                 }
 
+                
                 var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
                 var timeRemainingFormatted =
                 $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
@@ -302,6 +299,7 @@ namespace VIP
                 status = $" {ChatColors.Green}Active";
                 formating = $" {ChatColors.Green}{timeRemainingFormatted}";
                 IsVIP[client] = 1;
+                LoadPlayerData(player);
                 status_i = 1;
                 if (result.Get<int>(0, "end") != 0)
                 {
