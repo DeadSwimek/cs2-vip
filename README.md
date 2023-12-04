@@ -41,7 +41,7 @@
 
 **css_generatevip**
 
-`Usage: css_generatevip <Time In Seconds> <Group 0,1,2>`
+`Usage: css_generatevip <Time In days> <Group 0,1,2>`
 
 **css_activator**
 
@@ -49,7 +49,7 @@
 
 **css_addvip**
 
-`Usage: /addvip <Time In Seconds> <STEAMID64> <Group 0,1,2>`
+`Usage: /addvip <Time In Days> <STEAMID64> <Group 0,1,2>`
 
 **css_respawn**
 
