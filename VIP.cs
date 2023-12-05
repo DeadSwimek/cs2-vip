@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.3.2";
+    public override string ModuleVersion => "V. 1.3.5";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -109,12 +109,17 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
 
 
 
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users_test_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `used` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_test_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `used` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
 
-            MySql.ExecuteNonQueryAsync(@"ALTER TABLE `users_key_vip` ADD `group` INT(11) NOT NULL;");
-            MySql.ExecuteNonQueryAsync(@"ALTER TABLE `users` ADD `group` INT(11) NOT NULL;");
+            MySql.ExecuteNonQueryAsync(@"ALTER TABLE `deadswim_users_key_vip` ADD `group` INT(11) NOT NULL;");
+            MySql.ExecuteNonQueryAsync(@"ALTER TABLE `deadswim_users` ADD `group` INT(11) NOT NULL;");
+
+
+            MySql.ExecuteNonQueryAsync(@"RENAME TABLE users TO deadswim_users");
+            MySql.ExecuteNonQueryAsync(@"RENAME TABLE users_test_vip TO deadswim_users_test_vip");
+            MySql.ExecuteNonQueryAsync(@"RENAME TABLE users_key_vip TO deadswim_users_key_vip");
 
             WriteColor($"VIP Plugin - *[MySQL {Config.DBHost} Connected]", ConsoleColor.Green);
 
@@ -346,7 +351,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     {
         MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-        MySqlQueryResult result = MySql!.Table("users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
+        MySqlQueryResult result = MySql!.Table("deadswim_users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
         if (result.Rows == 1)
         {
             var client = player.Index;
@@ -354,11 +359,11 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             HaveGroup[client] = result.Get<int>(0, "group");
             if(Config.CommandOnGroup.ReservedSlots > get_vip_group(player))
             {
-                HaveReservation[client] = 0;
+                HaveReservation[client] = 1;
             }
             else
             {
-                HaveReservation[client] = 1;
+                HaveReservation[client] = 0;
             }
             player.Clan = get_name_group(player); 
 
@@ -378,7 +383,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 {
                     WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] exp. VIP today..", ConsoleColor.Red);
 
-                    MySql.Table("users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Delete();
+                    MySql.Table("deadswim_users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Delete();
                     IsVIP[client] = 0;
                 }
             }
@@ -484,11 +489,16 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 {
                     set_money(controller, Config.RewardsClass.FirstSpawnMoney);
                 }
+                if (controller.TeamNum == 3)
+                {
+                    controller.GiveNamedItem("item_defuser");
+                }
                 if (LastUsed[client] != 2 || LastUsed[client] != 3)
                 {
                     if (CheckIsHaveWeapon("healthshot", controller) == false)
                     {
                         controller.GiveNamedItem("weapon_healthshot");
+                        controller.GiveNamedItem("item_assaultsuit");
                     }
                 }
             }
