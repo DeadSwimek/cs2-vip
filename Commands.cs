@@ -56,7 +56,7 @@ namespace VIP
 
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult result = MySql!.Table("users_test_vip").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
+            MySqlQueryResult result = MySql!.Table("deadswim_users_test_vip").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
 
             if (result.Rows == 0)
             {
@@ -65,8 +65,9 @@ namespace VIP
                 var timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
                 MySqlQueryValue _Tvalues = new MySqlQueryValue()
                 .Add("steam_id", $"{player.SteamID}")
-                .Add("used", $"{timeofvip}");
-                MySql.Table("users_test_vip").Insert(_Tvalues);
+                .Add("used", $"{timeofvip}")
+                .Add("`group`", $"0"); ;
+                MySql.Table("deadswim_users_test_vip").Insert(_Tvalues);
 
                 var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
                 var timeRemainingFormatted =
@@ -114,7 +115,7 @@ namespace VIP
 
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult result = MySql!.Table("users_key_vip").Where(MySqlQueryCondition.New("token", "=", $"{token}")).Select();
+            MySqlQueryResult result = MySql!.Table("deadswim_users_key_vip").Where(MySqlQueryCondition.New("token", "=", $"{token}")).Select();
 
             if (result.Rows == 1)
             {
@@ -135,7 +136,7 @@ namespace VIP
                 .Add("steam_id", $"{player.SteamID}")
                 .Add("end", $"{timeofvip}")
                 .Add("`group`", $"{group_int}");
-                MySql.Table("users").Insert(_Tvalues);
+                MySql.Table("deadswim_users").Insert(_Tvalues);
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 player.PrintToChat($" {Config.Prefix} You activated the {ChatColors.Lime}VIP{ChatColors.Default}.");
                 if (result.Get<int>(0, "end") == 0)
@@ -145,7 +146,7 @@ namespace VIP
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 IsVIP[client] = 1;
                 LoadPlayerData(player);
-                MySql.Table("users_key_vip").Where($"token = '{token}'").Delete();
+                MySql.Table("deadswim_users_key_vip").Where($"token = '{token}'").Delete();
             }
             else
             {
@@ -198,7 +199,7 @@ namespace VIP
             .Add("token", token)
             .Add("end", $"{timeofvip}")
             .Add("`group`", group_int);
-            MySql.Table("users_key_vip").Insert(values);
+            MySql.Table("deadswim_users_key_vip").Insert(values);
 
             Server.PrintToConsole($"==========================================");
             Server.PrintToConsole($"You generate new VIP Token");
@@ -271,7 +272,7 @@ namespace VIP
                 .Add("steam_id", $"{SteamIDC}")
                 .Add("end", $"{timeofvip}")
                 .Add("`group`", group_int);
-                MySql.Table("users").Insert(values);
+                MySql.Table("deadswim_users").Insert(values);
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 player.PrintToChat($" {Config.Prefix} Player with steamid {ChatColors.Lime}{SteamIDC}{ChatColors.Default} has been added.");
                 player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
@@ -280,12 +281,25 @@ namespace VIP
 
             }
         }
+        [ConsoleCommand("css_vips", "Load all VIPs on server")]
+        public void CommandVIPList(CCSPlayerController? controller, CommandInfo info)
+        {
+            int vips = 0;
+            controller.PrintToChat($" {ChatColors.Green}===!-!==={ChatColors.Lime} VIP {ChatColors.Default}List {ChatColors.Green}===!-!===");
+            foreach (var player in Utilities.GetPlayers().Where(player => player is { IsBot: false, IsValid: true }).Where(player => IsVIP[player.Index] == 1))
+            {
+                vips++;
+                controller.PrintToChat($" [{ChatColors.Green}{player.SteamID}{ChatColors.Default}] {ChatColors.Orange}{player.PlayerName}");
+            }
+            controller.PrintToChat($" {ChatColors.Green}► Numbers of VIPs{ChatColors.Default} {ChatColors.Purple}{vips}{ChatColors.Default} {ChatColors.Green}◄ Numbers of VIPs");
+            controller.PrintToChat($" {ChatColors.Green}===!-!==={ChatColors.Lime} VIP {ChatColors.Default}List {ChatColors.Green}===!-!===");
+        }
         [ConsoleCommand("css_vip", "Info about VIP")]
         public void CommandVIPInfo(CCSPlayerController? player, CommandInfo info)
         {
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult result = MySql!.Table("users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
+            MySqlQueryResult result = MySql!.Table("deadswim_users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
             var status = "";
             var formating = "";
             int status_i = 0;
