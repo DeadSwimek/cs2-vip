@@ -102,11 +102,16 @@ namespace VIP
         public HookResult OnClientConnect(EventPlayerConnectFull @event, GameEventInfo info)
         {
             CCSPlayerController player = @event.Userid;
-
             if (player == null || !player.IsValid || player.IsBot)
                 return HookResult.Continue;
-            ConnectedPlayers++;
-
+            if (ConnectedPlayers == 0)
+            {
+                ConnectedPlayers = 1;
+            }
+            else
+            {
+                ConnectedPlayers++;
+            }
 
             var client = player.Index;
             Used[client] = 0;
@@ -124,15 +129,19 @@ namespace VIP
 
             if (player == null || !player.IsValid || player.IsBot)
                 return HookResult.Continue;
-
-            ConnectedPlayers--;
+            int connected = 0;
+            foreach (var player_l in Utilities.GetPlayers().Where(player => player is { IsBot: false, IsValid: true }))
+            {
+                connected++;
+            }
+            ConnectedPlayers = connected;
             return HookResult.Continue;
         }
         [GameEventHandler]
         public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             Server.PrintToConsole("This plugins is created by DeadSwim / https://madgames.eu");
-
+            timer_ex?.Kill();
             foreach (var l_player in Utilities.GetPlayers())
             {
                 CCSPlayerController player = l_player;
@@ -191,33 +200,36 @@ namespace VIP
                         return HookResult.Continue;
                     }
                     var client = player.Index;
-                    if (CheckIsHaveWeapon("c4", player) == true)
+                    if (IsVIP[client] == 1)
                     {
-                        HaveC4[client] = 1;
-                    }
-                    foreach (var weapon in player.PlayerPawn.Value.WeaponServices!.MyWeapons)
-                    {
-                        if (weapon is { IsValid: true, Value.IsValid: true })
+                        if (CheckIsHaveWeapon("c4", player) == true)
                         {
-                            if (weapon.Value.DesignerName.Contains("bayonet") || weapon.Value.DesignerName.Contains("knife"))
+                            HaveC4[client] = 1;
+                        }
+                        foreach (var weapon in player.PlayerPawn.Value.WeaponServices!.MyWeapons)
+                        {
+                            if (weapon is { IsValid: true, Value.IsValid: true })
                             {
-                                continue;
+                                if (weapon.Value.DesignerName.Contains("bayonet") || weapon.Value.DesignerName.Contains("knife"))
+                                {
+                                    continue;
+                                }
+                                weapon.Value.Remove();
                             }
-                            weapon.Value.Remove();
                         }
-                    }
-                    if (player.TeamNum == ((byte)CsTeam.Terrorist))
-                    {
-                        player.GiveNamedItem("weapon_glock");
-                        if (HaveC4[client] == 1)
+                        if (player.TeamNum == ((byte)CsTeam.Terrorist))
                         {
-                            player.GiveNamedItem("weapon_c4");
-                            HaveC4[client] = 0;
+                            player.GiveNamedItem("weapon_glock");
+                            if (HaveC4[client] == 1)
+                            {
+                                player.GiveNamedItem("weapon_c4");
+                                HaveC4[client] = 0;
+                            }
                         }
-                    }
-                    if (player.TeamNum == ((byte)CsTeam.CounterTerrorist))
-                    {
-                        player.GiveNamedItem("weapon_hkp2000");
+                        if (player.TeamNum == ((byte)CsTeam.CounterTerrorist))
+                        {
+                            player.GiveNamedItem("weapon_hkp2000");
+                        }
                     }
                 }
             }
@@ -242,7 +254,7 @@ namespace VIP
         public HookResult OnClientSpawn(EventPlayerSpawn @event, GameEventInfo info)
         {
             CCSPlayerController player = @event.Userid;
-            if (player == null || !player.IsValid || player.TeamNum == 1)
+            if (player == null || !player.IsValid || player.TeamNum == 1 || !player.PawnIsAlive)
             {
                 return HookResult.Continue;
             }
