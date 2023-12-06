@@ -77,7 +77,7 @@ namespace VIP
                 .Add("steam_id", $"{player.SteamID}")
                 .Add("end", $"{timeofvip}")
                 .Add("`group`", $"0");
-                MySql.Table("users").Insert(values);
+                MySql.Table("deadswim_users").Insert(values);
                 var client = player.Index;
                 IsVIP[client] = 1;
 
@@ -362,49 +362,54 @@ namespace VIP
         public void CommandRespawn(CCSPlayerController? player, CommandInfo info)
         {
             var client = player.Index;
-            if (Config.RespawnAllowed == false)
-                return;
-            if (IsVIP[client] == 0)
+            if (Config.RespawnAllowed)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
-                return;
-            }
-            if (Config.CommandOnGroup.Respawn > get_vip_group(player))
-            {
-                player.PrintToChat($" {Config.Prefix} You must have VIP group {get_name_group(player)}");
-                return;
-            }
-            if (Round < Config.MinimumRoundToUseCommands)
-            {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
-                return;
-            }
-            if (RespawnUsed[client] == 1)
-            {
+                if (IsVIP[client] == 0)
+                {
+                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                    return;
+                }
+                if (Config.CommandOnGroup.Respawn >= get_vip_group(player))
+                {
+                    player.PrintToChat($" {Config.Prefix} You must have biggest {ChatColors.Lime}VIP{ChatColors.Default} group.");
+                    return;
+                }
+                if (Round < Config.MinimumRoundToUseCommands)
+                {
+                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
+                    return;
+                }
+                if (player.PawnIsAlive)
+                {
+                    player.PrintToChat($" {Config.Prefix} Must be {ChatColors.Red}death {ChatColors.Default}.");
+                    return;
+                }
+                if (RespawnUsed[client] == 1)
+                {
+                    if (Config.Messages.AllowCenterMessages)
+                    {
+                        player.PrintToCenterHtml($" <font color='red'>You canno't use /respawn at this time</font>");
+                    }
+                    else
+                    {
+                        player.PrintToChat($" {Config.Prefix} You canno't use {ChatColors.Lime}/respawn{ChatColors.Red} at this time!");
+                    }
+                    return;
+                }
                 if (Config.Messages.AllowCenterMessages)
                 {
-                    player.PrintToCenterHtml($" <font color='red'>You canno't use /respawn at this time</font>");
+                    player.PrintToCenterHtml($" <font color='green'>You used /respawn</font>");
                 }
                 else
                 {
-                    player.PrintToChat($" {Config.Prefix} You canno't use {ChatColors.Lime}/respawn{ChatColors.Red} at this time!");
+                    player.PrintToChat($" {Config.Prefix} You used {ChatColors.Lime}/respawn");
                 }
-                return;
-            }
-            if (Config.Messages.AllowCenterMessages)
-            {
-                player.PrintToCenterHtml($" <font color='green'>You used /respawn</font>");
-            }
-            else
-            {
-                player.PrintToChat($" {Config.Prefix} You used {ChatColors.Lime}/respawn");
-            }
-                Server.NextFrame(() =>
-                {
-                    player!.Respawn();
-                });
-                RespawnUsed[client] = 1;
 
+                
+                player.PlayerPawn.Value.Respawn();
+
+                RespawnUsed[client] = 1;
+            }
         }
         [ConsoleCommand("css_guns_off", "Disable automatically weapons")]
 
