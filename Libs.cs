@@ -32,9 +32,7 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CSTimer = CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Admin;
 using System.Drawing;
-
-
-
+using System.Globalization;
 
 namespace VIP
 {
@@ -73,6 +71,18 @@ namespace VIP
                 return false;
             }
             return true;
+        }
+        static public void GiveItem(CCSPlayerController? player, string Item)
+        {
+            if (player.IsValid || player.PawnIsAlive)
+            {
+                player.GiveNamedItem(Item);
+                WriteColor($"VIP Plugin - [*SUCCESS*] Giving item {Item} to player {player.PlayerName}", ConsoleColor.Green);
+            }
+            else
+            {
+                WriteColor($"VIP Plugin - [*ERROR - GiveItem *] player {player.PlayerName} is not valid or alive!", ConsoleColor.Red);
+            }
         }
         static public int get_vip_group(CCSPlayerController? player)
         {
