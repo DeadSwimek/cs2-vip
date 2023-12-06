@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.3.5";
+    public override string ModuleVersion => "V. 1.3.6";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -164,6 +164,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                     continue;
                 if (IsVIP[client.Index] == 0)
                     return;
+                OnTick(client);
                 if (!Config.Bombinfo)
                     return;
                 if (Bomb)
@@ -201,7 +202,6 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                         Bomb = false;
                     }
                 }
-                OnTick(client);
                 //TryBhop(client); Still finding way to found autobhop.
             }
         });
@@ -257,10 +257,24 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     {
         var client = player.Index;
         LoadPlayerData(player);
-
-        WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, player on server: [{ConnectedPlayers}].", ConsoleColor.Green);
         var slots = Server.MaxPlayers;
         slots = slots - Config.ReservedSlotsForVIP;
+
+        int connected = 0;
+        foreach (var player_l in Utilities.GetPlayers().Where(player => player is { IsBot: false, IsValid: true }))
+        {
+            connected++;
+        }
+        ConnectedPlayers = connected;
+
+        WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, player on server: [{ConnectedPlayers}].", ConsoleColor.Green);
+
+
+        WriteColor($"----------------", ConsoleColor.Green);
+        WriteColor($"Actual players on Server : {ConnectedPlayers}", ConsoleColor.Green);
+        WriteColor($"Actual maxplayers on Server : {Server.MaxPlayers}", ConsoleColor.Green);
+        WriteColor($"Can be connected : {slots}", ConsoleColor.Green);
+        WriteColor($"----------------", ConsoleColor.Green);
         if (Config.ReservedMethod == 1)
         {
             if (ConnectedPlayers >= slots)
@@ -287,23 +301,38 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 }
             }
         }
+
         else if (Config.ReservedMethod == 2)
         {
+            bool kicked = false;
             if (ConnectedPlayers == Server.MaxPlayers)
             {
-                foreach (var l_player in Utilities.GetPlayers())
+                if (IsVIP[client] == 1)
                 {
-                    CCSPlayerController player_res = l_player;
+                    foreach (var l_player in Utilities.GetPlayers())
+                    {
+                        CCSPlayerController player_res = l_player;
 
-                    var el_player = player_res.Index;
+                        var el_player = player_res.Index;
                         WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
+                        if (kicked == false)
+                        {
                             if (IsVIP[el_player] != 1)
                             {
+                                kicked = true;
                                 Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{player_res.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
                                 Server.ExecuteCommand($"kickid {player_res.UserId}");
                             }
+                        }
+                    }
+                }
+                else
+                {
+                    WriteColor($"VIP Plugin - [*Server is full*] player {player.PlayerName} has been kicked from server.", ConsoleColor.Yellow);
+                    Server.ExecuteCommand($"kickid {player.UserId}");
                 }
             }
+            kicked = false;
         }
         else if (Config.ReservedMethod == 0)
         {
@@ -416,7 +445,11 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     }
     private bool CheckIsHaveWeapon(string weapon_name, CCSPlayerController? pc)
     {
-        foreach (var weapon in pc.PlayerPawn.Value.WeaponServices!.MyWeapons)
+        if(pc == null || !pc.IsValid)
+            return false;
+
+        var pawn = pc.PlayerPawn.Value.WeaponServices!;
+        foreach (var weapon in pawn.MyWeapons)
         {
             if (weapon is { IsValid: true, Value.IsValid: true })
             {
@@ -491,7 +524,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 }
                 if (controller.TeamNum == 3)
                 {
-                    controller.GiveNamedItem("item_defuser");
+                    GiveItem(controller, "item_defuser");
                 }
                 if (LastUsed[client] != 2 || LastUsed[client] != 3)
                 {
