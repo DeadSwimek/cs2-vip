@@ -34,7 +34,7 @@ using System.Reflection.Metadata;
 using System.Net;
 
 namespace VIP;
-[MinimumApiVersion(55)]
+[MinimumApiVersion(100)]
 
 public static class GetUnixTime
 {
@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.3.6";
+    public override string ModuleVersion => "V. 1.3.7";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -112,14 +112,6 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_test_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `used` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
-
-            MySql.ExecuteNonQueryAsync(@"ALTER TABLE `deadswim_users_key_vip` ADD `group` INT(11) NOT NULL;");
-            MySql.ExecuteNonQueryAsync(@"ALTER TABLE `deadswim_users` ADD `group` INT(11) NOT NULL;");
-
-
-            MySql.ExecuteNonQueryAsync(@"RENAME TABLE users TO deadswim_users");
-            MySql.ExecuteNonQueryAsync(@"RENAME TABLE users_test_vip TO deadswim_users_test_vip");
-            MySql.ExecuteNonQueryAsync(@"RENAME TABLE users_key_vip TO deadswim_users_key_vip");
 
             WriteColor($"VIP Plugin - *[MySQL {Config.DBHost} Connected]", ConsoleColor.Green);
 
