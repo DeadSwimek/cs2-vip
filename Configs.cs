@@ -111,7 +111,7 @@ public class CommandOnGroup
     [JsonPropertyName("Smoke")] public int Smoke { get; set; } = 0;
     [JsonPropertyName("DoubbleJump")] public int DoubbleJump { get; set; } = 0;
     [JsonPropertyName("BombInfo")] public int BombInfo { get; set; } = 0;
-
+    [JsonPropertyName("Glow")] public int Glow { get; set; } = 0;
     [JsonPropertyName("ReservedSlots")] public int ReservedSlots { get; set; } = 0;
 
 }
