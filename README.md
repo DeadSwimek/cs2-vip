@@ -183,6 +183,10 @@
   "Messages": {
     "AllowCenterMessages": true // If is true, server print to center messages
   },
+  "TestVIP": {
+    "EnableTestVIP": true, // If is true, player can take testvip
+    "TimeOfVIP": 3600 // Time of Test VIP (Seconds)
+  },
   "ConfigVersion": 1
 }
 ```
