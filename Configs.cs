@@ -57,6 +57,7 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("Bombinfo")] public bool Bombinfo { get; set; } = true;
     [JsonPropertyName("DisablePackWeaponAfter20Sec")] public bool DisablePackWeaponAfter20Sec { get; set; } = false;
     [JsonPropertyName("MinimumRoundToUseCommands")] public int MinimumRoundToUseCommands { get; set; } = 3;
+    [JsonPropertyName("DefusedReward")] public bool DefusedReward { get; set; } = true;
 
 
     [JsonPropertyName("WelcomeMessage")] public string WelcomeMessage { get; set; } = $"Welcom on server you are BEST VIP!";
