@@ -53,52 +53,58 @@ namespace VIP
         [ConsoleCommand("css_testvip", "Test VIP")]
         public void CommandTESTVIP(CCSPlayerController? player, CommandInfo info)
         {
-
-            MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
-
-            MySqlQueryResult result = MySql!.Table("deadswim_users_test_vip").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
-
-            if (result.Rows == 0)
+            if (Config.TestVIP.EnableTestVIP)
             {
-                int TimeSec = 3600;
-                var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
-                var timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
-                MySqlQueryValue _Tvalues = new MySqlQueryValue()
-                .Add("steam_id", $"{player.SteamID}")
-                .Add("used", $"{timeofvip}")
-                .Add("`group`", $"0"); ;
-                MySql.Table("deadswim_users_test_vip").Insert(_Tvalues);
+                MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-                var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
-                var timeRemainingFormatted =
-                $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+                MySqlQueryResult result = MySql!.Table("deadswim_users_test_vip").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
 
-                MySqlQueryValue values = new MySqlQueryValue()
-                .Add("steam_id", $"{player.SteamID}")
-                .Add("end", $"{timeofvip}")
-                .Add("`group`", $"0");
-                MySql.Table("deadswim_users").Insert(values);
-                var client = player.Index;
-                LoadPlayerData(player);
+                if (result.Rows == 0)
+                {
+                    int TimeSec = Config.TestVIP.TimeOfVIP;
+                    var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                    var timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                    MySqlQueryValue _Tvalues = new MySqlQueryValue()
+                    .Add("steam_id", $"{player.SteamID}")
+                    .Add("used", $"{timeofvip}")
+                    .Add("`group`", $"0"); ;
+                    MySql.Table("deadswim_users_test_vip").Insert(_Tvalues);
+
+                    var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
+                    var timeRemainingFormatted =
+                    $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+
+                    MySqlQueryValue values = new MySqlQueryValue()
+                    .Add("steam_id", $"{player.SteamID}")
+                    .Add("end", $"{timeofvip}")
+                    .Add("`group`", $"0");
+                    MySql.Table("deadswim_users").Insert(values);
+                    var client = player.Index;
+                    LoadPlayerData(player);
 
 
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
-                player.PrintToChat($" {Config.Prefix} You use a TestVIP.");
-                player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
-                Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} add new TEST VIP with steamid {player.SteamID}, end time is {timeRemainingFormatted}");
+                    player.PrintToChat($" {ChatColors.Lime}=========================================");
+                    player.PrintToChat($" {Config.Prefix} You use a TestVIP.");
+                    player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
+                    player.PrintToChat($" {ChatColors.Lime}=========================================");
+                    Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} add new TEST VIP with steamid {player.SteamID}, end time is {timeRemainingFormatted}");
+                }
+                else
+                {
+
+                    var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "used")) - DateTimeOffset.UtcNow;
+                    var timeRemainingFormatted =
+                    $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+
+                    player.PrintToChat($" {ChatColors.Lime}=========================================");
+                    player.PrintToChat($" {Config.Prefix} You cannot use anymore TestVIP.");
+                    player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
+                    player.PrintToChat($" {ChatColors.Lime}=========================================");
+                }
             }
             else
             {
-
-                var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "used")) - DateTimeOffset.UtcNow;
-                var timeRemainingFormatted =
-                $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
-
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
-                player.PrintToChat($" {Config.Prefix} You cannot use anymore TestVIP.");
-                player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
+                player.PrintToChat($" {Config.Prefix} On this server is not {ChatColors.Red}allowed{ChatColors.Lime} /testvip{ChatColors.Default}, contact the owner.");
             }
         }
         [ConsoleCommand("css_activator", "Activate VIP from Tokens")]
