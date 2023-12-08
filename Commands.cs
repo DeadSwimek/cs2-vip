@@ -79,7 +79,7 @@ namespace VIP
                 .Add("`group`", $"0");
                 MySql.Table("deadswim_users").Insert(values);
                 var client = player.Index;
-                IsVIP[client] = 1;
+                LoadPlayerData(player);
 
 
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
@@ -144,7 +144,6 @@ namespace VIP
                     player.PrintToChat($" {Config.Prefix} Your VIP is {ChatColors.Lime}Forever{ChatColors.Default}.");
                 }
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
-                IsVIP[client] = 1;
                 LoadPlayerData(player);
                 MySql.Table("deadswim_users_key_vip").Where($"token = '{token}'").Delete();
             }
