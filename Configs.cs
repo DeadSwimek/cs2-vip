@@ -78,11 +78,17 @@ public class ConfigVIP : BasePluginConfig
 
     [JsonPropertyName("CommandOnGroup")] public CommandOnGroup CommandOnGroup { get; set; } = new CommandOnGroup();
     [JsonPropertyName("Messages")] public Messages Messages { get; set; } = new Messages();
-
+    [JsonPropertyName("TestVIP")] public TestVIP TestVIP { get; set; } = new TestVIP();
 }
 public class Messages
 {
     [JsonPropertyName("AllowCenterMessages")] public bool AllowCenterMessages { get; set; } = true;
+
+}
+public class TestVIP
+{
+    [JsonPropertyName("EnableTestVIP")] public bool EnableTestVIP { get; set; } = true;
+    [JsonPropertyName("TimeOfVIP")] public int TimeOfVIP { get; set; } = 3600;
 
 }
 public class RewardsClass
