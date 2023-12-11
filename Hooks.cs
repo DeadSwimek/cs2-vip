@@ -119,7 +119,10 @@ namespace VIP
             IsVIP[client] = 0;
             HaveGroup[client] = 0;
             LoadPlayerData(player);
-
+            if (Config.WelcomeMessageEnable)
+            {
+                player.PrintToChat($" {Localizer["welcome"]}");
+            }
             return HookResult.Continue;
         }
         [GameEventHandler]
@@ -301,12 +304,12 @@ namespace VIP
                     if (Config.Messages.AllowCenterMessages)
                     {
                         AddTimer(2.0f, () =>
-                        player.PrintToCenterHtml($" {Config.TranslationClass.Autoguns}")
+                        player.PrintToCenterHtml($" {Localizer["AutoGun"]}")
                         );
                     }
                     if (!Config.Messages.AllowCenterMessages)
                     {
-                        player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Autoguns}");
+                        player.PrintToChat($" {Config.Prefix} {Localizer["AutoGun"]}");
                     }
                 }
                 if (LastUsed[client] == 1)
@@ -315,7 +318,7 @@ namespace VIP
                     {
                         player.GiveNamedItem("weapon_ak47");
                     }
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.WeaponAK}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAK"]}");
                     Used[client] = 1;
                 }
                 else if (LastUsed[client] == 2)
@@ -348,7 +351,7 @@ namespace VIP
                     {
                         player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_4}");
                     }
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack1}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
                     Used[client] = 1;
                 }
                 else if (LastUsed[client] == 3)
@@ -379,7 +382,7 @@ namespace VIP
                     {
                         player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_4}");
                     }
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack2}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["Package_two"]}");
                     Used[client] = 1;
                 }
                 else if (LastUsed[client] == 10)
@@ -410,7 +413,7 @@ namespace VIP
                     {
                         player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_4}");
                     }
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack3}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["Package_three"]}");
                     Used[client] = 1;
                 }
                 else if (LastUsed[client] == 4)
@@ -419,7 +422,7 @@ namespace VIP
                     {
                         player.GiveNamedItem("weapon_m4a1");
                     }
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.WeaponM4A1}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1"]}");
                     Used[client] = 1;
                 }
                 else if (LastUsed[client] == 5)
@@ -428,7 +431,7 @@ namespace VIP
                     {
                         player.GiveNamedItem("weapon_m4a1_silencer");
                     }
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.WeaponM4A1S}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1S"]}");
                     Used[client] = 1;
                 }
                 else if (LastUsed[client] == 6)
@@ -437,7 +440,7 @@ namespace VIP
                     {
                         player.GiveNamedItem("weapon_awp");
                     }
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.WeaponAWP}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAWP"]}");
                     Used[client] = 1;
                 }
                 //player.PrintToChat($"{Config.Prefix} You can use /ak for give AK47 or /m4 for give M4A1");
@@ -547,21 +550,23 @@ namespace VIP
                     {
                         if (Config.AllowKillMessages)
                         {
-                            Server.PrintToChatAll($" {Config.Prefix} Player {ChatColors.Lime}{player.PlayerName}{ChatColors.Default} is killed by {ChatColors.Lime}{attacker.PlayerName}{ChatColors.Default}.");
+                        Server.PrintToChatAll($" {Config.Prefix} {Localizer["KillInfo", player.PlayerName, attacker.PlayerName]}");
                         }
                     }
                     if (Config.GiveMoneyAfterKill)
                     {
                         var AttackerMoneys = MoneyValueAttacker.Account;
                         MoneyValueAttacker.Account = AttackerMoneys + Config.RewardsClass.KillMoney;
-                        attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillMoney} ${ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
+                        //attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillMoney} ${ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
+                        attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillMoney, player.PlayerName]}");
+
                     }
-                    if (Config.GiveHPAfterKill)
+                if (Config.GiveHPAfterKill)
                     {
                         var health_attacker = attacker.PlayerPawn.Value.Health;
                         @event.Attacker.PlayerPawn.Value.Health = @event.Attacker.PlayerPawn.Value.Health + Config.RewardsClass.KillHP;
                         Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
-                        attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillHP} HP{ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
+                        attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player.PlayerName]}");
                     }
 
             }
@@ -582,6 +587,13 @@ namespace VIP
             if (IsVIP[client] == 0)
             {
                 return HookResult.Continue;
+            }
+            if (Config.EnableShowDamage)
+            {
+                if (@event.Hitgroup != 0)
+                {
+                    ShowDamage(attacker, @event.DmgHealth, @event.DmgArmor, player.PlayerName);
+                }
             }
             if (!Config.EnableFalldamage)
             {
@@ -608,7 +620,7 @@ namespace VIP
                         @event.Userid.PlayerPawn.Value.Health = @event.Userid.PlayerPawn.Value.Health += @event.DmgHealth;
                         if (@event.Attacker.IsValid)
                         {
-                            attacker.PrintToChat($" {Config.Prefix} You canno't hit {ChatColors.Lime}VIP {ChatColors.Default}player with Knife!");
+                            attacker.PrintToChat($" {Config.Prefix} {Localizer["PlayerISVIP"]}");
                         }
                     }
                     else
