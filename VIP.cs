@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.3.9";
+    public override string ModuleVersion => "V. 1.4.0";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -60,6 +60,11 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     private static readonly int?[] RespawnUsed = new int?[64];
     private static readonly int?[] HaveDoubble = new int?[64];
     private static readonly int?[] HaveReservation = new int?[64];
+
+    private static readonly bool?[] allowedHit = new bool?[64];
+    private static readonly int?[] damage = new int?[64];
+    private static readonly int?[] armor = new int?[64];
+    private static readonly string?[] damaged_player = new string?[64];
 
     private static readonly int[] J = new int[Server.MaxPlayers];
     private static readonly PlayerFlags[] LF = new PlayerFlags[Server.MaxPlayers];
@@ -78,6 +83,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public string SitePlant;
     public CounterStrikeSharp.API.Modules.Timers.Timer? timer_ex;
     public CounterStrikeSharp.API.Modules.Timers.Timer? timer_twenty;
+    public CounterStrikeSharp.API.Modules.Timers.Timer? timer_hitshow;
 
     public void OnConfigParsed(ConfigVIP config)
     {
@@ -157,6 +163,12 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 if (IsVIP[client.Index] == 0)
                     return;
                 OnTick(client);
+                if (allowedHit[client.Index] == true)
+                {
+                    client.PrintToCenterHtml(
+                        $"<center><font class='fontSize-l' color='gold'>{damaged_player[client.Index]}</font></center><br>" +
+                        $"<font color='green'>Take HP :</font> <font class='fontSize-m' color='red'>-{damage[client.Index]} (AR: -{armor[client.Index]})</font>");
+                }
                 if (!Config.Bombinfo)
                     return;
                 if (Bomb)
@@ -378,7 +390,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             var client = player.Index;
             IsVIP[client] = 1;
             HaveGroup[client] = result.Get<int>(0, "group");
-            if(Config.CommandOnGroup.ReservedSlots > get_vip_group(player))
+            if (Config.CommandOnGroup.ReservedSlots > get_vip_group(player))
             {
                 HaveReservation[client] = 1;
             }
@@ -386,17 +398,14 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             {
                 HaveReservation[client] = 0;
             }
-            player.Clan = get_name_group(player); 
+            player.Clan = get_name_group(player);
 
             var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "end")) - DateTimeOffset.UtcNow;
             var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var timeRemainingFormatted =
             $"{timeRemaining.Days}d {timeRemaining.Hours}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
             WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] have VIP. Remaining time of VIP [{timeRemainingFormatted}]", ConsoleColor.Green);
-            if (Config.WelcomeMessageEnable)
-            {
-                player.PrintToChat($" {Config.WelcomeMessage}");
-            }
+
             // Checking if is still time to VIP
             if (result.Get<int>(0, "end") != 0)
             {
@@ -428,16 +437,16 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         {
             if (weapon is { IsValid: true, Value.IsValid: true })
             {
-                if(!weapon.Value.DesignerName.Contains("bayonet") || !weapon.Value.DesignerName.Contains("knife"))
-                { continue; } 
-                    weapon.Value.Remove();
-                    Server.PrintToConsole($"{player.PlayerName} remove weapon {weapon.Value.DesignerName}");
+                if (!weapon.Value.DesignerName.Contains("bayonet") || !weapon.Value.DesignerName.Contains("knife"))
+                { continue; }
+                weapon.Value.Remove();
+                Server.PrintToConsole($"{player.PlayerName} remove weapon {weapon.Value.DesignerName}");
             }
         }
     }
     private bool CheckIsHaveWeapon(string weapon_name, CCSPlayerController? pc)
     {
-        if(pc == null || !pc.IsValid)
+        if (pc == null || !pc.IsValid)
             return false;
 
         var pawn = pc.PlayerPawn.Value.WeaponServices!;
@@ -495,7 +504,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
 
         return message;
     }
-    
+
     private void Give_Values(CCSPlayerController controller)
     {
         if (controller == null || !controller.IsValid || controller.IsBot)
