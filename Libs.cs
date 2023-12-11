@@ -84,6 +84,33 @@ namespace VIP
                 WriteColor($"VIP Plugin - [*ERROR - GiveItem *] player {player.PlayerName} is not valid or alive!", ConsoleColor.Red);
             }
         }
+                public void ShowDamage(CCSPlayerController? player, int hp, int ar, string damaged)
+        {
+            if (player == null)
+                return;
+            if (!player.IsValid)
+                return;
+            if (!player.PawnIsAlive)
+                return;
+            var client = player.Index;
+
+            allowedHit[client] = true;
+            damage[client] = hp;
+            armor[client] = ar;
+            damaged_player[client] = damaged;
+            AddTimer(2.0f, () => { HideDamage(player); });
+
+            return;
+        }
+        public void HideDamage(CCSPlayerController? player)
+        {
+            if (player == null)
+                return;
+            if (!player.IsValid)
+                return;
+
+            allowedHit[player.Index] = false;
+        }
         static public int get_vip_group(CCSPlayerController? player)
         {
             if(player == null)
