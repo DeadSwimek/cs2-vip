@@ -58,6 +58,8 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("DisablePackWeaponAfter20Sec")] public bool DisablePackWeaponAfter20Sec { get; set; } = false;
     [JsonPropertyName("MinimumRoundToUseCommands")] public int MinimumRoundToUseCommands { get; set; } = 3;
     [JsonPropertyName("DefusedReward")] public bool DefusedReward { get; set; } = true;
+    [JsonPropertyName("EnableShowDamage")] public bool EnableShowDamage { get; set; } = true;
+    
 
 
     [JsonPropertyName("WelcomeMessage")] public string WelcomeMessage { get; set; } = $"Welcom on server you are BEST VIP!";
@@ -67,7 +69,6 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("DBHost")] public string DBHost { get; set; } = "localhost";
     [JsonPropertyName("DBPort")] public int DBPort { get; set; } = 3306;
 
-    [JsonPropertyName("translation")] public TranslationClass TranslationClass { get; set; } = new TranslationClass();
     [JsonPropertyName("money")] public RewardsClass RewardsClass { get; set; } = new RewardsClass();
 
     [JsonPropertyName("pack1")] public Pack1Settings Pack1Settings { get; set; } = new Pack1Settings();
@@ -154,25 +155,5 @@ public class Pack3Settings
     [JsonPropertyName("Acceroies_3")] public string Acceroies_3 { get; set; } = "smokegrenade";
     [JsonPropertyName("Acceroies_4")] public string Acceroies_4 { get; set; } = "hegrenade";
 
-
-}
-public class TranslationClass
-{
-    [JsonPropertyName("OnceUse")] public string OnceUse { get; set; } = $" This command you can use {ChatColors.Red}only once{ChatColors.Default} on round!";
-    [JsonPropertyName("MustBeVIP")] public string MustBeVIP { get; set; } = $" This command are allowed only for {ChatColors.Lime}VIP{ChatColors.Default}!";
-    [JsonPropertyName("MustBeThird")] public string MustBeThird { get; set; } = $" Must be a {ChatColors.Red}Third{ChatColors.Default} round, to use this command!";
-
-    [JsonPropertyName("Pack1")] public string Pack1 { get; set; } = $" You got a Packages {ChatColors.Lime}number one{ChatColors.Default}.";
-    [JsonPropertyName("Pack2")] public string Pack2 { get; set; } = $" You got a Packages {ChatColors.Lime}number two{ChatColors.Default}.";
-    [JsonPropertyName("Pack3")] public string Pack3 { get; set; } = $" You got a Packages {ChatColors.Lime}number three{ChatColors.Default}.";
-
-
-    [JsonPropertyName("WeaponAK")] public string WeaponAK { get; set; } = $" You got a weapon {ChatColors.Lime}AK-47{ChatColors.Default}.";
-    [JsonPropertyName("WeaponM4A1")] public string WeaponM4A1 { get; set; } = $" You got a weapon {ChatColors.Lime}M4A1{ChatColors.Default}.";
-    [JsonPropertyName("WeaponM4A1S")] public string WeaponM4A1S { get; set; } = $" You got a weapon {ChatColors.Lime}M4A1-S{ChatColors.Default}.";
-    [JsonPropertyName("WeaponAWP")] public string WeaponAWP { get; set; } = $" You got a weapon {ChatColors.Lime}AWP{ChatColors.Default}.";
-    [JsonPropertyName("Autoguns")] public string Autoguns { get; set; } = $" <font color:'green'>If you wanna turn off automaticall weapon type</font><font color:'red'> /guns_off</font>";
-    [JsonPropertyName("MustFirst20Sec")] public string MustFirst20Sec { get; set; } = $" You can use this command only in {ChatColors.Red}first 20 Seconds{ChatColors.Default}.";
-    [JsonPropertyName("MustBeAlive")] public string MustBeAlive { get; set; } = $" You can use this command only when {ChatColors.Red}you are alive{ChatColors.Default}!";
 
 }
