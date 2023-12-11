@@ -111,27 +111,11 @@
   "Bombinfo": true, // If true, show for VIPs players detonation time
   "DisablePackWeaponAfter20Sec": false, // If false, VIPs players can take anytime guns/packs
   "MinimumRoundToUseCommands": 3, // Minimum round to use VIPs commands
-  "WelcomeMessage": "Welcom on server you are BEST VIP!", 
   "DBDatabase": "database",
   "DBUser": "user",
   "DBPassword": "password",
   "DBHost": "localhost",
   "DBPort": 3306,
-  "translation": {
-    "OnceUse": " This command you can use \u0007only once\u0001 on round!",
-    "MustBeVIP": " This command are allowed only for \u0006VIP\u0001!",
-    "MustBeThird": " Must be a \u0007Third\u0001 round, to use this command!",
-    "Pack1": " You got a Packages number one.",
-    "Pack2": " You got a Packages number two.",
-    "Pack3": " You got a Packages number three.",
-    "WeaponAK": " You got a weapon AK-47.",
-    "WeaponM4A1": " You got a weapon M4A1.",
-    "WeaponM4A1S": " You got a weapon M4A1-S.",
-    "WeaponAWP": " You got a weapon AWP.",
-    "Autoguns": " \u003Cfont color:\u0027green\u0027\u003EIf you wanna turn off automaticall weapon type\u003C/font\u003E\u003Cfont color:\u0027red\u0027\u003E /guns_off\u003C/font\u003E",
-    "MustFirst20Sec": " You can use this command only in \u0007first 20 Seconds\u0001.",
-    "MustBeAlive": " You can use this command only when \u0007you are alive\u0001!"
-  },
   "money": {
     "FirstSpawnMoney": 1200,
     "SpawnArmor": 100,
