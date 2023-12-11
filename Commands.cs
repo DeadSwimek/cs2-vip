@@ -144,10 +144,10 @@ namespace VIP
                 .Add("`group`", $"{group_int}");
                 MySql.Table("deadswim_users").Insert(_Tvalues);
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
-                player.PrintToChat($" {Config.Prefix} You activated the {ChatColors.Lime}VIP{ChatColors.Default}.");
+                player.PrintToChat($" {Config.Prefix} {Localizer["Activator"]}");
                 if (result.Get<int>(0, "end") == 0)
                 {
-                    player.PrintToChat($" {Config.Prefix} Your VIP is {ChatColors.Lime}Forever{ChatColors.Default}.");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["ForeverVIP"]}");
                 }
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 LoadPlayerData(player);
@@ -156,8 +156,8 @@ namespace VIP
             else
             {
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
-                player.PrintToChat($" {Config.Prefix} This {ChatColors.Red}Token{ChatColors.Default} dosent exist.");
-                player.PrintToChat($" {Config.Prefix} You type this {ChatColors.Red}{token}{ChatColors.Default}.");
+                player.PrintToChat($" {Config.Prefix} {Localizer["TokenNotExist"]}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["TokenTyped", token]}");
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
             }
         }
@@ -376,38 +376,38 @@ namespace VIP
                 }
                 if (Config.CommandOnGroup.Respawn >= get_vip_group(player))
                 {
-                    player.PrintToChat($" {Config.Prefix} You must have biggest {ChatColors.Lime}VIP{ChatColors.Default} group.");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["LowGroup"]}");
                     return;
                 }
                 if (Round < Config.MinimumRoundToUseCommands)
                 {
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["MustThierd", Config.MinimumRoundToUseCommands]}");
                     return;
                 }
                 if (player.PawnIsAlive)
                 {
-                    player.PrintToChat($" {Config.Prefix} Must be {ChatColors.Red}death {ChatColors.Default}.");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["MustDeath"]}");
                     return;
                 }
                 if (RespawnUsed[client] == 1)
                 {
                     if (Config.Messages.AllowCenterMessages)
                     {
-                        player.PrintToCenterHtml($" <font color='red'>You canno't use /respawn at this time</font>");
+                        player.PrintToCenterHtml($" <font color='red'>{Localizer["RespawnUse"]}</font>");
                     }
                     else
                     {
-                        player.PrintToChat($" {Config.Prefix} You canno't use {ChatColors.Lime}/respawn{ChatColors.Red} at this time!");
+                        player.PrintToChat($" {Config.Prefix} {Localizer["RespawnUse"]}");
                     }
                     return;
                 }
                 if (Config.Messages.AllowCenterMessages)
                 {
-                    player.PrintToCenterHtml($" <font color='green'>You used /respawn</font>");
+                    player.PrintToCenterHtml($" <font color='green'>{Localizer["RespawnUsed"]}</font>");
                 }
                 else
                 {
-                    player.PrintToChat($" {Config.Prefix} You used {ChatColors.Lime}/respawn");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["RespawnUsed"]}");
                 }
 
                 
@@ -437,10 +437,10 @@ namespace VIP
                 LastUsed[client] = 0;
                 if (Config.Messages.AllowCenterMessages)
                 {
-                    player.PrintToCenter($"You turn off automatically weapon..");
+                    player.PrintToCenter($"{Localizer["TurnedOff"]}");
                 }else
                 {
-                    player.PrintToChat($" {Config.Prefix} You turn off automatically weapons..");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["TurnedOff"]}");
                 }
             }
         }
@@ -465,17 +465,17 @@ namespace VIP
             }
             if (!player.PawnIsAlive)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeAlive}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["MustBeAlive"]}");
                 return;
             }
             if (IsVIP[client] == 0)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["MustBeVIP"]}");
                 return;
             }
             if (Config.CommandOnGroup.Weapons > get_vip_group(player))
             {
-                player.PrintToChat($" {Config.Prefix} You must have VIP group {get_name_group(player)}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["LowGroup"]}");
                 return;
             }
             if (Disabled20Sec)
@@ -486,12 +486,12 @@ namespace VIP
 
             if (Round < Config.MinimumRoundToUseCommands)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["MustThierd", Config.MinimumRoundToUseCommands]}");
                 return;
             }
             if (Used[client] == 1)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.OnceUse}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["OnceUse"]}");
                 return;
             }
             if (Convert.ToInt32(PackagesID) == 1)
@@ -502,7 +502,7 @@ namespace VIP
                 {
                     player.GiveNamedItem("weapon_ak47");
                 }
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.WeaponAK}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAK"]}");
             }
             else if (Convert.ToInt32(PackagesID) == 2)
             {
@@ -512,7 +512,7 @@ namespace VIP
                 {
                     player.GiveNamedItem("weapon_m4a1");
                 }
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.WeaponM4A1}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1"]}");
             }
             else if (Convert.ToInt32(PackagesID) == 3)
             {
@@ -522,7 +522,7 @@ namespace VIP
                 {
                     player.GiveNamedItem("weapon_m4a1_silencer");
                 }
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.WeaponM4A1S}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1S"]}");
             }
             else if (Convert.ToInt32(PackagesID) == 4)
             {
@@ -563,17 +563,17 @@ namespace VIP
             }
             if (!player.PawnIsAlive)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeAlive}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["MustBeAlive"]}");
                 return;
             }
             if (IsVIP[client] == 0)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["MustBeVIP"]}");
                 return;
             }
             if (Config.CommandOnGroup.Pack > get_vip_group(player))
             {
-                player.PrintToChat($" {Config.Prefix} You must have VIP group {get_name_group(player)}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["LowGroup"]}");
                 return;
             }
             if (Disabled20Sec)
@@ -584,19 +584,19 @@ namespace VIP
 
             if (Round < Config.MinimumRoundToUseCommands)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeThird}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["MustThierd", Config.MinimumRoundToUseCommands]}");
                 return;
             }
             if (Used[client] == 1)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.OnceUse}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["OnceUse"]}");
                 return;
             }
             if (Convert.ToInt32(PackagesID) == 1)
             {
                 Used[client] = 1;
                 LastUsed[client] = 2;
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack1}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
                 // Weapons
                 if (CheckIsHaveWeapon($"{Config.Pack1Settings.Pistol}", player) == false)
                 {
@@ -629,7 +629,7 @@ namespace VIP
             {
                 Used[client] = 1;
                 LastUsed[client] = 3;
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack2}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["Package_two"]}");
                 // Weapons
                 if (CheckIsHaveWeapon($"{Config.Pack2Settings.Pistol}", player) == false)
                 {
@@ -664,7 +664,7 @@ namespace VIP
                 {
                     Used[client] = 1;
                     LastUsed[client] = 10;
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.Pack3}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["Package_three"]}");
                     // Weapons
                     if (CheckIsHaveWeapon($"{Config.Pack3Settings.Pistol}", player) == false)
                     {
