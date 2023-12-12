@@ -371,7 +371,7 @@ namespace VIP
             {
                 if (IsVIP[client] == 0)
                 {
-                    player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                    player.PrintToChat($" {Config.Prefix} {Localizer["MustBeVIP"]}");
                     return;
                 }
                 if (Config.CommandOnGroup.Respawn >= get_vip_group(player))
@@ -427,7 +427,7 @@ namespace VIP
             }
             if (IsVIP[client] == 0)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustBeVIP}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["MustBeVIP"]}");
                 return;
             }
 
@@ -480,7 +480,7 @@ namespace VIP
             }
             if (Disabled20Sec)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustFirst20Sec}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["Must20Sec"]}");
                 return;
             }
 
@@ -532,7 +532,7 @@ namespace VIP
                 {
                     player.GiveNamedItem("weapon_awp");
                 }
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.WeaponAWP}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAWP"]}");
             }
             else
             {
@@ -578,7 +578,7 @@ namespace VIP
             }
             if (Disabled20Sec)
             {
-                player.PrintToChat($" {Config.Prefix} {Config.TranslationClass.MustFirst20Sec}");
+                player.PrintToChat($" {Config.Prefix} {Localizer["Must20Sec"]}");
                 return;
             }
 
