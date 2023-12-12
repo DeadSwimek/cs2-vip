@@ -34,7 +34,7 @@ using System.Reflection.Metadata;
 using System.Net;
 
 namespace VIP;
-[MinimumApiVersion(100)]
+[MinimumApiVersion(120)]
 
 public static class GetUnixTime
 {
@@ -50,8 +50,8 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
 {
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
-    public override string ModuleDescription => "Simple VIP system based on database.";
-    public override string ModuleVersion => "V. 1.4.0";
+    public override string ModuleDescription => "Advanced VIP system based on database.";
+    public override string ModuleVersion => "V. 1.4.1";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -165,9 +165,11 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 OnTick(client);
                 if (allowedHit[client.Index] == true)
                 {
+                    var clienti = client.Index;
                     client.PrintToCenterHtml(
-                        $"<center><font class='fontSize-l' color='gold'>{damaged_player[client.Index]}</font></center><br>" +
-                        $"<font color='green'>Take HP :</font> <font class='fontSize-m' color='red'>-{damage[client.Index]} (AR: -{armor[client.Index]})</font>");
+                        $"<font color='green'>Player :</font> <font color='gold'>{damaged_player[clienti]}</font><br>" +
+                        $"<font color='green'>Take HP :</font> <font color='red'>-{damage[clienti]}</font><br>" +
+                        $"<font color='green'>Take Armor :</font> <font color='red'>-{armor[clienti]}</font>");
                 }
                 if (!Config.Bombinfo)
                     return;
