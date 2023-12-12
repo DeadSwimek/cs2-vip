@@ -84,7 +84,7 @@ namespace VIP
                 WriteColor($"VIP Plugin - [*ERROR - GiveItem *] player {player.PlayerName} is not valid or alive!", ConsoleColor.Red);
             }
         }
-                public void ShowDamage(CCSPlayerController? player, int hp, int ar, string damaged)
+        public void ShowDamage(CCSPlayerController? player, int hp, int ar, string damaged)
         {
             if (player == null)
                 return;
@@ -99,7 +99,6 @@ namespace VIP
             armor[client] = ar;
             damaged_player[client] = damaged;
             AddTimer(2.0f, () => { HideDamage(player); });
-
             return;
         }
         public void HideDamage(CCSPlayerController? player)
