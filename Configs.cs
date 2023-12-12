@@ -121,7 +121,7 @@ public class CommandOnGroup
     [JsonPropertyName("BombInfo")] public int BombInfo { get; set; } = 0;
     [JsonPropertyName("Glow")] public int Glow { get; set; } = 0;
     [JsonPropertyName("ReservedSlots")] public int ReservedSlots { get; set; } = 0;
-
+    [JsonPropertyName("Flash")] public int Flash { get; set; } = 0;
 }
 public class Pack1Settings
 {
