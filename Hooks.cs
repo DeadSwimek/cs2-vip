@@ -572,6 +572,30 @@ namespace VIP
             }
             return HookResult.Continue;
         }
+        [GameEventHandler(HookMode.Pre)]
+        public HookResult OnPlayerBlind(EventPlayerBlind @event, GameEventInfo info)
+        {
+
+            var player = @event.Userid;
+            if (!player.IsValid || !player.PawnIsAlive || player == null)
+                return HookResult.Continue;
+            var attacker = @event.Attacker;
+            if (!attacker.IsValid || !attacker.PawnIsAlive || attacker == null)
+                return HookResult.Continue;
+            var client = player.Index;
+            var player_team = player.TeamNum;
+            var attacker_team = attacker.TeamNum;
+            if (Config.CommandOnGroup.Flash >= get_vip_group(player))
+                return HookResult.Continue;
+            if(player_team == attacker_team)
+            {
+                @event.BlindDuration = 0.1f;
+                player.PlayerPawn.Value.FlashMaxAlpha = 0.5f;
+                return HookResult.Changed;
+            }
+            return HookResult.Continue;
+
+        }
         [GameEventHandler(HookMode.Post)]
 
         public HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
