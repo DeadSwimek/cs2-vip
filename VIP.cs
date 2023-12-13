@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Advanced VIP system based on database.";
-    public override string ModuleVersion => "V. 1.4.2";
+    public override string ModuleVersion => "V. 1.4.3";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -220,7 +220,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                         Bomb = false;
                     }
                 }
-                //TryBhop(client); Still finding way to found autobhop.
+                TryBhop(client);
             }
         });
 
@@ -251,25 +251,15 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     {
         if (!controller.PawnIsAlive)
             return;
-        var pawn = controller.Pawn.Value;
-        var flags = (PlayerFlags)pawn.Flags;
-        var client = controller.Index;
         var buttons = controller.Buttons;
-
-        if (IsVIP[client] == 0)
+        var client = controller.Index;
+        var PP = controller.PlayerPawn.Value;
+        var flags = (PlayerFlags)PP!.Flags;
+        if (IsVIP[client] != 1)
             return;
 
-        //LF[client] = flags;
-        //LB[client] = buttons;
-
-        if (buttons == PlayerButtons.Jump && (flags & PlayerFlags.FL_ONGROUND) != 0)
-        {
-
-            Server.PrintToConsole($"Client {controller.PlayerName} : {PlayerButtons.Jump} {flags & PlayerFlags.FL_ONGROUND}");
-            Server.PrintToConsole($"Client {controller.PlayerName} : Button : {buttons} / {buttons}");
-            //LB[client] = PlayerButtons.Jump;
-            //buttons = PlayerButtons.Jump;
-        }
+        if ((flags & PlayerFlags.FL_ONGROUND) != 0 && (buttons & PlayerButtons.Jump) != 0)
+            PP!.AbsVelocity.Z = 300;
     }
     public void Authorization_Client(CCSPlayerController player)
     {
