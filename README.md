@@ -30,6 +30,7 @@
 - Configurated packages.
 - 3 VIPs groups.
 - AntiTeam flash
+- AutoBHOP
 
 
 # Donators
