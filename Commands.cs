@@ -597,32 +597,12 @@ namespace VIP
                 Used[client] = 1;
                 LastUsed[client] = 2;
                 player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
-                // Weapons
-                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Pistol}", player) == false)
+                foreach(var weapon in Config.Pack1Settings.Weapons)
                 {
-                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Pistol}");
-                }
-                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Gun}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Gun}");
-                }
-                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies}");
-
-                }
-                // Granades
-                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_2}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_2}");
-                }
-                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_3}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_3}");
-                }
-                if (CheckIsHaveWeapon($"{Config.Pack1Settings.Acceroies_4}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack1Settings.Acceroies_4}");
+                    if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{weapon}");
+                    }
                 }
             }
             else if (Convert.ToInt32(PackagesID) == 2)
@@ -630,32 +610,12 @@ namespace VIP
                 Used[client] = 1;
                 LastUsed[client] = 3;
                 player.PrintToChat($" {Config.Prefix} {Localizer["Package_two"]}");
-                // Weapons
-                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Pistol}", player) == false)
+                foreach (var weapon in Config.Pack2Settings.Weapons)
                 {
-                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Pistol}");
-                }
-                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Gun}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Gun}");
-                }
-                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies}");
-
-                }
-                // Granades
-                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_2}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_2}");
-                }
-                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_3}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_3}");
-                }
-                if (CheckIsHaveWeapon($"{Config.Pack2Settings.Acceroies_4}", player) == false)
-                {
-                    player.GiveNamedItem($"weapon_{Config.Pack2Settings.Acceroies_4}");
+                    if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                    {
+                        player.GiveNamedItem($"weapon_{weapon}");
+                    }
                 }
             }
             else if (Convert.ToInt32(PackagesID) == 3)
@@ -665,32 +625,12 @@ namespace VIP
                     Used[client] = 1;
                     LastUsed[client] = 10;
                     player.PrintToChat($" {Config.Prefix} {Localizer["Package_three"]}");
-                    // Weapons
-                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Pistol}", player) == false)
+                    foreach (var weapon in Config.Pack3Settings.Weapons)
                     {
-                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Pistol}");
-                    }
-                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Gun}", player) == false)
-                    {
-                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Gun}");
-                    }
-                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies}", player) == false)
-                    {
-                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies}");
-
-                    }
-                    // Granades
-                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_2}", player) == false)
-                    {
-                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_2}");
-                    }
-                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_3}", player) == false)
-                    {
-                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_3}");
-                    }
-                    if (CheckIsHaveWeapon($"{Config.Pack3Settings.Acceroies_4}", player) == false)
-                    {
-                        player.GiveNamedItem($"weapon_{Config.Pack3Settings.Acceroies_4}");
+                        if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                        {
+                            player.GiveNamedItem($"weapon_{weapon}");
+                        }
                     }
                 }
             }
