@@ -123,37 +123,20 @@ public class CommandOnGroup
     [JsonPropertyName("ReservedSlots")] public int ReservedSlots { get; set; } = 0;
     [JsonPropertyName("Flash")] public int Flash { get; set; } = 0;
 }
+
+
 public class Pack1Settings
 {
-    [JsonPropertyName("Gun")] public string Gun { get; set; } = "ak47";
-    [JsonPropertyName("Pistol")] public string Pistol { get; set; } = "deagle";
-    [JsonPropertyName("Acceroies")] public string Acceroies { get; set; } = "healthshot";
-    [JsonPropertyName("Acceroies_2")] public string Acceroies_2 { get; set; } = "molotov";
-    [JsonPropertyName("Acceroies_3")] public string Acceroies_3 { get; set; } = "smokegrenade";
-    [JsonPropertyName("Acceroies_4")] public string Acceroies_4 { get; set; } = "hegrenade";
-
+    [JsonPropertyName("Weapons")] public List<string?> Weapons { get; set; } = new List<string?> { "ak47", "deagle", "healthshot", "molotov", "smokegrenade", "hegrenade" };
 }
 public class Pack2Settings
 {
-    [JsonPropertyName("Gun")] public string Gun { get; set; } = "m4a1";
-    [JsonPropertyName("Pistol")] public string Pistol { get; set; } = "deagle";
-    [JsonPropertyName("Acceroies")] public string Acceroies { get; set; } = "healthshot";
-    [JsonPropertyName("Acceroies_2")] public string Acceroies_2 { get; set; } = "molotov";
-    [JsonPropertyName("Acceroies_3")] public string Acceroies_3 { get; set; } = "smokegrenade";
-    [JsonPropertyName("Acceroies_4")] public string Acceroies_4 { get; set; } = "hegrenade";
-
-
+    [JsonPropertyName("Weapons")] public List<string?> Weapons { get; set; } = new List<string?> { "m4a1", "deagle", "healthshot", "molotov", "smokegrenade", "hegrenade" };
 }
 
 public class Pack3Settings
 {
     [JsonPropertyName("Allowed")] public bool Allowed { get; set; } = false;
-    [JsonPropertyName("Gun")] public string Gun { get; set; } = "m4a1";
-    [JsonPropertyName("Pistol")] public string Pistol { get; set; } = "deagle";
-    [JsonPropertyName("Acceroies")] public string Acceroies { get; set; } = "healthshot";
-    [JsonPropertyName("Acceroies_2")] public string Acceroies_2 { get; set; } = "molotov";
-    [JsonPropertyName("Acceroies_3")] public string Acceroies_3 { get; set; } = "smokegrenade";
-    [JsonPropertyName("Acceroies_4")] public string Acceroies_4 { get; set; } = "hegrenade";
-
+    [JsonPropertyName("Weapons")] public List<string?> Weapons { get; set; } = new List<string?> { "m4a1", "deagle", "healthshot", "molotov", "smokegrenade", "hegrenade" };
 
 }
