@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Advanced VIP system based on database.";
-    public override string ModuleVersion => "V. 1.4.3";
+    public override string ModuleVersion => "V. 1.4.4";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -60,6 +60,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     private static readonly int?[] RespawnUsed = new int?[64];
     private static readonly int?[] HaveDoubble = new int?[64];
     private static readonly int?[] HaveReservation = new int?[64];
+    private static readonly int?[] allow_bombinfo = new int?[64];
 
     private static readonly bool?[] allowedHit = new bool?[64];
     private static readonly int?[] damage = new int?[64];
@@ -163,6 +164,8 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 if (IsVIP[client.Index] == 0)
                     return;
                 OnTick(client);
+                TryBhop(client);
+
                 if (allowedHit[client.Index] == true)
                 {
                     var clienti = client.Index;
@@ -175,52 +178,42 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                     return;
                 if (Bomb)
                 {
-                    if (bombtime >= 25)
+                    if (allow_bombinfo[client.Index] == 1)
                     {
-                        if (IsVIP[client.Index] == 1 && Config.CommandOnGroup.BombInfo > get_vip_group(client))
+                        if (bombtime >= 25)
                         {
                             client.PrintToCenterHtml(
                             $"<font color='gray'>Bomb detonating</font> <font class='fontSize-l' color='green'>{bombtime}</font><br>" +
                             $"<font color='gray'>Planted on site</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>"
                             );
                         }
-                    }
-                    else if (bombtime >= 10)
-                    {
-                        if (IsVIP[client.Index] == 1 && Config.CommandOnGroup.BombInfo > get_vip_group(client))
+                        else if (bombtime >= 10)
                         {
                             client.PrintToCenterHtml(
                             $"<font color='green'>Bomb detonating</font> <font class='fontSize-l' color='orange'>{bombtime}</font><br>" +
                             $"<font color='orange'>Timer is</font> <font color='white'>smaller</font><br>" +
                             $"<font color='gray'>Planted on site</font> <font class='fontSize-m' color='orange'>[{SitePlant}]</font>");
                         }
-                    }
-                    else if (bombtime >= 5)
-                    {
-                        if (IsVIP[client.Index] == 1 && Config.CommandOnGroup.BombInfo > get_vip_group(client))
+                        else if (bombtime >= 5)
                         {
                             client.PrintToCenterHtml(
                             $"<font color='gold'>Bomb detonating</font> <font class='fontSize-l' color='red'>{bombtime}</font><br>" +
                             $"<font color='white'>Last change</font> <font color='orange'>TO DEFUSE!</font><br>" +
                             $"<font color='gold'>Planted on site</font> <font class='fontSize-m' color='red'>[{SitePlant}]</font>");
                         }
-                    }
-                    else if (bombtime >= 0)
-                    {
-                        if (IsVIP[client.Index] == 1 && Config.CommandOnGroup.BombInfo > get_vip_group(client))
+                        else if (bombtime >= 0)
                         {
                             client.PrintToCenterHtml(
                             $"<font color='gold'>Bomb detonating</font> <font class='fontSize-l' color='red'>{bombtime}</font><br>" +
                             $"<font color='white'>All on site is</font> <font color='orange'>DEAD!</font><br>" +
                             $"<font color='gold'>Planted on site</font> <font class='fontSize-m' color='red'>[{SitePlant}]</font>");
                         }
-                    }
-                    else if (bombtime == 0)
-                    {
-                        Bomb = false;
+                        else if (bombtime == 0)
+                        {
+                            Bomb = false;
+                        }
                     }
                 }
-                TryBhop(client);
             }
         });
 
@@ -432,6 +425,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             HaveReservation[client] = 0;
             IsVIP[client] = 0;
             HaveGroup[client] = null;
+            allow_bombinfo[player.Index] = 0;
             WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] is not VIP.", ConsoleColor.Yellow);
         }
     }
