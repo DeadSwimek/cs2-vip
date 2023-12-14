@@ -113,6 +113,8 @@
   "Bombinfo": true, // If true, show for VIPs players detonation time
   "DisablePackWeaponAfter20Sec": false, // If false, VIPs players can take anytime guns/packs
   "MinimumRoundToUseCommands": 3, // Minimum round to use VIPs commands
+  "DefusedReward": true, // If true, VIPs player got rewards for defuse
+  "EnableShowDamage": true, // If true, VIPs players got center message with damage info and player name
   "DBDatabase": "database",
   "DBUser": "user",
   "DBPassword": "password",
