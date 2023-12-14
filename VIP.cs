@@ -264,7 +264,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         int connected = 0;
         foreach (var player_l in Utilities.GetPlayers().Where(player => player is { IsBot: false, IsValid: true }))
         {
-            connected++;
+            if (player_l.UserId != 65535)
+            {
+                connected++;
+            }
         }
         ConnectedPlayers = connected;
 
@@ -312,17 +315,20 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 {
                     foreach (var l_player in Utilities.GetPlayers())
                     {
-                        CCSPlayerController player_res = l_player;
-
-                        var el_player = player_res.Index;
-                        WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
-                        if (kicked == false)
+                        if (l_player.UserId != 65535)
                         {
-                            if (IsVIP[el_player] != 1)
+                            CCSPlayerController player_res = l_player;
+
+                            var el_player = player_res.Index;
+                            WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
+                            if (kicked == false)
                             {
-                                kicked = true;
-                                Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{player_res.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
-                                Server.ExecuteCommand($"kickid {player_res.UserId}");
+                                if (IsVIP[el_player] != 1)
+                                {
+                                    kicked = true;
+                                    Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{player_res.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
+                                    Server.ExecuteCommand($"kickid {player_res.UserId}");
+                                }
                             }
                         }
                     }
