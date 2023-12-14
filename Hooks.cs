@@ -485,6 +485,7 @@ namespace VIP
                 {
                     return HookResult.Continue;
                 }
+                allow_bombinfo[player.Index] = 1;
                 if (planted.IsBombSiteB)
                 {
                     SitePlant = "B";
