@@ -31,7 +31,13 @@ namespace VIP
 {
     public partial class VIP
     {
+        [ConsoleCommand("css_settings", "User settings")]
+        public void opensettings(CCSPlayerController? player, CommandInfo info)
+        {
+            if (IsVIP[player.Index] != 1) { return; }
 
+            settings_menu_open(player);
+        }
         [ConsoleCommand("css_addfakeplayer", "Add fake client for testing reservation slots")]
         public void addfakeplayer(CCSPlayerController? player, CommandInfo info)
         {
