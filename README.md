@@ -57,6 +57,10 @@
 
 `Usage: /respawn` Respawn a player.
 
+**css_settings**
+
+`Usage: /settings` Open menu with settings
+
 **css_vips**
 
 `Usage: /vips` Type you all online VIPs players.
@@ -87,6 +91,7 @@
 | `css_weapon`    | Database add     |
 | `css_respawn`    | Database add     |
 | `css_pack`  | Database add   |
+| `css_settings`  | Database add   |
 | `css_guns_off`  | NONE   |
 | `css_activator`  | NONE   |
 | `css_testvip`  | NONE   |
