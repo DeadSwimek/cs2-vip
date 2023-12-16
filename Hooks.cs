@@ -500,7 +500,7 @@ namespace VIP
                         var AttackerMoneys = MoneyValueAttacker.Account;
                         MoneyValueAttacker.Account = AttackerMoneys + Config.RewardsClass.KillMoney;
                         //attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillMoney} ${ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
-                        attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillMoney, player.PlayerName]}");
+                        attacker.PrintToChat($" {Config.Prefix} {Localizer["MoneyRewards", Config.RewardsClass.KillMoney, player.PlayerName]}");
 
                     }
                 if (Config.GiveHPAfterKill)
