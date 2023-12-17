@@ -68,6 +68,7 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("DBPassword")] public string DBPassword { get; set; } = "password";
     [JsonPropertyName("DBHost")] public string DBHost { get; set; } = "localhost";
     [JsonPropertyName("DBPort")] public int DBPort { get; set; } = 3306;
+    [JsonPropertyName("DBPrefix")] public string DBPrefix { get; set; } = "deadswim";
 
     [JsonPropertyName("money")] public RewardsClass RewardsClass { get; set; } = new RewardsClass();
 
