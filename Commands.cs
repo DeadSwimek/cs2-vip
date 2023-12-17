@@ -63,7 +63,7 @@ namespace VIP
             {
                 MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-                MySqlQueryResult result = MySql!.Table("deadswim_users_test_vip").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
+                MySqlQueryResult result = MySql!.Table($"{Config.DBPrefix}_users_test_vip").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
 
                 if (result.Rows == 0)
                 {
@@ -74,7 +74,7 @@ namespace VIP
                     .Add("steam_id", $"{player.SteamID}")
                     .Add("used", $"{timeofvip}")
                     .Add("`group`", $"0"); ;
-                    MySql.Table("deadswim_users_test_vip").Insert(_Tvalues);
+                    MySql.Table($"{Config.DBPrefix}_users_test_vip").Insert(_Tvalues);
 
                     var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
                     var timeRemainingFormatted =
@@ -84,7 +84,7 @@ namespace VIP
                     .Add("steam_id", $"{player.SteamID}")
                     .Add("end", $"{timeofvip}")
                     .Add("`group`", $"0");
-                    MySql.Table("deadswim_users").Insert(values);
+                    MySql.Table($"{Config.DBPrefix}_users").Insert(values);
                     var client = player.Index;
                     LoadPlayerData(player);
 
@@ -127,7 +127,7 @@ namespace VIP
 
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult result = MySql!.Table("deadswim_users_key_vip").Where(MySqlQueryCondition.New("token", "=", $"{token}")).Select();
+            MySqlQueryResult result = MySql!.Table($"{Config.DBPrefix}_users_key_vip").Where(MySqlQueryCondition.New("token", "=", $"{token}")).Select();
 
             if (result.Rows == 1)
             {
@@ -148,7 +148,7 @@ namespace VIP
                 .Add("steam_id", $"{player.SteamID}")
                 .Add("end", $"{timeofvip}")
                 .Add("`group`", $"{group_int}");
-                MySql.Table("deadswim_users").Insert(_Tvalues);
+                MySql.Table($"{Config.DBPrefix}_users").Insert(_Tvalues);
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 player.PrintToChat($" {Config.Prefix} {Localizer["Activator"]}");
                 if (result.Get<int>(0, "end") == 0)
@@ -157,7 +157,7 @@ namespace VIP
                 }
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 LoadPlayerData(player);
-                MySql.Table("deadswim_users_key_vip").Where($"token = '{token}'").Delete();
+                MySql.Table($"{Config.DBPrefix}_users_key_vip").Where($"token = '{token}'").Delete();
             }
             else
             {
@@ -210,7 +210,7 @@ namespace VIP
             .Add("token", token)
             .Add("end", $"{timeofvip}")
             .Add("`group`", group_int);
-            MySql.Table("deadswim_users_key_vip").Insert(values);
+            MySql.Table($"{Config.DBPrefix}_users_key_vip").Insert(values);
 
             Server.PrintToConsole($"==========================================");
             Server.PrintToConsole($"You generate new VIP Token");
@@ -283,7 +283,7 @@ namespace VIP
                 .Add("steam_id", $"{SteamIDC}")
                 .Add("end", $"{timeofvip}")
                 .Add("`group`", group_int);
-                MySql.Table("deadswim_users").Insert(values);
+                MySql.Table($"{Config.DBPrefix}_users").Insert(values);
                 player.PrintToChat($" {ChatColors.Lime}=========================================");
                 player.PrintToChat($" {Config.Prefix} Player with steamid {ChatColors.Lime}{SteamIDC}{ChatColors.Default} has been added.");
                 player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
@@ -310,7 +310,7 @@ namespace VIP
         {
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult result = MySql!.Table("deadswim_users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
+            MySqlQueryResult result = MySql!.Table($"{Config.DBPrefix}_users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
             var status = "";
             var formating = "";
             int status_i = 0;
@@ -358,7 +358,7 @@ namespace VIP
                 }
                 if (get_vip_group(player) >= Config.CommandOnGroup.Respawn || Config.RespawnAllowed)
                 {
-                    player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Respawn on spawn  : {ChatColors.Lime}/respawn{ChatColors.Gold} ◄");
+                    player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Respawn on spawn  : {ChatColors.Lime}/respawnvip{ChatColors.Gold} ◄");
                 }
                 player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Turn of auto wep. : {ChatColors.Lime}/guns_off{ChatColors.Gold} ◄");
 
@@ -367,7 +367,7 @@ namespace VIP
 
 
         }
-        [ConsoleCommand("css_respawn", "Command to respawn player")]
+        [ConsoleCommand("css_respawnvip", "Command to respawn player")]
 
         
         public void CommandRespawn(CCSPlayerController? player, CommandInfo info)
