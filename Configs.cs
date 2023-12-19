@@ -59,7 +59,8 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("MinimumRoundToUseCommands")] public int MinimumRoundToUseCommands { get; set; } = 3;
     [JsonPropertyName("DefusedReward")] public bool DefusedReward { get; set; } = true;
     [JsonPropertyName("EnableShowDamage")] public bool EnableShowDamage { get; set; } = true;
-    
+    [JsonPropertyName("GroupToVip")] public string GroupToVip { get; set; } = "#css/vip";
+
 
 
     [JsonPropertyName("WelcomeMessage")] public string WelcomeMessage { get; set; } = $"Welcom on server you are BEST VIP!";
@@ -123,6 +124,8 @@ public class CommandOnGroup
     [JsonPropertyName("Glow")] public int Glow { get; set; } = 0;
     [JsonPropertyName("ReservedSlots")] public int ReservedSlots { get; set; } = 0;
     [JsonPropertyName("Flash")] public int Flash { get; set; } = 0;
+
+    [JsonPropertyName("BHop")] public int BHop { get; set; } = 0;
 }
 
 
