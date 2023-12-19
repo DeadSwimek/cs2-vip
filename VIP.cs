@@ -34,7 +34,7 @@ using System.Reflection.Metadata;
 using System.Net;
 
 namespace VIP;
-[MinimumApiVersion(120)]
+[MinimumApiVersion(130)]
 
 public static class GetUnixTime
 {
@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Advanced VIP system based on database.";
-    public override string ModuleVersion => "V. 1.4.7";
+    public override string ModuleVersion => "V. 1.4.8";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -247,7 +247,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         return res.ToString();
     }
 
-    public static void TryBhop(CCSPlayerController controller)
+    public void TryBhop(CCSPlayerController controller)
     {
         if (!controller.PawnIsAlive)
             return;
@@ -259,8 +259,11 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             return;
         if (UserBhop[client] != 1)
             return;
-        if ((flags & PlayerFlags.FL_ONGROUND) != 0 && (buttons & PlayerButtons.Jump) != 0)
-            PP!.AbsVelocity.Z = 300;
+        if (Config.CommandOnGroup.ReservedSlots > get_vip_group(controller))
+        {
+            if ((flags & PlayerFlags.FL_ONGROUND) != 0 && (buttons & PlayerButtons.Jump) != 0)
+                PP!.AbsVelocity.Z = 300;
+        }
     }
     public void Authorization_Client(CCSPlayerController player)
     {
@@ -413,6 +416,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 HaveReservation[client] = 0;
             }
             player.Clan = get_name_group(player);
+            AdminManager.AddPlayerToGroup(player, Config.GroupToVip);
 
             var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "end")) - DateTimeOffset.UtcNow;
             var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
