@@ -120,6 +120,7 @@
   "MinimumRoundToUseCommands": 3, // Minimum round to use VIPs commands
   "DefusedReward": true, // If true, VIPs player got rewards for defuse
   "EnableShowDamage": true, // If true, VIPs players got center message with damage info and player name
+  "GroupToVip": "#css/vip", // Name of CSS group what u want add to VIPs players
   "DBDatabase": "database",
   "DBUser": "user",
   "DBPassword": "password",
@@ -178,7 +179,8 @@
     "DoubbleJump": 1,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
     "BombInfo": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
     "ReservedSlots": 0,  // Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
-    "Flash": 0 //  Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "Flash": 0, //  Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
+    "BHop": 0 //  Id of group 0,1 (0 is Group1, 1 is Group2, 2 is Group3)
   },
   "Messages": {
     "AllowCenterMessages": true // If is true, server print to center messages
