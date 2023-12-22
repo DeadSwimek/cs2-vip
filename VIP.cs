@@ -465,18 +465,21 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     }
     private bool CheckIsHaveWeapon(string weapon_name, CCSPlayerController? pc)
     {
-        if (pc == null || !pc.IsValid)
+        if (pc == null || !pc.IsValid || pc.PlayerPawn == null || !pc.PlayerPawn.IsValid)
             return false;
 
-        var pawn = pc.PlayerPawn.Value.WeaponServices!;
-        foreach (var weapon in pawn.MyWeapons)
+        var pawn = pc.PlayerPawn.Value;
+        if (pawn.WeaponServices == null) // Additional check
+            return false;
+
+        foreach (var weapon in pawn.WeaponServices.MyWeapons)
         {
-            if (weapon is { IsValid: true, Value.IsValid: true })
+            if (weapon is { IsValid: true, Value: { IsValid: true } })
             {
-                if (weapon.Value.DesignerName.Contains($"{weapon_name}"))
+                if (weapon.Value.DesignerName.Contains(weapon_name))
                 {
-                    WriteColor($"VIP Plugin - Requested weapon is [weapon_{weapon_name}]", ConsoleColor.Cyan);
-                    WriteColor($"VIP Plugin - {pc.PlayerName} have weapon with name [{weapon.Value.DesignerName}]", ConsoleColor.Cyan);
+                    //WriteColor($"VIP Plugin - Requested weapon is [weapon_{weapon_name}]", ConsoleColor.Cyan);
+                    WriteColor($"VIP Plugin - {pc.PlayerName} has requested weapon [{weapon.Value.DesignerName}]", ConsoleColor.Cyan);
                     return true;
                 }
             }
@@ -535,30 +538,37 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         {
             if (Config.EnableVIPAcceries)
             {
-                if (Config.CommandOnGroup.Acceries > get_vip_group(controller)) return;
-                //controller.PlayerPawn.Value.Health = Config.RewardsClass.SpawnHP;
-                set_armor(controller, Config.RewardsClass.SpawnArmor);
-                controller.PlayerPawn.Value.Health = Config.RewardsClass.SpawnHP;
-
-                if (get_money(controller) <= 800)
+                Server.NextFrame(() =>
                 {
-                    set_money(controller, Config.RewardsClass.FirstSpawnMoney);
-                }
-                if (controller.TeamNum == 3)
-                {
-                    GiveItem(controller, "item_defuser");
-                }
-                if (LastUsed[client] != 2 || LastUsed[client] != 3)
-                {
-                    if (CheckIsHaveWeapon("healthshot", controller) == false)
+                    AddTimer(1.0f, () =>
                     {
-                        controller.GiveNamedItem("weapon_healthshot");
-                        controller.GiveNamedItem("item_assaultsuit");
-                    }
-                }
+                                if (Config.CommandOnGroup.Acceries > get_vip_group(controller)) return;
+                        //controller.PlayerPawn.Value.Health = Config.RewardsClass.SpawnHP;
+                        set_armor(controller, Config.RewardsClass.SpawnArmor);
+                        controller.PlayerPawn.Value.Health = Config.RewardsClass.SpawnHP;
+
+                        if (get_money(controller) <= 800)
+                        {
+                            set_money(controller, Config.RewardsClass.FirstSpawnMoney);
+                        }
+                        if (controller.TeamNum == 3)
+                        {
+                            GiveItem(controller, "item_defuser");
+                        }
+                        if (LastUsed[client] != 2 || LastUsed[client] != 3)
+                        {
+                            if (CheckIsHaveWeapon("healthshot", controller) == false)
+                            {
+                                controller.GiveNamedItem("weapon_healthshot");
+                                controller.GiveNamedItem("item_assaultsuit");
+                            }
+                        }
+                    });
+                });
             }
         }
-
     }
-    // Database settings
+
 }
+
+

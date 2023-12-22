@@ -312,79 +312,81 @@ namespace VIP
                         player.PrintToChat($" {Config.Prefix} {Localizer["AutoGun"]}");
                     }
                 }
-                if (LastUsed[client] == 1)
+                AddTimer(1.0f, () =>
                 {
-                    if (CheckIsHaveWeapon("ak47", player) == false)
+                    if (LastUsed[client] == 1)
                     {
-                        player.GiveNamedItem("weapon_ak47");
-                    }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAK"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 2)
-                {
-                    foreach (var weapon in Config.Pack1Settings.Weapons)
-                    {
-                        if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                        if (CheckIsHaveWeapon("ak47", player) == false)
                         {
-                            player.GiveNamedItem($"weapon_{weapon}");
+                            player.GiveNamedItem("weapon_ak47");
                         }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAK"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 3)
-                {
-                    foreach (var weapon in Config.Pack2Settings.Weapons)
+                    else if (LastUsed[client] == 2)
                     {
-                        if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                        foreach (var weapon in Config.Pack1Settings.Weapons)
                         {
-                            player.GiveNamedItem($"weapon_{weapon}");
+                            if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                            {
+                                player.GiveNamedItem($"weapon_{weapon}");
+                            }
                         }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["Package_two"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 10)
-                {
-                    foreach (var weapon in Config.Pack3Settings.Weapons)
+                    else if (LastUsed[client] == 3)
                     {
-                        if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                        foreach (var weapon in Config.Pack2Settings.Weapons)
                         {
-                            player.GiveNamedItem($"weapon_{weapon}");
+                            if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                            {
+                                player.GiveNamedItem($"weapon_{weapon}");
+                            }
                         }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["Package_two"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["Package_three"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 4)
-                {
-                    if (CheckIsHaveWeapon("m4a1", player) == false)
+                    else if (LastUsed[client] == 10)
                     {
-                        player.GiveNamedItem("weapon_m4a1");
+                        foreach (var weapon in Config.Pack3Settings.Weapons)
+                        {
+                            if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                            {
+                                player.GiveNamedItem($"weapon_{weapon}");
+                            }
+                        }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["Package_three"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 5)
-                {
-                    if (CheckIsHaveWeapon("m4a1_silencer", player) == false)
+                    else if (LastUsed[client] == 4)
                     {
-                        player.GiveNamedItem("weapon_m4a1_silencer");
+                        if (CheckIsHaveWeapon("m4a1", player) == false)
+                        {
+                            player.GiveNamedItem("weapon_m4a1");
+                        }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1S"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 6)
-                {
-                    if (CheckIsHaveWeapon("awp", player) == false)
+                    else if (LastUsed[client] == 5)
                     {
-                        player.GiveNamedItem("weapon_awp");
+                        if (CheckIsHaveWeapon("m4a1_silencer", player) == false)
+                        {
+                            player.GiveNamedItem("weapon_m4a1_silencer");
+                        }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1S"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAWP"]}");
-                    Used[client] = 1;
-                }
-                //player.PrintToChat($"{Config.Prefix} You can use /ak for give AK47 or /m4 for give M4A1");
+                    else if (LastUsed[client] == 6)
+                    {
+                        if (CheckIsHaveWeapon("awp", player) == false)
+                        {
+                            player.GiveNamedItem("weapon_awp");
+                        }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAWP"]}");
+                        Used[client] = 1;
+                    }
+                });
             }
             return HookResult.Continue;
         }
