@@ -71,6 +71,9 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("DBPort")] public int DBPort { get; set; } = 3306;
     [JsonPropertyName("DBPrefix")] public string DBPrefix { get; set; } = "deadswim";
 
+    [JsonPropertyName("SpawnItems")] public List<string?> SpawnItems { get; set; } = new List<string?> { "weapon_healthshot", "item_assaultsuit" };
+
+
     [JsonPropertyName("money")] public RewardsClass RewardsClass { get; set; } = new RewardsClass();
 
     [JsonPropertyName("pack1")] public Pack1Settings Pack1Settings { get; set; } = new Pack1Settings();
