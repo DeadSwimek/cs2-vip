@@ -126,6 +126,10 @@
   "DBPassword": "password",
   "DBHost": "localhost",
   "DBPort": 3306,
+  "SpawnItems": [
+      "weapon_healthshot",
+      "item_assaultsuit"
+  ],
   "money": {
     "FirstSpawnMoney": 1200,
     "SpawnArmor": 100,
