@@ -550,10 +550,12 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 }
                 if (LastUsed[client] != 2 || LastUsed[client] != 3)
                 {
-                    if (CheckIsHaveWeapon("healthshot", controller) == false)
+                    foreach (var weapon in Config.SpawnItems)
                     {
-                        controller.GiveNamedItem("weapon_healthshot");
-                        controller.GiveNamedItem("item_assaultsuit");
+                        if (CheckIsHaveWeapon($"{weapon}", controller) == false)
+                        {
+                            controller.GiveNamedItem($"{weapon}");
+                        }
                     }
                 }
             }
