@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Advanced VIP system based on database.";
-    public override string ModuleVersion => "V. 1.4.8";
+    public override string ModuleVersion => "V. 1.5.0";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -169,7 +169,10 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 if (IsVIP[client.Index] == 0)
                     return;
                 OnTick(client);
-                TryBhop(client);
+                if (UserBhop[client.Index] != 1)
+                {
+                    TryBhop(client);
+                }
 
                 if (allowedHit[client.Index] == true)
                 {
@@ -368,23 +371,22 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
 
         if (IsVIP[client] == 0)
             return;
-        if (HaveDoubble[client] == 0)
-            return;
-
-
-        if ((LF[client] & PlayerFlags.FL_ONGROUND) != 0 && (flags & PlayerFlags.FL_ONGROUND) == 0 &&
-            (LB[client] & PlayerButtons.Jump) == 0 && (buttons & PlayerButtons.Jump) != 0)
+        if (HaveDoubble[client] != 0)
         {
-            J[client]++;
-        }
-        else if ((flags & PlayerFlags.FL_ONGROUND) != 0)
-        {
-            J[client] = 0;
-        }
-        else if ((LB[client] & PlayerButtons.Jump) == 0 && (buttons & PlayerButtons.Jump) != 0 && J[client] <= 1)
-        {
-            J[client]++;
-            pawn.AbsVelocity.Z = 320;
+            if ((LF[client] & PlayerFlags.FL_ONGROUND) != 0 && (flags & PlayerFlags.FL_ONGROUND) == 0 &&
+                (LB[client] & PlayerButtons.Jump) == 0 && (buttons & PlayerButtons.Jump) != 0)
+            {
+                J[client]++;
+            }
+            else if ((flags & PlayerFlags.FL_ONGROUND) != 0)
+            {
+                J[client] = 0;
+            }
+            else if ((LB[client] & PlayerButtons.Jump) == 0 && (buttons & PlayerButtons.Jump) != 0 && J[client] <= 1)
+            {
+                J[client]++;
+                pawn.AbsVelocity.Z = 320;
+            }
         }
 
         LF[client] = flags;
