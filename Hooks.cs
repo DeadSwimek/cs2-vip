@@ -266,7 +266,10 @@ namespace VIP
                 timer_ex?.Kill();
                 var client = player.Index;
                 Used[client] = 0;
-                Give_Values(player);
+                Server.NextFrame(() =>
+                {
+                    AddTimer(0.1f, () => { Give_Values(player); });
+                });
 
                 if (Config.DisablePackWeaponAfter20Sec)
                 {
@@ -506,7 +509,10 @@ namespace VIP
                 if (Config.GiveHPAfterKill)
                     {
                         var health_attacker = attacker.PlayerPawn.Value.Health;
-                        @event.Attacker.PlayerPawn.Value.Health = @event.Attacker.PlayerPawn.Value.Health + Config.RewardsClass.KillHP;
+                        Server.NextFrame(() =>
+                        {
+                            AddTimer(0.1f, () => { set_hp(attacker, health_attacker + Config.RewardsClass.KillHP); });
+                        });
                         Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
                         attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player.PlayerName]}");
                     }
