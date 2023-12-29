@@ -603,7 +603,6 @@ namespace VIP
             }
             CCSPlayerController player = @event.Userid;
             CCSPlayerController attacker = @event.Attacker;
-            var player = @event.Userid;
             var MoneyValueAttacker = attacker.InGameMoneyServices;
             var attacker_entity = attacker.Index;
             if (player == null || !player.IsValid)
