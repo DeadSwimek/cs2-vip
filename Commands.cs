@@ -376,7 +376,7 @@ namespace VIP
 
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult result = MySql?.Table($"{Config.DBPrefix}_users")?.Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID?.ToString()))?.Select();
+            MySqlQueryResult result = MySql?.Table($"{Config.DBPrefix}_users")?.Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString()))?.Select();
             var status = "";
             var formating = "";
             int status_i = 0;
@@ -480,7 +480,7 @@ namespace VIP
                         $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
 
                     MySqlQueryValue values = new MySqlQueryValue()
-                        .Add("steam_id", $"{player?.SteamID?.ToString()}")
+                        .Add("steam_id", $"{player.SteamID?.ToString()}")
                         .Add("end", $"{timeofvip}")
                         .Add("`group`", $"0");
                     MySql.Table($"{Config.DBPrefix}_users").Insert(values);
