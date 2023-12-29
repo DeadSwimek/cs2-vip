@@ -374,9 +374,9 @@ namespace VIP
                 return;
             }
 
-            MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+            MySqlDb? MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult result = MySql?.Table($"{Config.DBPrefix}_users")?.Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString()))?.Select();
+            MySqlQueryResult? result = MySql?.Table($"{Config.DBPrefix}_users")?.Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID?.ToString()))?.Select();
             var status = "";
             var formating = "";
             int status_i = 0;
@@ -435,6 +435,7 @@ namespace VIP
             }
             player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+{ChatColors.Red} www.BRUTALCI.info {ChatColors.Green}+-+-+-+-+-+-");
         }
+
         static bool IsTimeBetween8PMAnd8AM() // ty k4ryu <3
         {
             // Get the current time
@@ -480,13 +481,18 @@ namespace VIP
                         $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
 
                     MySqlQueryValue values = new MySqlQueryValue()
-                        .Add("steam_id", $"{player.SteamID}")
+                        .Add("steam_id", $"{player?.SteamID}")
                         .Add("end", $"{timeofvip}")
                         .Add("`group`", $"0");
                     MySql.Table($"{Config.DBPrefix}_users").Insert(values);
 
                     var client = player?.Index;
-                    LoadPlayerData(player);
+                    
+                    // Ensure that player is not null before calling LoadPlayerData
+                    if (player != null)
+                    {
+                        LoadPlayerData(player);
+                    }
 
                     player?.PrintToChat($" {Config.Prefix} You have activated {ChatColors.Red}FREE VIP. {ChatColors.Default} Ending in: {ChatColors.Red}{timeRemainingFormatted}{ChatColors.Default}."); ;
                     Server.PrintToConsole($"VIP Plugin - Player {player?.PlayerName} used FREE VIP with steamid {player?.SteamID}, end time is {timeRemainingFormatted}");
@@ -496,7 +502,8 @@ namespace VIP
                     player?.PrintToChat($" {Config.Prefix} You can't use {ChatColors.Red}FREE VIP {ChatColors.Default}before 20h.");
                 }
             }
-        }
+}
+
 
         [ConsoleCommand("css_respawnvip", "Command to respawn player")]
 
