@@ -376,7 +376,7 @@ namespace VIP
 
             MySqlDb? MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult? result = MySql?.Table($"{Config.DBPrefix}_users")?.Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID?.ToString()))?.Select();
+            MySqlQueryResult? result = MySql?.Table($"{Config.DBPrefix}_users")?.Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString()))?.Select();
             var status = "";
             var formating = "";
             int status_i = 0;
