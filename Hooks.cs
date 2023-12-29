@@ -136,28 +136,6 @@ namespace VIP
             }
             return HookResult.Continue;
         }
-        static bool IsTimeBetween8PMAnd8AM() // ty k4ryu <3
-        {
-            // Get the current time
-            DateTime currentTime = DateTime.Now;
-
-            // Define the start and end times for the range (8 PM to 8 AM)
-            TimeSpan startTime = TimeSpan.FromHours(20); // 8 PM
-            TimeSpan endTime = TimeSpan.FromHours(8);    // 8 AM
-
-            if (endTime < startTime)
-            {
-                // The range spans midnight, so we need to check if the current time
-                // is less than the end time or greater than the start time.
-                return currentTime.TimeOfDay >= startTime || currentTime.TimeOfDay <= endTime;
-            }
-            else
-            {
-                // The range does not span midnight, so we can simply check if the
-                // current time is between the start and end times.
-                return currentTime.TimeOfDay >= startTime && currentTime.TimeOfDay <= endTime;
-            }
-        }
         private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
         {
             CCSPlayerController player = @event.Userid;

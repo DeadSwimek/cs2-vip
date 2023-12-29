@@ -95,8 +95,8 @@ public class TestVIP
 {
     [JsonPropertyName("EnableTestVIP")] public bool EnableTestVIP { get; set; } = true;
     [JsonPropertyName("TimeOfVIP")] public int TimeOfVIP { get; set; } = 3600;
-    [JsonPropertyName("EnableFreeVIP")] public bool EnableTestVIP { get; set; } = true;
-    [JsonPropertyName("FreeVIPTime")] public int TimeOfVIP { get; set; } = 3600;
+    [JsonPropertyName("EnableFreeVIP")] public bool EnableFreeVIP { get; set; } = true;
+    [JsonPropertyName("FreeVIPTime")] public int FreeVIPTime { get; set; } = 18000;
 
 }
 public class RewardsClass
