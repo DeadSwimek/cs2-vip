@@ -506,17 +506,18 @@ namespace VIP
         [ConsoleCommand("css_respawnvip", "Command to respawn player")]
         public void CommandRespawn(CCSPlayerController? player, CommandInfo info)
         {
-            if (player == null)
+            var client = player?.Index;
+
+            if (client == null || !player.IsValid || player.PlayerPawn == null || !player.PlayerPawn.IsValid)
             {
-                // Handle the case where player is null
-                Server.PrintToConsole("Error: Player is null.");
+                // Handle the case where player or player.PlayerPawn is null
+                Server.PrintToConsole("Error: Player or PlayerPawn is null.");
                 return;
             }
 
-            var client = player.Index;
             if (Config.RespawnAllowed)
             {
-                if (IsVIP[client] == 0)
+                if (IsVIP[client.Value] == 0)
                 {
                     player.PrintToChat($" {Config.Prefix} {Localizer["MustBeVIP"]}");
                     return;
@@ -540,7 +541,7 @@ namespace VIP
                     return;
                 }
 
-                if (RespawnUsed[client] == 1)
+                if (RespawnUsed[client.Value] == 1)
                 {
                     if (Config.Messages.AllowCenterMessages)
                     {
@@ -562,11 +563,12 @@ namespace VIP
                     player.PrintToChat($" {Config.Prefix} {Localizer["RespawnUsed"]}");
                 }
 
-                player.PlayerPawn?.Value.Respawn();
+                player.PlayerPawn.Value.Respawn();
 
-                RespawnUsed[client] = 1;
+                RespawnUsed[client.Value] = 1;
             }
         }
+
         [ConsoleCommand("css_gunsoff", "Disable weapon loadout")]
         public void CommandGUNS_off(CCSPlayerController? player, CommandInfo info)
         {
