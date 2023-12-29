@@ -480,7 +480,7 @@ namespace VIP
                         $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
 
                     MySqlQueryValue values = new MySqlQueryValue()
-                        .Add("steam_id", $"{player.SteamID?.ToString()}")
+                        .Add("steam_id", $"{player.SteamID}")
                         .Add("end", $"{timeofvip}")
                         .Add("`group`", $"0");
                     MySql.Table($"{Config.DBPrefix}_users").Insert(values);
