@@ -294,7 +294,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         {
             if (ConnectedPlayers >= slots)
             {
-                if (IsVIP[client] == 1)
+                if (IsVIP[client] == 1 || AdminManager.PlayerHasPermissions(player, "@css/reservation"))
                 {
                     WriteColor($"VIP PLugins - Player [{player.PlayerName}] connecting to server, trying too use [Reserved slot]", ConsoleColor.Green);
 
@@ -322,7 +322,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             bool kicked = false;
             if (ConnectedPlayers == Server.MaxPlayers)
             {
-                if (IsVIP[client] == 1)
+                if (IsVIP[client] == 1 || AdminManager.PlayerHasPermissions(player, "@css/reservation"))
                 {
                     foreach (var l_player in Utilities.GetPlayers())
                     {

@@ -80,7 +80,7 @@ namespace VIP
                 }
 
                 MySqlQueryResult result = mySql.Table($"{Config.DBPrefix}_users_test_vip")
-                    .Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID?.ToString()))
+                    .Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString()))
                     .Select();
 
                 if (result.Rows == 0)
@@ -265,9 +265,18 @@ namespace VIP
         [ConsoleCommand("css_addvip", "Add new VIP")]
         public void CommandAddVIP(CCSPlayerController? player, CommandInfo info)
         {
+            if (player == null)
+            {
+                // Perform error handling or return early if player is null
+                // For example:
+                Server.PrintToConsole("VIP Plugin - Error: Player is null.");
+                return;
+            }
+
             var Group = info.ArgByIndex(3);
             var SteamIDC = info.ArgByIndex(2);
             var TimeSec = info.ArgByIndex(1);
+
             if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
             {
                 player.PrintToChat($" {Config.Prefix} You are not admin..");
@@ -303,7 +312,7 @@ namespace VIP
             {
                 var TimeToUTC = DateTime.UtcNow.AddDays(Convert.ToInt32(TimeSec)).GetUnixEpoch();
                 var timeofvip = 0;
-                if(TimeSec == "0")
+                if (TimeSec == "0")
                 {
                     timeofvip = 0;
                 }
@@ -312,7 +321,7 @@ namespace VIP
                     timeofvip = DateTime.UtcNow.AddDays(Convert.ToInt32(TimeSec)).GetUnixEpoch();
                 }
 
-                
+
                 var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
                 var timeRemainingFormatted =
                 $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
@@ -335,12 +344,22 @@ namespace VIP
         [ConsoleCommand("css_vips", "Load all VIPs on server")]
         public void CommandVIPList(CCSPlayerController? controller, CommandInfo info)
         {
+            if (controller == null)
+            {
+                // Handle the case where controller is null
+                Server.PrintToConsole("VIP Plugin - Error: Controller is null.");
+                return;
+            }
+
             int vips = 0;
             controller.PrintToChat($" {ChatColors.Green}===!-!==={ChatColors.Lime} VIP {ChatColors.Default}List {ChatColors.Green}===!-!===");
             foreach (var player in Utilities.GetPlayers().Where(player => player is { IsBot: false, IsValid: true }).Where(player => IsVIP[player.Index] == 1))
             {
-                vips++;
-                controller.PrintToChat($" [{ChatColors.Green}{player.SteamID}{ChatColors.Default}] {ChatColors.Orange}{player.PlayerName}");
+                if (player != null)
+                {
+                    vips++;
+                    controller.PrintToChat($" [{ChatColors.Green}{player.SteamID}{ChatColors.Default}] {ChatColors.Orange}{player.PlayerName}");
+                }
             }
             controller.PrintToChat($" {ChatColors.Green}► Numbers of VIPs{ChatColors.Default} {ChatColors.Purple}{vips}{ChatColors.Default} {ChatColors.Green}◄ Numbers of VIPs");
             controller.PrintToChat($" {ChatColors.Green}===!-!==={ChatColors.Lime} VIP {ChatColors.Default}List {ChatColors.Green}===!-!===");
@@ -348,28 +367,38 @@ namespace VIP
         [ConsoleCommand("css_vip", "Info about VIP")]
         public void CommandVIPInfo(CCSPlayerController? player, CommandInfo info)
         {
+            if (player == null)
+            {
+                // Handle the case where player is null
+                Server.PrintToConsole("VIP Plugin - Error: Player is null.");
+                return;
+            }
+
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySqlQueryResult result = MySql!.Table($"{Config.DBPrefix}_users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
+            MySqlQueryResult result = MySql?.Table($"{Config.DBPrefix}_users")?.Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID?.ToString()))?.Select();
             var status = "";
             var formating = "";
             int status_i = 0;
-            if (result.Rows == 1)
+
+            if (result?.Rows == 1)
             {
                 var client = player.Index;
                 var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "end")) - DateTimeOffset.UtcNow;
                 var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 var timeRemainingFormatted =
-                $"{timeRemaining.Days}d {timeRemaining.Hours}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+                    $"{timeRemaining.Days}d {timeRemaining.Hours}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
                 status = $" {ChatColors.Green}Active";
                 formating = $" {ChatColors.Green}{timeRemainingFormatted}";
                 IsVIP[client] = 1;
                 LoadPlayerData(player);
                 status_i = 1;
+
                 if (result.Get<int>(0, "end") != 0)
                 {
                     status = $" {ChatColors.Green}Active";
                 }
+
                 if (result.Get<int>(0, "end") == 0)
                 {
                     formating = $" {ChatColors.Green}Never ending";
@@ -381,9 +410,10 @@ namespace VIP
                 status = $" {ChatColors.Red} Inactive";
                 status_i = 0;
             }
+
             player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+ {ChatColors.Gold}✪ BRUTALCI VIP ✪ {ChatColors.Green}+-+-+-+-+-+-");
             player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}You have {status}{ChatColors.Default} VIP Status.");
-            if(status_i == 1)
+            if (status_i == 1)
             {
                 player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Ending in: {ChatColors.Lime}{formating}{ChatColors.Default}.");
                 player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}{ChatColors.Lime}VIP {ChatColors.Default}Group: {ChatColors.Red}{get_name_group(player)}{ChatColors.Default}.");
@@ -392,7 +422,7 @@ namespace VIP
                 {
                     player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Select Weapon: {ChatColors.Red}!guns {ChatColors.Default}ak, m4, m4a4, awp{ChatColors.Gold}");
                 }
-                if (get_vip_group(player) >= Config.CommandOnGroup.Pack )
+                if (get_vip_group(player) >= Config.CommandOnGroup.Pack)
                 {
                     player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Select Weapon Pack: {ChatColors.Red}!wp {ChatColors.Default}ak, m4, m4a4{ChatColors.Gold}");
                 }
@@ -404,8 +434,6 @@ namespace VIP
 
             }
             player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+{ChatColors.Red} www.BRUTALCI.info {ChatColors.Green}+-+-+-+-+-+-");
-
-
         }
         static bool IsTimeBetween8PMAnd8AM() // ty k4ryu <3
         {
@@ -436,9 +464,10 @@ namespace VIP
             {
                 if (is_vip(player))
                 {
-                    player.PrintToChat($" {Config.Prefix} You already have {ChatColors.Green}VIP{ChatColors.Default} features, you {ChatColors.Red}can not activate{ChatColors.Default} this VIP!");
+                    player?.PrintToChat($" {Config.Prefix} You already have {ChatColors.Green}VIP{ChatColors.Default} features, you {ChatColors.Red}can not activate{ChatColors.Default} this VIP!");
                     return;
                 }
+
                 if (IsTimeBetween8PMAnd8AM())
                 {
                     int TimeSec = Config.TestVIP.FreeVIPTime;
@@ -448,26 +477,27 @@ namespace VIP
                     MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
                     var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
                     var timeRemainingFormatted =
-                    $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+                        $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
 
                     MySqlQueryValue values = new MySqlQueryValue()
-                    .Add("steam_id", $"{player.SteamID}")
-                    .Add("end", $"{timeofvip}")
-                    .Add("`group`", $"0");
+                        .Add("steam_id", $"{player?.SteamID?.ToString()}")
+                        .Add("end", $"{timeofvip}")
+                        .Add("`group`", $"0");
                     MySql.Table($"{Config.DBPrefix}_users").Insert(values);
-                    var client = player.Index;
+
+                    var client = player?.Index;
                     LoadPlayerData(player);
 
-
-                    player.PrintToChat($" {Config.Prefix} You have activated {ChatColors.Red}FREE VIP. {ChatColors.Default} Ending in: {ChatColors.Red}{timeRemainingFormatted}{ChatColors.Default}."); ;
-                    Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} used FREE VIP with steamid {player.SteamID}, end time is {timeRemainingFormatted}");
+                    player?.PrintToChat($" {Config.Prefix} You have activated {ChatColors.Red}FREE VIP. {ChatColors.Default} Ending in: {ChatColors.Red}{timeRemainingFormatted}{ChatColors.Default}."); ;
+                    Server.PrintToConsole($"VIP Plugin - Player {player?.PlayerName} used FREE VIP with steamid {player?.SteamID}, end time is {timeRemainingFormatted}");
                 }
                 else
                 {
-                    player.PrintToChat($" {Config.Prefix} You can't use {ChatColors.Red}FREE VIP {ChatColors.Default}before 20h.");
+                    player?.PrintToChat($" {Config.Prefix} You can't use {ChatColors.Red}FREE VIP {ChatColors.Default}before 20h.");
                 }
             }
         }
+
         [ConsoleCommand("css_respawnvip", "Command to respawn player")]
 
         
