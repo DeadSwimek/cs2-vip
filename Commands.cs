@@ -568,7 +568,6 @@ namespace VIP
                 RespawnUsed[client.Value] = 1;
             }
         }
-
         [ConsoleCommand("css_gunsoff", "Disable weapon loadout")]
         public void CommandGUNS_off(CCSPlayerController? player, CommandInfo info)
         {
