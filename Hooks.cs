@@ -161,7 +161,7 @@ namespace VIP
 
                 MySql.Table($"{Config.DBPrefix}_users").Insert(values);
 
-                var client = player.Index;
+                // var client = player.Index;
                 LoadPlayerData(player);
 
                 player.PrintToChat($" {Config.Prefix} {ChatColors.Red}FREE VIP. {ChatColors.Default} is Active. Use {ChatColors.Red}!vip {ChatColors.Default}for more info.");
@@ -630,24 +630,42 @@ namespace VIP
                         // attacker.PrintToChat($" {Config.Prefix} {Localizer["MoneyRewards", Config.RewardsClass.KillMoney, player.PlayerName]}");
 
                     }
+                            // if (Config.GiveHPAfterKill)
+                            // {
+                                
+                            //     if (2 > get_vip_group(player))
+                            //     {
+                            //         return HookResult.Continue;
+                            //     }
+
+                            //     var health_attacker = attacker.PlayerPawn.Value.Health;
+                            //     Server.NextFrame(() =>
+                            //     {
+                            //         AddTimer(0.1f, () => { set_hp(attacker, health_attacker + Config.RewardsClass.KillHP); });
+                            //     });
+
+                            //     // Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
+                            //     attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player.PlayerName]}");
+                            // }
                 if (Config.GiveHPAfterKill)
-                {
-                    
-                    if (2 > get_vip_group(player))
                     {
-                        return HookResult.Continue;
+                        if (player != null)
+                        {
+                            if (2 > get_vip_group(player))
+                            {
+                                return HookResult.Continue;
+                            }
+                        }
+
+                        var health_attacker = attacker.PlayerPawn.Value.Health;
+                        Server.NextFrame(() =>
+                        {
+                            AddTimer(0.1f, () => { set_hp(attacker, health_attacker + Config.RewardsClass.KillHP); });
+                        });
+
+                        // Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
+                        attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player?.PlayerName ?? "Unknown"]}");
                     }
-
-                    var health_attacker = attacker.PlayerPawn.Value.Health;
-                    Server.NextFrame(() =>
-                    {
-                        AddTimer(0.1f, () => { set_hp(attacker, health_attacker + Config.RewardsClass.KillHP); });
-                    });
-
-                    // Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
-                    attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player.PlayerName]}");
-                }
-
             }
             return HookResult.Continue;
         }
