@@ -181,8 +181,8 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                         return;
                     client.PrintToCenterHtml(
                         $"<font color='green'>Player :</font> <font color='gold'>{damaged_player[clienti]}</font><br>" +
-                        $"<font color='green'>Take HP :</font> <font color='red'>-{damage[clienti]}</font><br>" +
-                        $"<font color='green'>Take Armor :</font> <font color='red'>-{armor[clienti]}</font>");
+                        $"<font color='green'>HP :</font> <font color='red'>-{damage[clienti]}</font> <font color='green'>AP :</font> <font color='red'>-{armor[clienti]}</font>"
+                        );
                 }
                 if (!Config.Bombinfo)
                     return;
@@ -193,30 +193,27 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                         if (bombtime >= 25)
                         {
                             client.PrintToCenterHtml(
-                            $"<font color='gray'>Bomb detonating</font> <font class='fontSize-l' color='green'>{bombtime}</font><br>" +
-                            $"<font color='gray'>Planted on site</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>"
-                            );
+                            $"<font color='gray'>C4: </font> <font class='fontSize-l' color='green'>{bombtime}</font>" +
+                            $"<font color='gray'> SITE: </font> <font class='fontSize-l' color='green'>[{SitePlant}]</font>");
                         }
                         else if (bombtime >= 10)
                         {
                             client.PrintToCenterHtml(
-                            $"<font color='green'>Bomb detonating</font> <font class='fontSize-l' color='orange'>{bombtime}</font><br>" +
-                            $"<font color='orange'>Timer is</font> <font color='white'>smaller</font><br>" +
-                            $"<font color='gray'>Planted on site</font> <font class='fontSize-m' color='orange'>[{SitePlant}]</font>");
+                            $"<font color='green'>C4: </font> <font class='fontSize-l' color='orange'>{bombtime}</font>" +
+                            $"<font color='gray'> SITE: </font> <font class='fontSize-l' color='orange'>[{SitePlant}]</font>");
                         }
                         else if (bombtime >= 5)
                         {
                             client.PrintToCenterHtml(
-                            $"<font color='gold'>Bomb detonating</font> <font class='fontSize-l' color='red'>{bombtime}</font><br>" +
-                            $"<font color='white'>Last change</font> <font color='orange'>TO DEFUSE!</font><br>" +
-                            $"<font color='gold'>Planted on site</font> <font class='fontSize-m' color='red'>[{SitePlant}]</font>");
+                            $"<font color='gold'>C4:</font> <font class='fontSize-l' color='red'>{bombtime}</font>" +
+                            $"<font color='gold'> SITE: </font> <font class='fontSize-l' color='red'>[{SitePlant}]</font>");
                         }
                         else if (bombtime >= 0)
                         {
                             client.PrintToCenterHtml(
-                            $"<font color='gold'>Bomb detonating</font> <font class='fontSize-l' color='red'>{bombtime}</font><br>" +
-                            $"<font color='white'>All on site is</font> <font color='orange'>DEAD!</font><br>" +
-                            $"<font color='gold'>Planted on site</font> <font class='fontSize-m' color='red'>[{SitePlant}]</font>");
+                            $"<font color='gold'>C4:</font> <font class='fontSize-l' color='red'>{bombtime}</font>" +
+                            $"<font color='gold'> SITE: </font> <font class='fontSize-m' color='red'>[{SitePlant}]</font><br>" +
+                            $"<font class='fontSize-s' color='white'>www.</font><font class='fontSize-s' color='red'>BRUTALCI</font><font class='fontSize-s' color='white'>.info</font>");
                         }
                         else if (bombtime == 0)
                         {
@@ -288,34 +285,34 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, player on server: [{ConnectedPlayers}].", ConsoleColor.Green);
 
 
-        WriteColor($"----------------", ConsoleColor.Green);
+        WriteColor($"---------------------------------", ConsoleColor.Green);
         WriteColor($"Actual players on Server : {ConnectedPlayers}", ConsoleColor.Green);
         WriteColor($"Actual maxplayers on Server : {Server.MaxPlayers}", ConsoleColor.Green);
         WriteColor($"Can be connected : {slots}", ConsoleColor.Green);
-        WriteColor($"----------------", ConsoleColor.Green);
+        WriteColor($"---------------------------------", ConsoleColor.Green);
         if (Config.ReservedMethod == 1)
         {
             if (ConnectedPlayers >= slots)
             {
                 if (IsVIP[client] == 1)
                 {
-                    WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
+                    WriteColor($"VIP PLugins - Player [{player.PlayerName}] connecting to server, trying too use [Reserved slot]", ConsoleColor.Green);
 
                     if (HaveReservation[client] == 1)
                     {
-                        Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} use the Reservated slot!");
+                        Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} used the Reservated slot!");
                         return;
                     }
                     else
                     {
-                        Server.ExecuteCommand($"kickid {player.UserId} \"This slot are for VIP\"");
-                        Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP GROUP!");
+                        Server.ExecuteCommand($"kickid {player.UserId} \"This slot is reserved for VIPs\"");
+                        Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, This slot is reserved for VIPs!");
                     }
                 }
                 else
                 {
-                    Server.ExecuteCommand($"kickid {player.UserId} \"This slot are for VIP\"");
-                    Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, bcs slot are for VIP!");
+                    Server.ExecuteCommand($"kickid {player.UserId} \"This slot is reserved for VIPs\"");
+                    Server.PrintToConsole($"VIP Plugins - Player {player.PlayerName} is kicked from the server, This slot is reserved for VIPs!");
                 }
             }
         }
@@ -334,13 +331,13 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                             CCSPlayerController player_res = l_player;
 
                             var el_player = player_res.Index;
-                            WriteColor($"VIP PLugins - Player [{player.PlayerName}] try to connect on server, try too use [Reserved slots].", ConsoleColor.Green);
+                            WriteColor($"VIP PLugins - Player [{player.PlayerName}] connecting to server, trying too use [Reserved slot]", ConsoleColor.Green);
                             if (kicked == false)
                             {
                                 if (IsVIP[el_player] != 1)
                                 {
                                     kicked = true;
-                                    Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{player_res.PlayerName} {ChatColors.Default}has been kicked, bcs {ChatColors.Lime}VIP{ChatColors.Default} need to connect.");
+                                    Server.PrintToChatAll($" {Config.Prefix}Player {ChatColors.Lime}{player_res.PlayerName} {ChatColors.Default}has been kicked. {ChatColors.Lime}VIP{ChatColors.Default} player is connecting.");
                                     Server.ExecuteCommand($"kickid {player_res.UserId}");
                                 }
                             }
@@ -424,14 +421,14 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var timeRemainingFormatted =
             $"{timeRemaining.Days}d {timeRemaining.Hours}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
-            WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] have VIP. Remaining time of VIP [{timeRemainingFormatted}]", ConsoleColor.Green);
+            WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] has VIP. Remaining time of VIP [{timeRemainingFormatted}]", ConsoleColor.Green);
 
             // Checking if is still time to VIP
             if (result.Get<int>(0, "end") != 0)
             {
                 if (result.Get<int>(0, "end") < nowtimeis)
                 {
-                    WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] exp. VIP today..", ConsoleColor.Red);
+                    WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] VIP expires today..", ConsoleColor.Red);
 
                     MySql.Table($"{Config.DBPrefix}_users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Delete();
                     IsVIP[client] = 0;
@@ -439,7 +436,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             }
             else
             {
-                WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] have VIP forever.", ConsoleColor.Green);
+                WriteColor($"VIP Plugin - Player [{player.PlayerName} ({player.SteamID})] has permanent VIP.", ConsoleColor.Green);
             }
         }
         else
@@ -477,8 +474,9 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             {
                 if (weapon.Value.DesignerName.Contains($"{weapon_name}"))
                 {
-                    WriteColor($"VIP Plugin - Requested weapon is [weapon_{weapon_name}]", ConsoleColor.Cyan);
-                    WriteColor($"VIP Plugin - {pc.PlayerName} have weapon with name [{weapon.Value.DesignerName}]", ConsoleColor.Cyan);
+                    // WriteColor($"VIP Plugin - Requested weapon is [weapon_{weapon_name}]", ConsoleColor.Cyan);
+                    // WriteColor($"VIP Plugin - {pc.PlayerName} has weapon with name [{weapon.Value.DesignerName}]", ConsoleColor.Cyan);
+                    WriteColor($"VIP Plugin - {pc.PlayerName} has requested weapon -> [{weapon.Value.DesignerName}]", ConsoleColor.Cyan);
                     return true;
                 }
             }

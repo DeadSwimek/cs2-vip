@@ -56,9 +56,10 @@ namespace VIP
                 if (IsVIP[client] == 1)
                 {
                     GetTag = $" {ChatColors.Lime}VIP {ChatColors.Default}»";
-                    var isAlive = player.PawnIsAlive ? "" : "-DEAD-";
+                    var isAlive = player.PawnIsAlive ? "" : "[DEAD]";
 
-                    Server.PrintToChatAll(ReplaceTags($"{isAlive} {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
+                    // Server.PrintToChatAll(ReplaceTags($"{isAlive} {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
+                    Server.PrintToChatAll(ReplaceTags($" {ChatColors.Grey}[ALL] {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Grey}{isAlive}{ChatColors.Default}: {message}"));
                 }
                 else
                 {
@@ -78,18 +79,19 @@ namespace VIP
 
                 if (player == null || !player.IsValid || player.IsBot || message == null || message == "")
                     return HookResult.Continue;
-                if (message_first.Substring(0, 1) == "/" || message_first.Substring(0, 1) == "!" || message_first.Substring(0, 1) == "rtv")
+                if (message_first.Substring(0, 1) == "/" || message_first.Substring(0, 1) == "!" || message_first.Substring(0, 1) == "@")
                     return HookResult.Continue;
                 var GetTag = "";
                 if (IsVIP[client] == 1)
                 {
                     GetTag = $" {ChatColors.Lime}VIP {ChatColors.Default}»";
-                    var isAlive = player.PawnIsAlive ? "" : "-DEAD-";
+                    var isAlive = player.PawnIsAlive ? "" : "[DEAD]";
                     for (int i = 1; i <= Server.MaxPlayers; i++)
                     {
                         CCSPlayerController? pc = Utilities.GetPlayerFromIndex(i);
                         if (pc == null || !pc.IsValid || pc.IsBot || pc.TeamNum != player.TeamNum) continue;
-                        pc.PrintToChat(ReplaceTags($"{isAlive}(TEAM) {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
+                        // pc.PrintToChat(ReplaceTags($"{isAlive}(TEAM) {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}: {ChatColors.Lime}{message}"));
+                        pc.PrintToChat(ReplaceTags($" {GetTag} {ChatColors.Red}{player.PlayerName} {ChatColors.Grey}{isAlive}{ChatColors.Default}: {message}"));
                     }
                 }
                 else
@@ -122,7 +124,72 @@ namespace VIP
             if (Config.WelcomeMessageEnable)
             {
                 player.PrintToChat($" {Localizer["welcome"]}");
+                MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+
+                MySqlQueryResult result = MySql!.Table("users").Where(MySqlQueryCondition.New("steam_id", "=", player.SteamID.ToString())).Select();
+                var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(result.Get<int>(0, "end")) - DateTimeOffset.UtcNow;
+                var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                var timeRemainingFormatted =
+                $"{timeRemaining.Days}d {timeRemaining.Hours}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+                player.PrintToChat($" {ChatColors.Red}{player.PlayerName} {ChatColors.Gold}You have VIP features. Type {ChatColors.Lime}!vip {ChatColors.Gold}too get more info.");
+                player.PrintToChat($" » {ChatColors.Gold}VIP: {ChatColors.Red}{get_name_group(player)} {ChatColors.Default}• {ChatColors.Lime}{timeRemainingFormatted} {ChatColors.Gold}left.");
             }
+            return HookResult.Continue;
+        }
+        static bool IsTimeBetween8PMAnd8AM() // ty k4ryu <3
+        {
+            // Get the current time
+            DateTime currentTime = DateTime.Now;
+
+            // Define the start and end times for the range (8 PM to 8 AM)
+            TimeSpan startTime = TimeSpan.FromHours(20); // 8 PM
+            TimeSpan endTime = TimeSpan.FromHours(8);    // 8 AM
+
+            if (endTime < startTime)
+            {
+                // The range spans midnight, so we need to check if the current time
+                // is less than the end time or greater than the start time.
+                return currentTime.TimeOfDay >= startTime || currentTime.TimeOfDay <= endTime;
+            }
+            else
+            {
+                // The range does not span midnight, so we can simply check if the
+                // current time is between the start and end times.
+                return currentTime.TimeOfDay >= startTime && currentTime.TimeOfDay <= endTime;
+            }
+        }
+        private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+        {
+            CCSPlayerController player = @event.Userid;
+
+            if (player == null || !player.IsValid || player.IsBot || player.IsHLTV || !player.PlayerPawn.IsValid)
+                return HookResult.Continue;
+
+            if (IsTimeBetween8PMAnd8AM() && IsVIP[client] == 0)
+            {
+                int TimeSec = Config.TestVIP.FreeVIPTime;
+                var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                var timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+
+                var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
+                var timeRemainingFormatted =
+                    $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+
+                MySqlQueryValue values = new MySqlQueryValue()
+                    .Add("steam_id", $"{player.SteamID}")
+                    .Add("end", $"{timeofvip}")
+                    .Add("`group`", $"0");
+
+                MySql.Table($"{Config.DBPrefix}_users").Insert(values);
+
+                var client = player.Index;
+                LoadPlayerData(player);
+
+                player.PrintToChat($" {Config.Prefix} {ChatColors.Red}FREE VIP. {ChatColors.Default} is Active. Use {ChatColors.Red}!vip {ChatColors.Default}for more info.");
+                Server.PrintToConsole($"FREE VIP - Added FREE VIP to player {player.PlayerName} SteamID: {player.SteamID}. Ending: {timeRemainingFormatted}");
+            }
+
             return HookResult.Continue;
         }
         [GameEventHandler]
@@ -138,12 +205,14 @@ namespace VIP
                 connected++;
             }
             ConnectedPlayers = connected;
+            Used[client] = 0;
+            LastUsed[client] = 0;
             return HookResult.Continue;
         }
         [GameEventHandler]
         public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
-            Server.PrintToConsole("This plugins is created by DeadSwim / https://madgames.eu");
+            Server.PrintToConsole("Created by: DeadSwim  [Modified by audio_brutalci]");
             timer_ex?.Kill();
             foreach (var l_player in Utilities.GetPlayers())
             {
@@ -157,41 +226,109 @@ namespace VIP
 
             if (GameRules().WarmupPeriod)
             {
-                WriteColor($"VIP Plugin - *[GAMERULES]* Warmup dosen't real Round, set on 0.", ConsoleColor.Yellow);
+                WriteColor($"VIP Plugin - *[GAMERULES]* Warmup, setting round to 0.", ConsoleColor.Yellow);
 
-                Round = 0;
+                Round = -1;
+                
             }
             if (GameRules().OvertimePlaying == 1)
             {
-                WriteColor($"VIP Plugin - *[GAMERULES]* Overtime dosen't real Round, set on 0.", ConsoleColor.Yellow);
+                WriteColor($"VIP Plugin - *[GAMERULES]* Overtime, setting round to 0.", ConsoleColor.Yellow);
 
                 Round = 0;
             }
             if (GameRules().SwitchingTeamsAtRoundReset)
             {
-                Round = -1;
+                Round = 0;
                 DisableGiving = true;
-                foreach (var l_player in Utilities.GetPlayers())
+                // foreach (var l_player in Utilities.GetPlayers())
+                // {
+                //     CCSPlayerController player = l_player;
+                //     if (player == null && !player.IsValid)
+                //     {
+                //         return HookResult.Continue;
+                //     }
+                //     var client = player.Index;
+                    
+                //     if (IsVIP[client] == 1)
+                //     {
+                //         Round = 0;
+                //         Used[client] = 0;
+                //         LastUsed[client] = 0;
+                //     }
+                // }
+                foreach (var l_player in Utilities.GetPlayers().Where(player => IsVIP[player.Index] == 1))
                 {
                     CCSPlayerController player = l_player;
-                    if (player == null && !player.IsValid)
+
+                    if (player == null || !player.IsValid)
                     {
-                        return HookResult.Continue;
+                        // Skip invalid players
+                        continue;
                     }
+
                     var client = player.Index;
-                    
+
+                    Round = 0;
+                    Used[client] = 0;
+                    LastUsed[client] = 0;
+                }
+                WriteColor($"VIP Plugin - *[GAMERULES]* Halftime, set round {Round}.", ConsoleColor.Yellow);
+                WriteColor($"VIP Plugin - *[GAMERULES]* Restarting rounds number to zero..", ConsoleColor.Yellow);
+                WriteColor($"VIP Plugin - *[GAMERULES]* Removing all weapons from players and giving C4, Knife, Glock, HKP2000.", ConsoleColor.Yellow);
+            }
+            if (Round == 0 || Round == -1)
+            {
+                foreach (var l_player in Utilities.GetPlayers().Where(player => player.IsValid && !player.IsBot && IsVIP[player.Index] == 1))
+                {
+                    int?[] HaveC4 = new int?[65];
+                    CCSPlayerController player = l_player;
+
+                    var client = player.Index;
+
                     if (IsVIP[client] == 1)
                     {
-                        Round = -1;
-                        Used[client] = 0;
-                        LastUsed[client] = 0;
+                        if (CheckIsHaveWeapon("c4", player))
+                        {
+                            // Player has C4
+                            HaveC4[client] = 1;
+                        }
+
+                        // Remove all weapons except knife
+                        foreach (var weapon in player.PlayerPawn.Value.WeaponServices!.MyWeapons)
+                        {
+                            if (weapon is { IsValid: true, Value.IsValid: true })
+                            {
+                                if (weapon.Value.DesignerName.Contains("bayonet") || weapon.Value.DesignerName.Contains("knife"))
+                                {
+                                    continue;
+                                }
+
+                                weapon.Value.Remove();
+                            }
+                        }
+
+                        // Give weapons based on team
+                        if (player.TeamNum == (byte)CsTeam.Terrorist)
+                        {
+                            player.GiveNamedItem("weapon_glock");
+
+                            if (HaveC4[client] == 1)
+                            {
+                                player.GiveNamedItem("weapon_c4");
+                                HaveC4[client] = 0;
+                            }
+                        }
+                        else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
+                        {
+                            player.GiveNamedItem("weapon_usp_silencer");
+                            // player.GiveNamedItem("weapon_hkp2000");
+                        }
                     }
                 }
-                WriteColor($"VIP Plugin - *[GAMERULES]* Halftime/switch sites dosen't real Round, set on {Round}.", ConsoleColor.Yellow);
-                WriteColor($"VIP Plugin - *[GAMERULES]* Restarting rounds number to zero..", ConsoleColor.Yellow);
-                WriteColor($"VIP Plugin - *[GAMERULES]* Removing all weapons to players and giving C4, Knife, Glock, HKP2000.", ConsoleColor.Yellow);
             }
-            if(Round == 0 || Round == -1)
+
+/*            if(Round == 0 || Round == -1)
             {
                 foreach (var l_player in Utilities.GetPlayers())
                 {
@@ -231,11 +368,12 @@ namespace VIP
                         }
                         if (player.TeamNum == ((byte)CsTeam.CounterTerrorist))
                         {
-                            player.GiveNamedItem("weapon_hkp2000");
+                            player.GiveNamedItem("weapon_usp_silencer");
+                            // player.GiveNamedItem("weapon_hkp2000");
                         }
                     }
                 }
-            }
+            } */
 
             Round++;
 
@@ -248,7 +386,7 @@ namespace VIP
             {
                 DisableGiving = false;
             }
-            WriteColor($"VIP Plugin - Added new round count, now is [{Round}] {Bomb}.", ConsoleColor.Magenta);
+            WriteColor($"VIP Plugin - Round: [{Round}] C4: {Bomb}.", ConsoleColor.Magenta);
 
 
             return HookResult.Continue;
@@ -315,79 +453,85 @@ namespace VIP
                         player.PrintToChat($" {Config.Prefix} {Localizer["AutoGun"]}");
                     }
                 }
-                if (LastUsed[client] == 1)
+                if (Round > 1) return HookResult.Continue;
+
+                AddTimer(1.0f, () =>
                 {
-                    if (CheckIsHaveWeapon("ak47", player) == false)
+
+                    if (LastUsed[client] == 1)
                     {
-                        player.GiveNamedItem("weapon_ak47");
-                    }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAK"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 2)
-                {
-                    foreach (var weapon in Config.Pack1Settings.Weapons)
-                    {
-                        if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                        if (CheckIsHaveWeapon("ak47", player) == false)
                         {
-                            player.GiveNamedItem($"weapon_{weapon}");
+                            player.GiveNamedItem("weapon_ak47");
                         }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAK"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 3)
-                {
-                    foreach (var weapon in Config.Pack2Settings.Weapons)
+                    else if (LastUsed[client] == 2)
                     {
-                        if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                        foreach (var weapon in Config.Pack1Settings.Weapons)
                         {
-                            player.GiveNamedItem($"weapon_{weapon}");
+                            if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                            {
+                                player.GiveNamedItem($"weapon_{weapon}");
+                            }
                         }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["Package_two"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 10)
-                {
-                    foreach (var weapon in Config.Pack3Settings.Weapons)
+                    else if (LastUsed[client] == 3)
                     {
-                        if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                        foreach (var weapon in Config.Pack2Settings.Weapons)
                         {
-                            player.GiveNamedItem($"weapon_{weapon}");
+                            if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                            {
+                                player.GiveNamedItem($"weapon_{weapon}");
+                            }
                         }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["Package_two"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["Package_three"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 4)
-                {
-                    if (CheckIsHaveWeapon("m4a1", player) == false)
+                    else if (LastUsed[client] == 10)
                     {
-                        player.GiveNamedItem("weapon_m4a1");
+                        foreach (var weapon in Config.Pack3Settings.Weapons)
+                        {
+                            if (CheckIsHaveWeapon($"{weapon}", player) == false)
+                            {
+                                player.GiveNamedItem($"weapon_{weapon}");
+                            }
+                        }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["Package_three"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 5)
-                {
-                    if (CheckIsHaveWeapon("m4a1_silencer", player) == false)
+                    else if (LastUsed[client] == 4)
                     {
-                        player.GiveNamedItem("weapon_m4a1_silencer");
+                        if (CheckIsHaveWeapon("m4a1", player) == false)
+                        {
+                            player.GiveNamedItem("weapon_m4a1");
+                        }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1S"]}");
-                    Used[client] = 1;
-                }
-                else if (LastUsed[client] == 6)
-                {
-                    if (CheckIsHaveWeapon("awp", player) == false)
+                    else if (LastUsed[client] == 5)
                     {
-                        player.GiveNamedItem("weapon_awp");
+                        if (CheckIsHaveWeapon("m4a1_silencer", player) == false)
+                        {
+                            player.GiveNamedItem("weapon_m4a1_silencer");
+                        }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1S"]}");
+                        Used[client] = 1;
                     }
-                    player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAWP"]}");
-                    Used[client] = 1;
-                }
-                //player.PrintToChat($"{Config.Prefix} You can use /ak for give AK47 or /m4 for give M4A1");
+                    else if (LastUsed[client] == 6)
+                    {
+                        if (CheckIsHaveWeapon("awp", player) == false)
+                        {
+                            player.GiveNamedItem("weapon_awp");
+                        }
+                        player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAWP"]}");
+                        Used[client] = 1;
+                    }
+                    //player.PrintToChat($"{Config.Prefix} You can use /ak for give AK47 or /m4 for give M4A1");
+                });
             }
             return HookResult.Continue;
         }
@@ -503,19 +647,26 @@ namespace VIP
                         var AttackerMoneys = MoneyValueAttacker.Account;
                         MoneyValueAttacker.Account = AttackerMoneys + Config.RewardsClass.KillMoney;
                         //attacker.PrintToChat($" {Config.Prefix} You got {ChatColors.Lime}+{Config.RewardsClass.KillMoney} ${ChatColors.Default} for kill player {ChatColors.LightRed}{player.PlayerName}{ChatColors.Default}, enjoy.");
-                        attacker.PrintToChat($" {Config.Prefix} {Localizer["MoneyRewards", Config.RewardsClass.KillMoney, player.PlayerName]}");
+                        // attacker.PrintToChat($" {Config.Prefix} {Localizer["MoneyRewards", Config.RewardsClass.KillMoney, player.PlayerName]}");
 
                     }
                 if (Config.GiveHPAfterKill)
+                {
+                    var player = @event.Userid;
+                    if (2 > get_vip_group(player))
                     {
-                        var health_attacker = attacker.PlayerPawn.Value.Health;
-                        Server.NextFrame(() =>
-                        {
-                            AddTimer(0.1f, () => { set_hp(attacker, health_attacker + Config.RewardsClass.KillHP); });
-                        });
-                        Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
-                        attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player.PlayerName]}");
+                        return HookResult.Continue;
                     }
+
+                    var health_attacker = attacker.PlayerPawn.Value.Health;
+                    Server.NextFrame(() =>
+                    {
+                        AddTimer(0.1f, () => { set_hp(attacker, health_attacker + Config.RewardsClass.KillHP); });
+                    });
+
+                    // Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
+                    attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player.PlayerName]}");
+                }
 
             }
             return HookResult.Continue;

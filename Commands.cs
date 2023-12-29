@@ -89,11 +89,8 @@ namespace VIP
                     LoadPlayerData(player);
 
 
-                    player.PrintToChat($" {ChatColors.Lime}=========================================");
-                    player.PrintToChat($" {Config.Prefix} You use a TestVIP.");
-                    player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
-                    player.PrintToChat($" {ChatColors.Lime}=========================================");
-                    Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} add new TEST VIP with steamid {player.SteamID}, end time is {timeRemainingFormatted}");
+                    player.PrintToChat($" {Config.Prefix} You have activated {ChatColors.Red}TEST VIP. {ChatColors.Default} Ending in: {ChatColors.Red}{timeRemainingFormatted}{ChatColors.Default}."); ;
+                    Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} used TEST VIP with steamid {player.SteamID}, end time is {timeRemainingFormatted}");
                 }
                 else
                 {
@@ -102,10 +99,7 @@ namespace VIP
                     var timeRemainingFormatted =
                     $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
 
-                    player.PrintToChat($" {ChatColors.Lime}=========================================");
-                    player.PrintToChat($" {Config.Prefix} You cannot use anymore TestVIP.");
-                    player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
-                    player.PrintToChat($" {ChatColors.Lime}=========================================");
+                    player.PrintToChat($" {Config.Prefix} You already used VIP Test.");
                 }
             }
             else
@@ -113,7 +107,7 @@ namespace VIP
                 player.PrintToChat($" {Config.Prefix} On this server is not {ChatColors.Red}allowed{ChatColors.Lime} /testvip{ChatColors.Default}, contact the owner.");
             }
         }
-        [ConsoleCommand("css_activator", "Activate VIP from Tokens")]
+        [ConsoleCommand("css_brvip", "Activate VIP from Tokens")]
         public void CommandActivator(CCSPlayerController? player, CommandInfo info)
         {
             var token = info.ArgByIndex(1);
@@ -121,7 +115,7 @@ namespace VIP
                 return;
             if (is_vip(player))
             {
-                player.PrintToChat($" {Config.Prefix} You are {ChatColors.Lime}VIP{ChatColors.Default}, you {ChatColors.Red}cannot activate{ChatColors.Default} this VIP!");
+                player.PrintToChat($" {Config.Prefix} You already have {ChatColors.Green}VIP{ChatColors.Default} features, you {ChatColors.Red}can not activate{ChatColors.Default} this VIP!");
                 return;
             }
 
@@ -149,22 +143,17 @@ namespace VIP
                 .Add("end", $"{timeofvip}")
                 .Add("`group`", $"{group_int}");
                 MySql.Table($"{Config.DBPrefix}_users").Insert(_Tvalues);
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
                 player.PrintToChat($" {Config.Prefix} {Localizer["Activator"]}");
                 if (result.Get<int>(0, "end") == 0)
                 {
                     player.PrintToChat($" {Config.Prefix} {Localizer["ForeverVIP"]}");
                 }
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
                 LoadPlayerData(player);
                 MySql.Table($"{Config.DBPrefix}_users_key_vip").Where($"token = '{token}'").Delete();
             }
             else
             {
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
-                player.PrintToChat($" {Config.Prefix} {Localizer["TokenNotExist"]}");
-                player.PrintToChat($" {Config.Prefix} {Localizer["TokenTyped", token]}");
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
+                player.PrintToChat($" {Config.Prefix} Token{ChatColors.Default}: {ChatColors.Red}{token}{ChatColors.Default} does not exist!");
             }
         }
         [ConsoleCommand("css_generatevip", "Generate new VIP token")]
@@ -341,31 +330,92 @@ namespace VIP
                 status = $" {ChatColors.Red} Inactive";
                 status_i = 0;
             }
-            player.PrintToChat($" {ChatColors.Green}==!-!=={ChatColors.Lime} VIP {ChatColors.Default}Status {ChatColors.Green}==!-!==");
+            player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+ {ChatColors.Gold}✪ BRUTALCI VIP ✪ {ChatColors.Green}+-+-+-+-+-+-");
             player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}You have {status}{ChatColors.Default} VIP Status.");
             if(status_i == 1)
             {
-                player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Your {ChatColors.Lime}VIP have time {formating}{ChatColors.Default}.");
-                player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Your {ChatColors.Lime}VIP {ChatColors.Default}group {ChatColors.Green}{get_name_group(player)}{ChatColors.Default}.");
-                player.PrintToChat($" {ChatColors.Gold}▼ {ChatColors.Lime}Yours command available for you{ChatColors.Gold} ▼");
+                player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Ending in: {ChatColors.Lime}{formating}{ChatColors.Default}.");
+                player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}{ChatColors.Lime}VIP {ChatColors.Default}Group: {ChatColors.Red}{get_name_group(player)}{ChatColors.Default}.");
+                player.PrintToChat($" {ChatColors.Gold}▼ {ChatColors.Lime}Available Commands{ChatColors.Gold} ▼");
                 if (get_vip_group(player) >= Config.CommandOnGroup.Weapons)
                 {
-                    player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Selecting weapons : {ChatColors.Lime}/weapon {ChatColors.Default}1,2,3,4,5{ChatColors.Gold} ◄");
+                    player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Select Weapon: {ChatColors.Red}!guns {ChatColors.Default}ak, m4, m4a4, awp{ChatColors.Gold}");
                 }
                 if (get_vip_group(player) >= Config.CommandOnGroup.Pack )
                 {
-                    player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Selecting package : {ChatColors.Lime}/pack {ChatColors.Default}1,2{ChatColors.Gold} ◄");
+                    player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Select Weapon Pack: {ChatColors.Red}!wp {ChatColors.Default}ak, m4, m4a4{ChatColors.Gold}");
                 }
                 if (get_vip_group(player) >= Config.CommandOnGroup.Respawn || Config.RespawnAllowed)
                 {
                     player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Respawn on spawn  : {ChatColors.Lime}/respawnvip{ChatColors.Gold} ◄");
                 }
-                player.PrintToChat($" {ChatColors.Gold}► {ChatColors.Default}Turn of auto wep. : {ChatColors.Lime}/guns_off{ChatColors.Gold} ◄");
+                player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Turn off Weapon Loadout: {ChatColors.Red}!gunsoff");
 
             }
-            player.PrintToChat($" {ChatColors.Green}==!-!=={ChatColors.Lime} VIP {ChatColors.Default}Status {ChatColors.Green}==!-!==");
+            player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+{ChatColors.Red} www.BRUTALCI.info {ChatColors.Green}+-+-+-+-+-+-");
 
 
+        }
+        static bool IsTimeBetween8PMAnd8AM() // ty k4ryu <3
+        {
+            // Get the current time
+            DateTime currentTime = DateTime.Now;
+
+            // Define the start and end times for the range (8 PM to 8 AM)
+            TimeSpan startTime = TimeSpan.FromHours(20); // 8 PM
+            TimeSpan endTime = TimeSpan.FromHours(8);    // 8 AM
+
+            if (endTime < startTime)
+            {
+                // The range spans midnight, so we need to check if the current time
+                // is less than the end time or greater than the start time.
+                return currentTime.TimeOfDay >= startTime || currentTime.TimeOfDay <= endTime;
+            }
+            else
+            {
+                // The range does not span midnight, so we can simply check if the
+                // current time is between the start and end times.
+                return currentTime.TimeOfDay >= startTime && currentTime.TimeOfDay <= endTime;
+            }
+        }
+        [ConsoleCommand("css_freevip", "Free VIP")]
+        public void CommandFREEVIP(CCSPlayerController? player, CommandInfo info)
+        {
+            if (Config.TestVIP.EnableFreeVIP)
+            {
+                if (is_vip(player))
+                {
+                    player.PrintToChat($" {Config.Prefix} You already have {ChatColors.Green}VIP{ChatColors.Default} features, you {ChatColors.Red}can not activate{ChatColors.Default} this VIP!");
+                    return;
+                }
+                if (IsTimeBetween8PMAnd8AM())
+                {
+                    int TimeSec = Config.TestVIP.FreeVIPTime;
+                    var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                    var timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                    MySqlQueryValue _Tvalues = new MySqlQueryValue();
+                    MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+                    var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
+                    var timeRemainingFormatted =
+                    $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+
+                    MySqlQueryValue values = new MySqlQueryValue()
+                    .Add("steam_id", $"{player.SteamID}")
+                    .Add("end", $"{timeofvip}")
+                    .Add("`group`", $"0");
+                    MySql.Table($"{Config.DBPrefix}_users").Insert(values);
+                    var client = player.Index;
+                    LoadPlayerData(player);
+
+
+                    player.PrintToChat($" {Config.Prefix} You have activated {ChatColors.Red}FREE VIP. {ChatColors.Default} Ending in: {ChatColors.Red}{timeRemainingFormatted}{ChatColors.Default}."); ;
+                    Server.PrintToConsole($"VIP Plugin - Player {player.PlayerName} used FREE VIP with steamid {player.SteamID}, end time is {timeRemainingFormatted}");
+                }
+                else
+                {
+                    player.PrintToChat($" {Config.Prefix} You can't use {ChatColors.Red}FREE VIP {ChatColors.Default}before 20h.");
+                }
+            }
         }
         [ConsoleCommand("css_respawnvip", "Command to respawn player")]
 
@@ -422,7 +472,7 @@ namespace VIP
                 RespawnUsed[client] = 1;
             }
         }
-        [ConsoleCommand("css_guns_off", "Disable automatically weapons")]
+        [ConsoleCommand("css_gunsoff", "Disable weapon loadout")]
 
         public void CommandGUNS_off(CCSPlayerController? player, CommandInfo info)
         {
@@ -450,19 +500,19 @@ namespace VIP
                 }
             }
         }
-        [ConsoleCommand("css_weapon", "Select a Weapon from commands")]
+        [ConsoleCommand("css_guns", "Select a Weapon from commands")]
 
         public void SelectWeapon(CCSPlayerController? player, CommandInfo info)
         {
             var PackagesID = info.ArgByIndex(1);
             var client = player.Index;
-            if (PackagesID == null || PackagesID == "" || !IsInt(PackagesID))
+            if (PackagesID == null || PackagesID == "")
             {
-                player.PrintToChat($" {Config.Prefix} Please select the weapon. Must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Weapons 1 (AK-47). Type:{ChatColors.Lime}/weapon 1{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Weapons 2 (M4A1). Type:{ChatColors.Lime}/weapon 2{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Weapons 3 (M4A1-S). Type:{ChatColors.Lime}/weapon 3{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Weapons 4 (AWP). Type:{ChatColors.Lime}/weapon 4{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} Please select a weapon.");
+                player.PrintToChat($" Weapon (AK-47). Type:{ChatColors.Red}!guns ak{ChatColors.Default}.");
+                player.PrintToChat($" Weapon (M4A4). Type:{ChatColors.Red}!guns m4a4{ChatColors.Default}.");
+                player.PrintToChat($" Weapon (M4A1-S). Type:{ChatColors.Red}!guns m4{ChatColors.Default}.");
+                player.PrintToChat($" Weapon (AWP). Type:{ChatColors.Red}!guns awp{ChatColors.Default}.");
                 return;
             }
             if (!player.IsValid || !player.PlayerPawn.IsValid)
@@ -500,7 +550,9 @@ namespace VIP
                 player.PrintToChat($" {Config.Prefix} {Localizer["OnceUse"]}");
                 return;
             }
-            if (Convert.ToInt32(PackagesID) == 1)
+            string weaponName = PackagesID.ToLower();
+            
+            if (weaponName == "ak")
             {
                 Used[client] = 1;
                 LastUsed[client] = 1;
@@ -508,9 +560,9 @@ namespace VIP
                 {
                     player.GiveNamedItem("weapon_ak47");
                 }
-                player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAK"]}");
+                Server.PrintToChatAll($" {Config.Prefix} {ChatColors.Gold}{player.PlayerName} {ChatColors.Default}got a weapon {ChatColors.Lime}AK47");
             }
-            else if (Convert.ToInt32(PackagesID) == 2)
+            else if (weaponName == "m4a4")
             {
                 Used[client] = 1;
                 LastUsed[client] = 4;
@@ -518,9 +570,9 @@ namespace VIP
                 {
                     player.GiveNamedItem("weapon_m4a1");
                 }
-                player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1"]}");
+                Server.PrintToChatAll($" {Config.Prefix} {ChatColors.Gold}{player.PlayerName} {ChatColors.Default}got a weapon {ChatColors.Lime}M4A4");
             }
-            else if (Convert.ToInt32(PackagesID) == 3)
+            else if (weaponName == "m4")
             {
                 Used[client] = 1;
                 LastUsed[client] = 5;
@@ -528,9 +580,9 @@ namespace VIP
                 {
                     player.GiveNamedItem("weapon_m4a1_silencer");
                 }
-                player.PrintToChat($" {Config.Prefix} {Localizer["WeaponM4A1S"]}");
+                Server.PrintToChatAll($" {Config.Prefix} {ChatColors.Gold}{player.PlayerName} {ChatColors.Default}got a weapon {ChatColors.Lime}M4A1-S");
             }
-            else if (Convert.ToInt32(PackagesID) == 4)
+            else if (weaponName == "awp")
             {
                 Used[client] = 1;
                 LastUsed[client] = 6;
@@ -538,29 +590,29 @@ namespace VIP
                 {
                     player.GiveNamedItem("weapon_awp");
                 }
-                player.PrintToChat($" {Config.Prefix} {Localizer["WeaponAWP"]}");
+                Server.PrintToChatAll($" {Config.Prefix} {ChatColors.Gold}{player.PlayerName} {ChatColors.Default}got a weapon {ChatColors.Lime}AWP");
             }
             else
             {
                 Used[client] = 0;
                 LastUsed[client] = 0;
-                player.PrintToChat($" {Config.Prefix} Please select the weapon. Must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Weapons 1 (AK-47). Type:{ChatColors.Lime}/weapon 1{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Weapons 2 (M4A1). Type:{ChatColors.Lime}/weapon 2{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Weapons 3 (M4A1-S). Type:{ChatColors.Lime}/weapon 3{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Weapons 4 (AWP). Type:{ChatColors.Lime}/weapon 3{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} Please select a weapon.");
+                player.PrintToChat($" Weapon (AK-47). Type: {ChatColors.Red}!guns ak{ChatColors.Default}.");
+                player.PrintToChat($" Weapon (M4A4). Type: {ChatColors.Red}!guns m4a4{ChatColors.Default}.");
+                player.PrintToChat($" Weapon (M4A1-S). Type: {ChatColors.Red}!guns m4{ChatColors.Default}.");
+                player.PrintToChat($" Weapon (AWP). Type: {ChatColors.Red}!guns awp{ChatColors.Default}.");
             }
 
         }
-        [ConsoleCommand("css_pack", "Select a packages of weapons")]
+        [ConsoleCommand("css_wp", "Select a packages of weapons")]
 
         public void PackagesWeapons(CCSPlayerController? player, CommandInfo info)
         {
             var PackagesID = info.ArgByIndex(1);
             var client = player.Index;
-            if (PackagesID == null || PackagesID == "" || !IsInt(PackagesID))
+            if (PackagesID == null || PackagesID == "")
             {
-                player.PrintToChat($" {Config.Prefix} Current packages ids is {ChatColors.Lime}1{ChatColors.Default},{ChatColors.Lime}2{ChatColors.Default}. {ChatColors.Lime}/pack ID_PACK{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} Available Weapon Packs:{ChatColors.Lime}!wp {ChatColors.Lime}ak{ChatColors.Default}, {ChatColors.Lime}m4{ChatColors.Default}, {ChatColors.Lime}m4a4{ChatColors.Default}.");
                 return;
             }
             if (!player.IsValid || !player.PlayerPawn.IsValid)
@@ -598,11 +650,14 @@ namespace VIP
                 player.PrintToChat($" {Config.Prefix} {Localizer["OnceUse"]}");
                 return;
             }
-            if (Convert.ToInt32(PackagesID) == 1)
+            string weaponName = PackagesID.ToLower();
+
+            if (weaponName == "ak")
             {
                 Used[client] = 1;
                 LastUsed[client] = 2;
                 player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
+                Server.PrintToChatAll($" {Config.Prefix} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}has used weapon pack!");
                 foreach(var weapon in Config.Pack1Settings.Weapons)
                 {
                     if (CheckIsHaveWeapon($"{weapon}", player) == false)
@@ -611,11 +666,12 @@ namespace VIP
                     }
                 }
             }
-            else if (Convert.ToInt32(PackagesID) == 2)
+            else if (weaponName == "m4")
             {
                 Used[client] = 1;
                 LastUsed[client] = 3;
                 player.PrintToChat($" {Config.Prefix} {Localizer["Package_two"]}");
+                Server.PrintToChatAll($" {Config.Prefix} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}has used weapon pack!");
                 foreach (var weapon in Config.Pack2Settings.Weapons)
                 {
                     if (CheckIsHaveWeapon($"{weapon}", player) == false)
@@ -624,13 +680,14 @@ namespace VIP
                     }
                 }
             }
-            else if (Convert.ToInt32(PackagesID) == 3)
+            else if (weaponName == "m4a4")
             {
                 if (Config.Pack3Settings.Allowed)
                 {
                     Used[client] = 1;
                     LastUsed[client] = 10;
                     player.PrintToChat($" {Config.Prefix} {Localizer["Package_three"]}");
+                    Server.PrintToChatAll($" {Config.Prefix} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}has used weapon pack!");
                     foreach (var weapon in Config.Pack3Settings.Weapons)
                     {
                         if (CheckIsHaveWeapon($"{weapon}", player) == false)
@@ -644,7 +701,7 @@ namespace VIP
             {
                 Used[client] = 0;
                 LastUsed[client] = 0;
-                player.PrintToChat($" {Config.Prefix} Current packages ids is {ChatColors.Lime}1{ChatColors.Default},{ChatColors.Lime}2{ChatColors.Default}. {ChatColors.Lime}/pack ID_PACK{ChatColors.Default}, must be added in int.");
+                player.PrintToChat($" {Config.Prefix} Available Weapon Packs: {ChatColors.Lime}!wp {ChatColors.Lime}ak{ChatColors.Default}, {ChatColors.Lime}m4{ChatColors.Default}, {ChatColors.Lime}m4a4{ChatColors.Default}.");
             }
         }
     }

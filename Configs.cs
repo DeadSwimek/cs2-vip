@@ -39,10 +39,10 @@ namespace VIP;
 
 public class ConfigVIP : BasePluginConfig
 {
-    [JsonPropertyName("Prefix")] public string Prefix { get; set; } = $" {ChatColors.Default}[{ChatColors.Green}MadGames.eu{ChatColors.Default}]";
+    [JsonPropertyName("Prefix")] public string Prefix { get; set; } = $" {ChatColors.Blue}[BRVIP]{ChatColors.Default}";
     [JsonPropertyName("GiveHPAfterKill")] public bool GiveHPAfterKill { get; set; } = true;
     [JsonPropertyName("GiveMoneyAfterKill")] public bool GiveMoneyAfterKill { get; set; } = true;
-    [JsonPropertyName("AllowKillMessages")] public bool AllowKillMessages { get; set; } = true;
+    [JsonPropertyName("AllowKillMessages")] public bool AllowKillMessages { get; set; } = false;
     [JsonPropertyName("EnableVIPPrefix")] public bool EnableVIPPrefix { get; set; } = true;
     [JsonPropertyName("EnableVIPAcceries")] public bool EnableVIPAcceries { get; set; } = true;
     [JsonPropertyName("EnableVIPColoredSmokes")] public bool EnableVIPColoredSmokes { get; set; } = true;
@@ -52,8 +52,8 @@ public class ConfigVIP : BasePluginConfig
     [JsonPropertyName("EnableDoubbleJump")] public bool EnableDoubbleJump { get; set; } = true;
     [JsonPropertyName("KnifeDMGEnable")] public bool KnifeDMGEnable { get; set; } = false;
     [JsonPropertyName("WelcomeMessageEnable")] public bool WelcomeMessageEnable { get; set; } = true;
-    [JsonPropertyName("ReservedSlotsForVIP")] public int ReservedSlotsForVIP { get; set; } = 1;
-    [JsonPropertyName("ReservedMethod")] public int ReservedMethod { get; set; } = 1;
+    [JsonPropertyName("ReservedSlotsForVIP")] public int ReservedSlotsForVIP { get; set; } = 2;
+    [JsonPropertyName("ReservedMethod")] public int ReservedMethod { get; set; } = 2;
     [JsonPropertyName("Bombinfo")] public bool Bombinfo { get; set; } = true;
     [JsonPropertyName("DisablePackWeaponAfter20Sec")] public bool DisablePackWeaponAfter20Sec { get; set; } = false;
     [JsonPropertyName("MinimumRoundToUseCommands")] public int MinimumRoundToUseCommands { get; set; } = 3;
@@ -63,7 +63,7 @@ public class ConfigVIP : BasePluginConfig
 
 
 
-    [JsonPropertyName("WelcomeMessage")] public string WelcomeMessage { get; set; } = $"Welcom on server you are BEST VIP!";
+    [JsonPropertyName("WelcomeMessage")] public string WelcomeMessage { get; set; } = $" {ChatColors.Green}Thank you for supporting  {ChatColors.Red}BRUTALCI {ChatColors.Green}Community! {ChatColors.Red}<3";
     [JsonPropertyName("DBDatabase")] public string DBDatabase { get; set; } = "database";
     [JsonPropertyName("DBUser")] public string DBUser { get; set; } = "user";
     [JsonPropertyName("DBPassword")] public string DBPassword { get; set; } = "password";
@@ -95,6 +95,8 @@ public class TestVIP
 {
     [JsonPropertyName("EnableTestVIP")] public bool EnableTestVIP { get; set; } = true;
     [JsonPropertyName("TimeOfVIP")] public int TimeOfVIP { get; set; } = 3600;
+    [JsonPropertyName("EnableFreeVIP")] public bool EnableTestVIP { get; set; } = true;
+    [JsonPropertyName("FreeVIPTime")] public int TimeOfVIP { get; set; } = 3600;
 
 }
 public class RewardsClass
