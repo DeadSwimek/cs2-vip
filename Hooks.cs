@@ -139,7 +139,7 @@ namespace VIP
         private HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
         {
             CCSPlayerController player = @event.Userid;
-
+            var client = player.Index;
             if (player == null || !player.IsValid || player.IsBot || player.IsHLTV || !player.PlayerPawn.IsValid)
                 return HookResult.Continue;
 
@@ -174,6 +174,7 @@ namespace VIP
         public HookResult OnClientDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
         {
             CCSPlayerController player = @event.Userid;
+            var client = player.Index;
 
             if (player == null || !player.IsValid || player.IsBot)
                 return HookResult.Continue;
@@ -602,6 +603,7 @@ namespace VIP
             }
             CCSPlayerController player = @event.Userid;
             CCSPlayerController attacker = @event.Attacker;
+            var player = @event.Userid;
             var MoneyValueAttacker = attacker.InGameMoneyServices;
             var attacker_entity = attacker.Index;
             if (player == null || !player.IsValid)
@@ -630,7 +632,7 @@ namespace VIP
                     }
                 if (Config.GiveHPAfterKill)
                 {
-                    var player = @event.Userid;
+                    
                     if (2 > get_vip_group(player))
                     {
                         return HookResult.Continue;
