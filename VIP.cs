@@ -124,6 +124,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `{Config.DBPrefix}_users` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `{Config.DBPrefix}_users_test_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `used` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `{Config.DBPrefix}_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
+            MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `freevip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steam_id` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`steam_id`));");
 
             WriteColor($"VIP Plugin - *[MySQL {Config.DBHost} Connected]", ConsoleColor.Green);
 
@@ -224,7 +225,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
             }
         });
 
-
+        RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
         if (hotReload)
         {
             RegisterListener<Listeners.OnMapStart>(name =>
@@ -467,7 +468,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         if (pc == null || !pc.IsValid)
             return false;
 
-        var pawn = pc.PlayerPawn.Value.WeaponServices!;
+        var pawn = pc.PlayerPawn.Value?.WeaponServices!;
         foreach (var weapon in pawn.MyWeapons)
         {
             if (weapon is { IsValid: true, Value.IsValid: true })

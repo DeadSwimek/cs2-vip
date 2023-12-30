@@ -242,8 +242,8 @@ namespace VIP
             var group_int = Group;
 
             var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
-                var timeRemainingFormatted =
-                $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
+            var timeRemainingFormatted =
+            $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
 
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
             MySqlQueryValue values = new MySqlQueryValue()
@@ -265,13 +265,13 @@ namespace VIP
         [ConsoleCommand("css_addvip", "Add new VIP")]
         public void CommandAddVIP(CCSPlayerController? player, CommandInfo info)
         {
-            if (player == null)
-            {
-                // Perform error handling or return early if player is null
-                // For example:
-                Server.PrintToConsole("VIP Plugin - Error: Player is null.");
-                return;
-            }
+            // if (player == null)
+            // {
+            //     // Perform error handling or return early if player is null
+            //     // For example:
+            //     Server.PrintToConsole("VIP Plugin - Error: Player is null.");
+            //     return;
+            // }
 
             var Group = info.ArgByIndex(3);
             var SteamIDC = info.ArgByIndex(2);
@@ -279,31 +279,31 @@ namespace VIP
 
             if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
             {
-                player.PrintToChat($" {Config.Prefix} You are not admin..");
+                player?.PrintToChat($" {Config.Prefix} You are not admin..");
                 return;
             }
             else if (SteamIDC == null || SteamIDC == "" || !IsInt(SteamIDC))
             {
-                player.PrintToChat($" {Config.Prefix} You must add SteamID. Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777{ChatColors.Default}.");
+                player?.PrintToChat($" {Config.Prefix} You must add SteamID. Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
+                player?.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777{ChatColors.Default}.");
                 return;
             }
             else if (TimeSec == null || TimeSec == "" || !IsInt(TimeSec))
             {
-                player.PrintToChat($" {Config.Prefix} You must add Time in days. Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777{ChatColors.Default}.");
+                player?.PrintToChat($" {Config.Prefix} You must add Time in days. Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
+                player?.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777{ChatColors.Default}.");
 
                 return;
             }
             else if (Group == null || Group == "" || !IsInt(Group))
             {
-                player.PrintToChat($" {Config.Prefix} You must add Group (Exist: 0, 1). Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
-                player.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777 0{ChatColors.Default}.");
-                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
-                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '0' >{ChatColors.Default} {Config.GroupsNames.Group1} {ChatColors.Lime}< Group '0' >");
-                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '1' >{ChatColors.Default} {Config.GroupsNames.Group2} {ChatColors.Lime}< Group '1' >");
-                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '2' >{ChatColors.Default} {Config.GroupsNames.Group3} {ChatColors.Lime}< Group '2' >");
-                player.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
+                player?.PrintToChat($" {Config.Prefix} You must add Group (Exist: 0, 1). Example {ChatColors.Lime}/addvip <Time in days> 77777777 <GROUP>{ChatColors.Default}, must be added in int.");
+                player?.PrintToChat($" {Config.Prefix} Or if you wanna add forever VIP type {ChatColors.Lime}/addvip 0 77777777 0{ChatColors.Default}.");
+                player?.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
+                player?.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '0' >{ChatColors.Default} {Config.GroupsNames.Group1} {ChatColors.Lime}< Group '0' >");
+                player?.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '1' >{ChatColors.Default} {Config.GroupsNames.Group2} {ChatColors.Lime}< Group '1' >");
+                player?.PrintToChat($" {Config.Prefix} {ChatColors.Lime}< Group '2' >{ChatColors.Default} {Config.GroupsNames.Group3} {ChatColors.Lime}< Group '2' >");
+                player?.PrintToChat($" {Config.Prefix} {ChatColors.Lime}<------------>{ChatColors.Default} List's of Groups {ChatColors.Lime}<------------>");
 
 
                 return;
@@ -333,11 +333,11 @@ namespace VIP
                 .Add("end", $"{timeofvip}")
                 .Add("`group`", group_int);
                 MySql.Table($"{Config.DBPrefix}_users").Insert(values);
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
-                player.PrintToChat($" {Config.Prefix} Player with steamid {ChatColors.Lime}{SteamIDC}{ChatColors.Default} has been added.");
-                player.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
-                player.PrintToChat($" {ChatColors.Lime}=========================================");
-                Server.PrintToConsole($"VIP Plugin - Admin {player.PlayerName} add new VIP with steamid {SteamIDC}, end time is {timeRemainingFormatted}");
+                player?.PrintToChat($" {ChatColors.Lime}=========================================");
+                player?.PrintToChat($" {Config.Prefix} Player with steamid {ChatColors.Lime}{SteamIDC}{ChatColors.Default} has been added.");
+                player?.PrintToChat($" {Config.Prefix} Ending time is {ChatColors.Lime}{timeRemainingFormatted}{ChatColors.Default}.");
+                player?.PrintToChat($" {ChatColors.Lime}=========================================");
+                Server.PrintToConsole($"VIP Plugin - Admin {player?.PlayerName} add new VIP with steamid {SteamIDC}, end time is {timeRemainingFormatted}");
 
             }
         }
@@ -411,7 +411,7 @@ namespace VIP
                 status_i = 0;
             }
 
-            player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+ {ChatColors.Gold}✪ BRUTALCI VIP ✪ {ChatColors.Green}+-+-+-+-+-+-");
+            player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+ {ChatColors.Blue}✪ BRUTALCI VIP ✪ {ChatColors.Green}+-+-+-+-+-+-");
             player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}You have {status}{ChatColors.Default} VIP Status.");
             if (status_i == 1)
             {
@@ -433,7 +433,7 @@ namespace VIP
                 player.PrintToChat($" {ChatColors.Gold}» {ChatColors.Default}Turn off Weapon Loadout: {ChatColors.Red}!gunsoff");
 
             }
-            player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+{ChatColors.Red} www.BRUTALCI.info {ChatColors.Green}+-+-+-+-+-+-");
+            player.PrintToChat($" {ChatColors.Green}-+-+-+-+-+-+{ChatColors.Blue} www.BRUTALCI.info {ChatColors.Green}+-+-+-+-+-+-");
         }
 
         static bool IsTimeBetween8PMAnd8AM() // ty k4ryu <3
@@ -487,7 +487,7 @@ namespace VIP
                     MySql.Table($"{Config.DBPrefix}_users").Insert(values);
 
                     var client = player?.Index;
-                    
+
                     // Ensure that player is not null before calling LoadPlayerData
                     if (player != null)
                     {
@@ -650,7 +650,7 @@ namespace VIP
                 return;
             }
             string weaponName = PackagesID.ToLower();
-            
+
             if (weaponName == "ak")
             {
                 Used[client] = 1;
@@ -756,7 +756,7 @@ namespace VIP
                 LastUsed[client] = 2;
                 player.PrintToChat($" {Config.Prefix} {Localizer["Packages_one"]}");
                 Server.PrintToChatAll($" {Config.Prefix} {ChatColors.Red}{player.PlayerName} {ChatColors.Default}has used weapon pack!");
-                foreach(var weapon in Config.Pack1Settings.Weapons)
+                foreach (var weapon in Config.Pack1Settings.Weapons)
                 {
                     if (CheckIsHaveWeapon($"{weapon}", player) == false)
                     {

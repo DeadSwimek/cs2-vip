@@ -8,15 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.126" />
-    <PackageReference Include="Dapper" Version="2.1.21" />
-    <PackageReference Include="MySqlConnector" Version="2.3.1" />
-    <PackageReference Include="Nexd.MySQL" Version="1.0.2" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="*" />
+    <PackageReference Include="Dapper" Version="*" />
+    <PackageReference Include="MySqlConnector" Version="*" />
+    <PackageReference Include="Nexd.MySQL" Version="*" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="CounterStrikeSharp.API">
-       <HintPath>YOUR CSSHARP FOLDER DESTINATION HERE /_dependencies/CounterStrikeSharp.API.dll</HintPath>
+      <HintPath>C:/Users/mujoo/OneDrive/Desktop/CSS Plugini za Compile/counterstrikesharp v142/api/CounterStrikeSharp.API.dll</HintPath>
     </Reference>
   </ItemGroup>
 
