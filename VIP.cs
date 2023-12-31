@@ -471,15 +471,12 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         var pawn = pc.PlayerPawn.Value?.WeaponServices!;
         foreach (var weapon in pawn.MyWeapons)
         {
-            if (weapon is { IsValid: true, Value.IsValid: true })
+            if (weapon is { IsValid: true, Value.IsValid: true } && weapon.Value.DesignerName.Contains($"{weapon_name}"))
             {
-                if (weapon.Value.DesignerName.Contains($"{weapon_name}"))
-                {
                     // WriteColor($"VIP Plugin - Requested weapon is [weapon_{weapon_name}]", ConsoleColor.Cyan);
                     // WriteColor($"VIP Plugin - {pc.PlayerName} has weapon with name [{weapon.Value.DesignerName}]", ConsoleColor.Cyan);
                     WriteColor($"VIP Plugin - {pc.PlayerName} has requested weapon -> [{weapon.Value.DesignerName}]", ConsoleColor.Cyan);
                     return true;
-                }
             }
         }
         return false;

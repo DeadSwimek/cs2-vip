@@ -196,12 +196,12 @@ namespace VIP
         }
         static public void set_hp (CCSPlayerController? player, int hp)
         {
-            if (player == null || !player.PawnIsAlive)
+            if (player == null || !player.PawnIsAlive || get_vip_group(player) != 2)
             {
                 return;
             }
             player.PlayerPawn.Value.Health = hp;
-            Server.PrintToConsole($"Iam setting up {hp} to player {player.PlayerName}");
+            Server.PrintToConsole($"VIP Plugin - Setting {hp}HP to player {player.PlayerName}");
         }
         static public void set_armor(CCSPlayerController? player, int armor)
         {

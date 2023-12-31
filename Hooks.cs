@@ -121,7 +121,7 @@ namespace VIP
             IsVIP[client] = 0;
             HaveGroup[client] = 0;
             LoadPlayerData(player);
-            if (Config.WelcomeMessageEnable)
+            if (Config.WelcomeMessageEnable && IsVIP[client] == 1)
             {
                 player.PrintToChat($" {Localizer["welcome"]}");
                 MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
@@ -144,31 +144,33 @@ namespace VIP
             {
                 return HookResult.Continue;
             }
-
-            if (IsTimeBetween8PMAnd8AM() && IsVIP[client] == 0)
+            if (Config.TestVIP.EnableFreeVIP)
             {
-                int TimeSec = Config.TestVIP.FreeVIPTime;
-                var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
-                var timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
-                MySqlQueryValue _Tvalues = new MySqlQueryValue();
-                MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
-                var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
-                var timeRemainingFormatted =
-                    $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
-
-                MySqlQueryValue values = new MySqlQueryValue()
-                    .Add("steam_id", $"{player?.SteamID}")
-                    .Add("end", $"{timeofvip}")
-                    .Add("`group`", $"0");
-                MySql.Table($"{Config.DBPrefix}_users").Insert(values);
-                // Ensure that player is not null before calling LoadPlayerData
-                if (player != null)
+                if (IsTimeBetween8PMAnd8AM() && IsVIP[client] == 0)
                 {
-                    // LoadPlayerData(player);
-                    player.PrintToChat($" {Config.Prefix} {ChatColors.Red}FREE VIP. {ChatColors.Default} is Active. Use {ChatColors.Red}!vip {ChatColors.Default}for more info.");
-                }
+                    int TimeSec = Config.TestVIP.FreeVIPTime;
+                    var TimeToUTC = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                    var timeofvip = DateTime.UtcNow.AddSeconds(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                    MySqlQueryValue _Tvalues = new MySqlQueryValue();
+                    MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+                    var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(TimeToUTC) - DateTimeOffset.UtcNow;
+                    var timeRemainingFormatted =
+                        $"{timeRemaining.Days}d {timeRemaining.Hours:D2}:{timeRemaining.Minutes:D2}:{timeRemaining.Seconds:D2}";
 
-                Server.PrintToConsole($"FREE VIP - Added FREE VIP to player {player?.PlayerName} SteamID: {player?.SteamID}. Ending: {timeRemainingFormatted}");
+                    MySqlQueryValue values = new MySqlQueryValue()
+                        .Add("steam_id", $"{player?.SteamID}")
+                        .Add("end", $"{timeofvip}")
+                        .Add("`group`", $"0");
+                    MySql.Table($"{Config.DBPrefix}_users").Insert(values);
+                    // Ensure that player is not null before calling LoadPlayerData
+                    if (player != null)
+                    {
+                        // LoadPlayerData(player);
+                        player.PrintToChat($" {Config.Prefix} {ChatColors.Red}FREE VIP. {ChatColors.Default} is Active. Use {ChatColors.Red}!vip {ChatColors.Default}for more info.");
+                    }
+
+                    Server.PrintToConsole($"FREE VIP - Added FREE VIP to player {player?.PlayerName} SteamID: {player?.SteamID}. Ending: {timeRemainingFormatted}");
+                }
             }
             return HookResult.Continue;
         }
@@ -278,14 +280,16 @@ namespace VIP
                     if (player == null || !player.IsValid)
                     {
                         // Skip invalid players
-                        continue;
+                        return HookResult.Continue;
                     }
 
                     var client = player.Index;
-
-                    Round = 0;
-                    Used[client] = 0;
-                    LastUsed[client] = 0;
+                    if (IsVIP[client] == 1)
+                    {
+                        Round = 0;
+                        Used[client] = 0;
+                        LastUsed[client] = 0;
+                    }
                 }
                 WriteColor($"VIP Plugin - *[GAMERULES]* Halftime, set round {Round}.", ConsoleColor.Yellow);
                 WriteColor($"VIP Plugin - *[GAMERULES]* Restarting rounds number to zero..", ConsoleColor.Yellow);
@@ -691,15 +695,15 @@ namespace VIP
                             return HookResult.Continue;
                         }
                     }
-
+                    
                     var health_attacker = attacker.PlayerPawn.Value.Health;
                     Server.NextFrame(() =>
                     {
                         AddTimer(0.1f, () => { set_hp(attacker, health_attacker + Config.RewardsClass.KillHP); });
                     });
-
-                    // Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
-                    attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player?.PlayerName ?? "Unknown"]}");
+                    if (get_vip_group(player) == 2)
+                        // Server.PrintToConsole($"VIP Plugins - Here is bug from valve https://discord.com/channels/1160907911501991946/1160907912445710482/1175583981387927602");
+                        attacker.PrintToChat($" {Config.Prefix} {Localizer["KillRewards", Config.RewardsClass.KillHP, player?.PlayerName ?? "Unknown"]}");
                 }
             }
             return HookResult.Continue;
