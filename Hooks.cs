@@ -155,42 +155,6 @@ namespace VIP
                 }
             }
 
-            if (GameRules().WarmupPeriod)
-            {
-                WriteColor($"VIP Plugin - *[GAMERULES]* Warmup dosen't real Round, set on 0.", ConsoleColor.Yellow);
-
-                Round = 0;
-            }
-            if (GameRules().OvertimePlaying == 1)
-            {
-                WriteColor($"VIP Plugin - *[GAMERULES]* Overtime dosen't real Round, set on 0.", ConsoleColor.Yellow);
-
-                Round = 0;
-            }
-            if (GameRules().SwitchingTeamsAtRoundReset)
-            {
-                Round = -1;
-                DisableGiving = true;
-                foreach (var l_player in Utilities.GetPlayers())
-                {
-                    CCSPlayerController player = l_player;
-                    if (player == null && !player.IsValid)
-                    {
-                        return HookResult.Continue;
-                    }
-                    var client = player.Index;
-                    
-                    if (IsVIP[client] == 1)
-                    {
-                        Round = -1;
-                        Used[client] = 0;
-                        LastUsed[client] = 0;
-                    }
-                }
-                WriteColor($"VIP Plugin - *[GAMERULES]* Halftime/switch sites dosen't real Round, set on {Round}.", ConsoleColor.Yellow);
-                WriteColor($"VIP Plugin - *[GAMERULES]* Restarting rounds number to zero..", ConsoleColor.Yellow);
-                WriteColor($"VIP Plugin - *[GAMERULES]* Removing all weapons to players and giving C4, Knife, Glock, HKP2000.", ConsoleColor.Yellow);
-            }
             if(Round == 0 || Round == -1)
             {
                 foreach (var l_player in Utilities.GetPlayers())
