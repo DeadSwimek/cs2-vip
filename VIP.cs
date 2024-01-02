@@ -51,7 +51,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "Advanced VIP system based on database.";
-    public override string ModuleVersion => "V. 1.5.0";
+    public override string ModuleVersion => "V. 1.5.1";
     private string DatabaseConnectionString = string.Empty;
     private static readonly int?[] IsVIP = new int?[65];
     private static readonly int?[] HaveGroup = new int?[65];
@@ -72,9 +72,9 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
     private static readonly int?[] UserSmoke = new int?[64];
     private static readonly int?[] UserHit = new int?[64];
 
-    private static readonly int[] J = new int[Server.MaxPlayers];
-    private static readonly PlayerFlags[] LF = new PlayerFlags[Server.MaxPlayers];
-    private static readonly PlayerButtons[] LB = new PlayerButtons[Server.MaxPlayers];
+    private static readonly int?[] J = new int?[64];
+    private static readonly PlayerFlags[] LF = new PlayerFlags[64];
+    private static readonly CounterStrikeSharp.API.PlayerButtons[] LB = new CounterStrikeSharp.API.PlayerButtons[64];
 
 
     public ConfigVIP Config { get; set; }
@@ -169,9 +169,12 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 if (IsVIP[client.Index] == 0)
                     return;
                 OnTick(client);
-                if (UserBhop[client.Index] != 1)
+                if (UserBhop[client.Index] == 1)
                 {
-                    TryBhop(client);
+                    if (Config.CommandOnGroup.BHop < get_vip_group(client))
+                    {
+                        TryBhop(client);
+                    }
                 }
 
                 if (allowedHit[client.Index] == true)
@@ -250,7 +253,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         return res.ToString();
     }
 
-    public void TryBhop(CCSPlayerController controller)
+    public static void TryBhop(CCSPlayerController controller)
     {
         if (!controller.PawnIsAlive)
             return;
@@ -258,14 +261,9 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         var client = controller.Index;
         var PP = controller.PlayerPawn.Value;
         var flags = (PlayerFlags)PP!.Flags;
-        if (IsVIP[client] != 1)
-            return;
-        if (UserBhop[client] != 1)
-            return;
-        if (Config.CommandOnGroup.ReservedSlots > get_vip_group(controller))
+        if ((flags & PlayerFlags.FL_ONGROUND) != 0 && (buttons & PlayerButtons.Jump) != 0)
         {
-            if ((flags & PlayerFlags.FL_ONGROUND) != 0 && (buttons & PlayerButtons.Jump) != 0)
-                PP!.AbsVelocity.Z = 300;
+            PP!.AbsVelocity.Z = 300;
         }
     }
     public void Authorization_Client(CCSPlayerController player)
@@ -374,7 +372,7 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
         if (HaveDoubble[client] != 0)
         {
             if ((LF[client] & PlayerFlags.FL_ONGROUND) != 0 && (flags & PlayerFlags.FL_ONGROUND) == 0 &&
-                (LB[client] & PlayerButtons.Jump) == 0 && (buttons & PlayerButtons.Jump) != 0)
+                (buttons & PlayerButtons.Jump) == 0 && (buttons & PlayerButtons.Jump) != 0)
             {
                 J[client]++;
             }
@@ -387,10 +385,9 @@ public partial class VIP : BasePlugin, IPluginConfig<ConfigVIP>
                 J[client]++;
                 pawn.AbsVelocity.Z = 320;
             }
+            LF[client] = flags;
+            LB[client] = buttons;
         }
-
-        LF[client] = flags;
-        LB[client] = buttons;
     }
     internal static CCSGameRules GameRules()
     {
