@@ -1,0 +1,38 @@
+{
+    "Guns": "Zbraně",
+    "AllowedFor": "Povoleno pouze pro Typ: {0}",
+    "Yes": "Ano",
+    "No": "Ne",
+    "TurnOff": "Vypnuto",
+    "TurnOn": "Zapnuto",
+    "JustNow": "Právě bylo",
+    "MustBeAlive": "Aby jsi využil příkaz {0}, musíš být živí!",
+    "Detonation": "Bomba vybuchne",
+    "PlacedOn": "Položeno na", 
+
+    "VIPBuy": "Pořid si VIP na stránce https://xxx.xxx",
+
+    "VIPYouChoose": "Právé jsi si vybral {0} zbraň",
+    "VIPUseGuns": "Právě jsi si aktivoval automatické zbraně, pro deaktivaci napiš !guns_off",
+    "VIPUsedGuns": "Toto kolo si již využil příkaz !guns!",
+    "VIPNoMoreGuns": "Již nebudeš dále mít aktivní automatické !guns, pro aktivaci napiš !guns",
+    "VIPRound": "Pro aktivaci !guns musí být kolo {0} a výše",
+
+    "GiveMoneyForKill": "Právě jsi získal {0} creditů za zabití.",
+    "GiveMoneyForPlant": "Právě jsi získal {0} creditů za položení bomby.",
+
+    "VIPInActive": "VIP není aktivní",
+    "VIPLoading": "Právě obnovuji tvůj status VIP..",
+    "VIPStatus": "VIP Status",
+    "VIPRemaining": "VIP Vyprší:",
+    "VIPService": "Aktivní služby:",
+    "VIPActive": "Aktivní",
+    "VIPCommands": "Příkazy pro VIP:",
+
+    "TrialOff": "Vypnout",
+    "TrialRed": "Červená",
+    "TrialGreen": "Zelená",
+    "TrialBlue": "Modrá",
+    "TrialRainbow": "Duhová",
+    "VIPTrialChoose": "Právě jsi si aktivoval: {0}"
+}

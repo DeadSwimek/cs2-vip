@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.284" />
+    <PackageReference Include="Json.Net" Version="1.0.33" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Nexd.MySQL" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CounterStrikeSharp.API">
+      <HintPath>YOUR CSSHARP FOLDER DESTINATION HERE /_dependencies/CounterStrikeSharp.API.dll</HintPath>
+    </Reference>
+    <Reference Include="StoreApi">
+      <HintPath>..\StoreApi.dll</HintPath>
+    </Reference>
+    <Reference Include="WASDSharedAPI">
+      <HintPath>..\WASDSharedAPI.dll</HintPath>
+    </Reference>
+      <Reference Include="TagsApi">
+      <HintPath>..\TagsApi.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
+
