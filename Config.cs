@@ -1,4 +1,4 @@
-﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Text.Json.Serialization;
@@ -32,6 +32,11 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("Credits_Kill")] public int Credits_For_Kill { get; set; } = 50;
     [JsonPropertyName("Enable_Credits_Plant")] public bool More_Credit2 { get; set; } = true;
     [JsonPropertyName("Credits_Plant")] public int Credits_For_Plant { get; set; } = 50;
+    [JsonPropertyName("Enable_Credits_Defuse")] public bool More_Credit3 { get; set; } = true;
+    [JsonPropertyName("Credits_Defuse")] public int Credits_For_Defuse { get; set; } = 50;
+
+    [JsonPropertyName("StartHealth")] public int StartHealth { get; set; } = 110;
+
     [JsonPropertyName("MinRoundForGuns")] public int MinRoundForGuns { get; set; } = 2;
 
 }
