@@ -1,4 +1,4 @@
-﻿
+
 using System.Drawing;
 
 using CounterStrikeSharp.API;
@@ -47,59 +47,6 @@ namespace CustomPlugin
 
             return MenuManager;
         }
-        public void guns(CCSPlayerController? player)
-        {
-            var client = player!.Index;
-            var manager = GetMenuManager();
-            if (manager == null)
-                return;
-            IWasdMenu menu = manager.CreateMenu($"-> {Localizer["Guns"]} <-");
-            menu.Add("M4A1", (p, option) =>
-            {
-                manager.CloseMenu(p);
-
-                player.GiveNamedItem("weapon_m4a1");
-                Selected[client] = 1;
-                Selected_round[client] = 1;
-                player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose","M4A1"]} ");
-            });
-            menu.Add("M4A1-S", (p, option) =>
-            {
-                manager.CloseMenu(p);
-
-                player.GiveNamedItem("weapon_m4a1_silence");
-                Selected[client] = 2;
-                Selected_round[client] = 1;
-                player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", "M4A1-S"]}");
-            });
-            menu.Add("AK-47", (p, option) =>
-            {
-                manager.CloseMenu(p);
-
-                player.GiveNamedItem("weapon_ak47");
-                Selected[client] = 3;
-                Selected_round[client] = 1;
-                player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", "AK-47"]}");
-            });
-            menu.Add("AWP [ M-VIP ]", (p, option) =>
-            {
-                manager.CloseMenu(p);
-
-                if (AdminManager.PlayerHasPermissions(player, "@vip/mvip"))
-                {
-                    player.GiveNamedItem("weapon_awp");
-                    Selected[client] = 4;
-                    Selected_round[client] = 1;
-                    player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", "AWP"]}");
-                }
-                else
-                {
-                    player.PrintToChat($" {Config.Prefix} {Localizer["AllowedFor", "MVIP"]}");
-                }
-            });
-
-            manager.OpenMainMenu(player, menu);
-        }
         internal void replace_weapon(CCSPlayerController player, string weapon_s)
         {
             AddTimer(0.1f, () =>
@@ -145,6 +92,30 @@ namespace CustomPlugin
             return false;
         }
         [GameEventHandler]
+        public HookResult KillPlayer(EventPlayerDeath @event, GameEventInfo info)
+        {
+            var attacker = @event.Attacker;
+            var victin = @event.Userid;
+
+            if (attacker == null) return HookResult.Continue;
+
+
+            if (Config.More_Credit)
+            {
+                if (CSStore[attacker.Index] == 1)
+                {
+                    if (StoreApi == null) throw new Exception("StoreApi could not be located.");
+                    int credits = Config.Credits_For_Kill;
+
+                    StoreApi.GivePlayerCredits(attacker, credits);
+
+                    attacker.PrintToChat($" {Config.Prefix} {Localizer["GiveMoneyForKill", credits]}");
+                }
+            }
+
+            return HookResult.Continue;
+        }
+        [GameEventHandler]
         public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             timer_ex?.Kill();
@@ -159,13 +130,14 @@ namespace CustomPlugin
                 {
                     if (client == null || !client.IsValid || client.IsBot || !client.PawnIsAlive) return;
                     Selected_round[client.Index] = 0;
+                    if (Timestamp[client.Index] == null) { Timestamp[client.Index] = -1; }
                     if (Health[client.Index] == 1)
                     {
-                        client.PlayerPawn!.Value!.Health = 110;
+                        client.PlayerPawn!.Value!.Health = Config.StartHealth;
                         Utilities.SetStateChanged(client.PlayerPawn.Value, "CBaseEntity", "m_iHealth");
                         client.PlayerPawn!.Value!.ArmorValue = 100;
                         Utilities.SetStateChanged(client.PlayerPawn.Value, "CCSPlayerPawn", "m_ArmorValue");
-                        client.PlayerPawn!.Value!.MaxHealth = 110;
+                        client.PlayerPawn!.Value!.MaxHealth = Config.StartHealth;
                     }
                     if (Healthshot[client.Index] == 1)
                     {
@@ -193,6 +165,18 @@ namespace CustomPlugin
 
             if(player == null) return HookResult.Continue;
 
+            if (Config.More_Credit2)
+            {
+                if (CSStore[player.Index] == 1)
+                {
+                    if (StoreApi == null) throw new Exception("StoreApi could not be located.");
+                    int credits = Config.Credits_For_Plant;
+
+                    StoreApi.GivePlayerCredits(player, credits);
+
+                    player.PrintToChat($" {Config.Prefix} {Localizer["GiveMoneyForPlant", credits]}");
+                }
+            }
 
             Bomb = true;
             bombtime = 40.0f;
@@ -234,6 +218,22 @@ namespace CustomPlugin
         [GameEventHandler]
         public HookResult OnBombDefused(EventBombDefused @event, GameEventInfo info)
         {
+            var player = @event.Userid;
+            if (player == null) return HookResult.Continue;
+
+            if (Config.More_Credit3)
+            {
+                if (CSStore[player.Index] == 1)
+                {
+                    if (StoreApi == null) throw new Exception("StoreApi could not be located.");
+                    int credits = Config.Credits_For_Defuse;
+
+                    StoreApi.GivePlayerCredits(player, credits);
+
+                    player.PrintToChat($" {Config.Prefix} {Localizer["GiveMoneyForDefuse", credits]}");
+                }
+            }
+
             Bomb = false;
             timer_ex?.Kill();
             return HookResult.Continue;
