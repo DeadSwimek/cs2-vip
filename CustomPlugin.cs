@@ -1,4 +1,4 @@
-﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
@@ -22,7 +22,8 @@ using static StoreApi.Store;
 using System.Net;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-
+using CS2MenuManager.API.Enum;
+using CS2MenuManager.API.Menu;
 
 
 namespace CustomPlugin;
@@ -88,8 +89,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     public bool IsOld;
 
     public IStoreApi? StoreApi { get; set; }
-    public ITagApi? TagsApi { get; set; }
-
+    public ITagApi tagApi = null!;
 
     public required ConfigBan Config { get; set; }
 
@@ -101,8 +101,8 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        StoreApi = IStoreApi.Capability.Get() ?? throw new Exception("StoreApi could not be located."); // Used for VIP Prémium
-        TagsApi = ITagApi.Capability.Get() ?? throw new Exception("TagsApi could not be located.");
+        StoreApi = IStoreApi.Capability.Get() ?? throw new Exception("StoreApi could not be located.");
+        tagApi = ITagApi.Capability.Get() ?? throw new Exception("Tags Api not found!");
     }
     public override void Load(bool hotReload)
     {
@@ -185,7 +185,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
 
 
 
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `healthshot` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
 
@@ -277,7 +277,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         {
             if (Round >= Config.MinRoundForGuns)
             {
-                if(Selected_round[player!.Index] == 1)
+                if (Selected_round[player!.Index] == 1)
                 {
                     player.PrintToChat($" {Config.Prefix} {Localizer["VIPUsedGuns"]}");
                     return;
@@ -557,7 +557,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     public void VIP_Info(CCSPlayerController? player, CommandInfo info)
     {
         var client = player!.Index;
-        int time = (int)Timestamp[client];
+        int time = (int)Timestamp[client]!;
         var timeRemainingFormatted = "";
         var timeRemaining = DateTimeOffset.FromUnixTimeSeconds(time) - DateTimeOffset.UtcNow;
         var nowtimeis = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -625,13 +625,13 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         {
             player.Clan = Config.VIPTag_Score;
             Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
-            TagsApi?.SetPlayerTag(player, Tags.Tags_Tags.ChatTag, Config.VIPTag_Chat);
+            tagApi.SetAttribute(player, Tags.TagType.ChatTag, Config.VIPTag_Chat);
         }
         if (MVIP[player.Index] == 1)
         {
             player.Clan = Config.MVIPTag_Score;
             Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
-            TagsApi?.SetPlayerTag(player, Tags.Tags_Tags.ChatTag, Config.MVIPTag_Chat);
+            tagApi.SetAttribute(player, Tags.TagType.ChatTag, Config.MVIPTag_Chat);
         }
     }
     [GameEventHandler]
@@ -650,8 +650,12 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     }
     public void LoadVIP(CCSPlayerController player)
     {
+
         var client = player.Index;
-        int time = (int)Timestamp[client];
+
+        int time = (int)Timestamp[client]!;
+
+
         var timeRemainingFormatted = "";
         if (time == 0)
         {
@@ -813,6 +817,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             .Add("shots", "0")
             .Add("trials", "0")
             .Add("enable_nade", "0")
+            .Add("enable_quake", "0")
             .Add("free_vip", "0")
             .Add("credits", "1")
             .Add("guns", "0");
