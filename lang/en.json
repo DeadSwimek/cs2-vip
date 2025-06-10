@@ -17,6 +17,7 @@
     "VIPRound": "To activate !guns, the round must be {0} or higher",
     "GiveMoneyForKill": "You just earned {0} credits for a kill.",
     "GiveMoneyForPlant": "You just earned {0} credits for planting the bomb.",
+    "GiveMoneyForDefuse": "You just earned {0} credits for defuseing the bomb.",
     "VIPInActive": "VIP is not active",
     "VIPLoading": "Restoring your VIP status...",
     "VIPStatus": "VIP Status",
