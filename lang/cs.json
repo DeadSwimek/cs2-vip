@@ -20,6 +20,7 @@
 
     "GiveMoneyForKill": "Právě jsi získal {0} creditů za zabití.",
     "GiveMoneyForPlant": "Právě jsi získal {0} creditů za položení bomby.",
+    "GiveMoneyForDefuse": "Právě jsi získal {0} creditů za zneškodnění bomby.",
 
     "VIPInActive": "VIP není aktivní",
     "VIPLoading": "Právě obnovuji tvůj status VIP..",
