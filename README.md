@@ -10,10 +10,16 @@
 > If you wanna you can support me on this link - **https://www.paypal.com/paypalme/deadswim**
 ![](https://camo.githubusercontent.com/6f4dcc3ce2ec908ab308be1f42581be46c9bb46cc9958637cc6044f640ed835f/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f6174746163686d656e74732f313137363533373237323732343735383634382f313137363533373237323938303630373133382f7669702e706e67)
 
+### Require
+https://github.com/schwarper/CS2MenuManager
+https://github.com/schwarper/cs2-tags
+https://github.com/schwarper/cs2-store
+
 ### Features
 - Special VIP tag in chat/score. 
 - Pack of guns for free.
-- Set 115 HP on RoundStart.
+- Bonus Credits in shop for kill,plant,defuse
+- Set HP on RoundStart, Value can be edited in config file.
 - Translation files.
 - Connect to database.
 - VIPs can be added from keys.
@@ -68,15 +74,15 @@
 | `css_vip`    | Database add     |
 | `css_guns_off`  | NONE   |
 | `css_activator`  | NONE   |
+| `css_reloadvip` | NONE  |
 
 #Config
 
 ```JSON
 {
-{
-  "Token": "TOKEN", // Only for VIP Prémum
+  "Token": "YOUR_TOKEN",
   "Prefix": " \u0001[\u0004MadGames.eu\u0001]",
-  "DBDatabase": "db",
+  "DBDatabase": "database",
   "DBUser": "user",
   "DBPassword": "password",
   "DBHost": "localhost",
@@ -86,20 +92,22 @@
   "MVIPTag_Chat": "{Green} MVIP{Grey}\u00BB ",
   "MVIPTag_Score": "\u2042",
 
-  "NadeEnable": true, // Only for VIP Prémum
-  "NadeModel": "particles/ui/hud/ui_map_def_utility_trail.vpcf", // Only for VIP Prémum
+  "NadeEnable": true,
+  "NadeModel": "particles/ui/hud/ui_map_def_utility_trail.vpcf",
   // red, green, blue
-  "NadeColor": "red", // Only for VIP Prémum
+  "NadeColor": "red",
 
-  "Enable_Credits": true, // Only for VIP Prémum
-  "Credits_Kill": 50, // Only for VIP Prémum
-  "Enable_Credits_Plant": true, // Only for VIP Prémum
-  "Credits_Plant": 50, // Only for VIP Prémum
+  "Enable_Credits": true,
+  "Credits_Kill": 50,
+  "Enable_Credits_Plant": true,
+  "Credits_Plant": 50,
+  "Enable_Credits_Defuse": true,
+  "Credits_Defuse": 50,
 
+  "StartHealth": 110,
 
   "MinRoundForGuns": 2,
   "ConfigVersion": 1
-}
 }
 ```
 
