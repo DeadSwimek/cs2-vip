@@ -1,4 +1,4 @@
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
@@ -24,7 +24,8 @@ using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using CS2MenuManager.API.Enum;
 using CS2MenuManager.API.Menu;
-
+using VIPAPI;
+using CounterStrikeSharp.API.Core.Capabilities;
 
 namespace CustomPlugin;
 
@@ -87,7 +88,8 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     private static readonly CounterStrikeSharp.API.PlayerButtons[] LB = new CounterStrikeSharp.API.PlayerButtons[64];
 
     public bool IsOld;
-
+    public CoreAPI CoreAPI { get; set; } = null!;
+    private static PluginCapability<IAPI> APICapability { get; } = new("vip:api");
     public IStoreApi? StoreApi { get; set; }
     public ITagApi tagApi = null!;
 
@@ -106,7 +108,11 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     }
     public override void Load(bool hotReload)
     {
-
+        CoreAPI = new CoreAPI(this);
+        if (CoreAPI != null)
+        {
+            Capabilities.RegisterPluginCapability(APICapability, () => CoreAPI);
+        }
         CreateDatabase();
         Console.WriteLine("VIP System, created by DeadSwim");
         RegisterListener<Listeners.OnMapStart>(name =>

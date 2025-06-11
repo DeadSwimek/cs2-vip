@@ -1,4 +1,4 @@
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -27,6 +27,30 @@ namespace CustomPlugin
                 res.Append(valid[rnd.Next(valid.Length)]);
             }
             return res.ToString();
+        }
+        public bool IsPlayerVip(CCSPlayerController player)
+        {
+            if (player == null)
+                return false;
+
+            var client = player.Index;
+
+            if (MVIP[client] == 1) return true;
+            else if (Guns[client] == 1) return true;
+
+            return false;
+        }
+        public string GetGroup(CCSPlayerController player)
+        {
+            if (player == null)
+                return "Player=Null";
+
+            var client = player.Index;
+
+            if (MVIP[client] == 1) return "MVIP";
+            else if (Guns[client] == 1) return "VIP";
+
+            return "None";
         }
         public void CreateNadeTrail(Vector start, CBaseGrenade grenade)
         {
@@ -80,4 +104,5 @@ namespace CustomPlugin
             menu.Display(player, 0);
         }
     }
+
 }

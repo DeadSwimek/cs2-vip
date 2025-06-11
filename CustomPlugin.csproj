@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -29,6 +29,9 @@
     </Reference>
     <Reference Include="CS2MenuManager">
       <HintPath>..\CS2MenuManager.dll</HintPath>
+    </Reference>
+    <Reference Include="VIPSharedApi">
+      <HintPath>..\VIPApi.dll</HintPath>
     </Reference>
   </ItemGroup>
 
