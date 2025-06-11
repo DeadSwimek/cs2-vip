@@ -1,0 +1,15 @@
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPSharedApi.csproj.AssemblyReference.cache
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPSharedApi.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPSharedApi.AssemblyInfoInputs.cache
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPSharedApi.AssemblyInfo.cs
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPSharedApi.csproj.CoreCompileInputs.cache
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\CustomPlugin\VIPSharedApi.deps.json
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\CustomPlugin\VIPSharedApi.dll
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\CustomPlugin\VIPSharedApi.pdb
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPSharedApi.dll
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\refint\VIPSharedApi.dll
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPSharedApi.pdb
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\ref\VIPSharedApi.dll
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\VIPSharedApi\VIPSharedApi.deps.json
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\VIPSharedApi\VIPSharedApi.dll
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\VIPSharedApi\VIPSharedApi.pdb

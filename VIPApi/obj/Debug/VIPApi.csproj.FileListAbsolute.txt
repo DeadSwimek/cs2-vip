@@ -1,0 +1,12 @@
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\CustomPlugin\VIPApi.deps.json
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\CustomPlugin\VIPApi.dll
+C:\Users\ondra\Desktop\VIP-Private\BuildOutput\shared\CustomPlugin\VIPApi.pdb
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPApi.csproj.AssemblyReference.cache
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPApi.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPApi.AssemblyInfoInputs.cache
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPApi.AssemblyInfo.cs
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPApi.csproj.CoreCompileInputs.cache
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPApi.dll
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\refint\VIPApi.dll
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\VIPApi.pdb
+C:\Users\ondra\Desktop\VIP-Private\VIPApi\obj\Debug\ref\VIPApi.dll

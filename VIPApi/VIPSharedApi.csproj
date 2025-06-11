@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>VIPSharedApi</AssemblyName>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <OutputPath>$(ProjectDir)..\BuildOutput\shared\VIPSharedApi\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.318" />
+    <Reference Include="CounterStrikeSharp.API">
+      <HintPath>YOUR CSSHARP FOLDER DESTINATION HERE /_dependencies/CounterStrikeSharp.API.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
