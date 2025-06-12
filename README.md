@@ -28,50 +28,21 @@ https://github.com/schwarper/cs2-store
 - Guns selector
 - Reloading VIP user
 - AutoBHOP
+- Models in database can select by /models
 
 
 # Donators
 ***GreeNyTM*** Value **200 CZK**
 
-# Commands
-
-**css_generatevip**
-
-`Usage: css_generatevip <Time In days> <Group 0,1,2>`
-
-**css_activator**
-
-`Usage: /activator <YOUR_TOKEN>`
-
-**css_addvip**
-
-`Usage: /addvip <Time In Days> <STEAMID64> <Group 0,1,2>`
-
-**css_vip**
-
-`Usage: /vip` Reload VIP settings for player.
-
-**css_weapon**
-
-`Usage: /guns` List of packages:
-
-| ID      | Weapon   |
-| ------------ | ------------ |
-| `1`    | AK-47     |
-| `2`    | M4A1     |
-| `3`    | M4A1-S     |
-| `4`    | AWP     |
-
-**css_guns_off**
-
-`Usage: /guns_off` Turn of automatically weapons giving
-
 | Command      | Permission   |
 | ------------ | ------------ |
 | `css_generatevip`    | @css/root     |
+| `css_addmodel`    | @css/root     |
 | `css_addvip`    | @css/root     |
 | `css_guns`    | Database add     |
 | `css_vip`    | Database add     |
+| `css_settings`    | Database add     |
+| `css_models`    | Database add     |
 | `css_guns_off`  | NONE   |
 | `css_activator`  | NONE   |
 | `css_reloadvip` | NONE  |
@@ -103,6 +74,32 @@ https://github.com/schwarper/cs2-store
   "Credits_Plant": 50,
   "Enable_Credits_Defuse": true,
   "Credits_Defuse": 50,
+
+  "EnabledBhop": true,
+  "EnabledTrials": true,
+  "EnabledShotTrials": true,
+  "EnabledGuns": true,
+  "EnabledFallDamage": true,
+  "EnabledNoKnifeDamage": true,
+  "EnabledModels": true,
+
+  "EnabledQuake": false,
+  "QuakeTeamKiller": "sounds/madgamessounds/quake/teamkiller.vsnd_c",
+  "QuakeHeadShot": "sounds/madgamessounds/quake/headshot.vsnd_c",
+  "Sounds": [
+      {
+        "quake_kill": 1,
+        "path": "sounds/madgamessounds/quake/firstblood.vsnd_c"
+      },
+      {
+        "quake_kill": 2,
+        "path": "sounds/madgamessounds/quake/doublekill.vsnd_c"
+      },
+      {
+        "quake_kill": 3,
+        "path": "sounds/madgamessounds/quake/triplekill.vsnd_c"
+      }
+  ],
 
   "StartHealth": 110,
 
