@@ -28,6 +28,9 @@ https://github.com/schwarper/cs2-store
 - Guns selector
 - Reloading VIP user
 - AutoBHOP
+- No Knife Damage
+- No Fall Damage
+- Kill's quake
 - Models in database can select by /models
 
 
