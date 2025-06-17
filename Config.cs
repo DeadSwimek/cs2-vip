@@ -35,8 +35,35 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("Enable_Credits_Defuse")] public bool More_Credit3 { get; set; } = true;
     [JsonPropertyName("Credits_Defuse")] public int Credits_For_Defuse { get; set; } = 50;
 
-    [JsonPropertyName("StartHealth")] public int StartHealth { get; set; } = 110;
+    [JsonPropertyName("EnabledBhop")] public bool EnabledBhop { get; set; } = true;
+    [JsonPropertyName("EnabledTrails")] public bool EnabledTrails { get; set; } = true;
+    [JsonPropertyName("EnabledShotTrails")] public bool EnabledShotTrails { get; set; } = true;
+    [JsonPropertyName("EnabledGuns")] public bool EnabledGuns { get; set; } = true;
+    [JsonPropertyName("EnabledQuake")] public bool EnabledQuake { get; set; } = false;
+    [JsonPropertyName("EnabledFallDamage")] public bool FallDamage { get; set; } = true;
+    [JsonPropertyName("EnabledNoKnifeDamage")] public bool NoKnifeDamage { get; set; } = true;
+    [JsonPropertyName("EnabledModels")] public bool ModelsEnabled { get; set; } = true;
+    [JsonPropertyName("EnabledDoubbleJump")] public bool EnabledDoubbleJump { get; set; } = true;
+    [JsonPropertyName("EnabledInstantReload")] public bool EnabledInstantReload { get; set; } = true;
+    [JsonPropertyName("QuakeTeamKiller")] public string QuakeTeamKiller { get; set; } = "sounds/madgamessounds/quake/teamkiller.vsnd_c";
+    [JsonPropertyName("QuakeHeadShot")] public string QuakeHeadShot { get; set; } = "sounds/madgamessounds/quake/headshot.vsnd_c";
 
+    public List<Sound> Sounds { get; set; } = new List<Sound>
+        {
+            new Sound { Kill = 1, Path = "sounds/madgamessounds/quake/firstblood.vsnd_c" },
+            new Sound { Kill = 2, Path = "sounds/madgamessounds/quake/doublekill.vsnd_c" },
+            new Sound { Kill = 3, Path = "sounds/madgamessounds/quake/triplekill.vsnd_c" },
+        };
+
+    [JsonPropertyName("StartHealth")] public int StartHealth { get; set; } = 110;
     [JsonPropertyName("MinRoundForGuns")] public int MinRoundForGuns { get; set; } = 2;
 
+}
+public class Sound
+{
+    [JsonPropertyName("quake_kill")]
+    public required int Kill { get; init; }
+
+    [JsonPropertyName("path")]
+    public required string Path { get; init; }
 }

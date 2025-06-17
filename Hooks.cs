@@ -115,6 +115,93 @@ namespace CustomPlugin
 
             return HookResult.Continue;
         }
+        public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
+        {
+            if (@event == null) return HookResult.Continue;
+
+            var vic = @event.Userid;
+            var vic_client = (int)vic!.Index;
+            var att = @event.Attacker;
+            var att_client = (int)att!.Index;
+            var headshot = @event.Headshot;
+            if (vic == null) return HookResult.Continue;
+            if (att == null) return HookResult.Continue;
+            if (att.IsBot) return HookResult.Continue;
+            if (vic == att) return HookResult.Continue;
+            if (att != vic)
+            {
+                if (Config.EnabledQuake)
+                {
+                    if (QuakeEnable[att_client] == 1)
+                    {
+                        KillCount[att_client]++;
+                        if (headshot)
+                        {
+                            att.ExecuteClientCommand($"play {Config.QuakeHeadShot}");
+                        }
+                        else
+                        {
+                            if (att.TeamNum == vic.TeamNum)
+                            {
+                                att.ExecuteClientCommand($"play {Config.QuakeTeamKiller}");
+                            }
+                            else
+                            {
+                                foreach (var sound in Config.Sounds)
+                                {
+
+
+                                    var sound_kill = sound.Kill;
+                                    var sound_path = sound.Path;
+
+                                    if (KillCount[att_client] == sound.Kill)
+                                    {
+                                        att.ExecuteClientCommand($"play {sound_path}");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return HookResult.Continue;
+        }
+        [GameEventHandler]
+        public HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
+        {
+            var attacker = @event.Attacker;
+            var victim = @event.Userid;
+            var weapon = @event.Weapon;
+            if (weapon.Contains("knife"))
+            {
+                if (Config.NoKnifeDamage)
+                {
+                    if (knife[victim.Index] == 1)
+                    {
+                        var health_taked = @event.DmgHealth;
+                        victim.PlayerPawn.Value!.Health = health_taked + victim.PlayerPawn.Value.Health;
+                        attacker.PrintToChat($" {Config.Prefix} {Localizer["VIPDMGKnife"]}");
+                        return HookResult.Continue;
+                    }
+                }
+            }
+            if (Config.FallDamage)
+            {
+                if (falldmg[victim.Index] == 1)
+                {
+                    if (@event.Hitgroup == 0 && @event.Weapon != "inferno" && @event.Weapon != "hegrenade" && @event.Weapon != "knife" && @event.Weapon != "decoy")
+                    {
+                        var health_taked = @event.DmgHealth;
+                        victim.PlayerPawn.Value!.Health = health_taked + victim.PlayerPawn.Value.Health;
+                        return HookResult.Continue;
+                    }
+                }
+            }
+
+
+            return HookResult.Continue;
+        }
         [GameEventHandler]
         public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
