@@ -82,6 +82,8 @@ https://github.com/schwarper/cs2-store
   "EnabledFallDamage": true,
   "EnabledNoKnifeDamage": true,
   "EnabledModels": true,
+  "EnabledDoubbleJump": true,
+  "EnabledInstantReload": true,
 
   "EnabledQuake": false,
   "QuakeTeamKiller": "sounds/madgamessounds/quake/teamkiller.vsnd_c",
