@@ -26,6 +26,7 @@ using CS2MenuManager.API.Enum;
 using CS2MenuManager.API.Menu;
 using VIPAPI;
 using CounterStrikeSharp.API.Core.Capabilities;
+using static TagsApi.Tags;
 
 namespace CustomPlugin;
 
@@ -60,12 +61,17 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     private static readonly int?[] ShotsEnable = new int?[64];
     private static readonly int?[] BhopEnable = new int?[64];
     private static readonly int?[] QuakeEnable = new int?[64];
+    private static readonly int?[] HealthEnable = new int?[64];
+    private static readonly int?[] BombEnable = new int?[64];
     private static readonly int?[] KillCount = new int?[64];
     private static readonly int?[] Selected = new int?[64];
     private static readonly int?[] Selected_round = new int?[64];
     private static readonly int?[] Selectedr = new int?[64];
+    private static readonly int?[] SelectedTag = new int?[64];
+    private static readonly int?[] SelectedTag2 = new int?[64];
 
     private static readonly int?[] IReload = new int?[64];
+    private static readonly int?[] Tag = new int?[64];
     private static readonly int?[] DJump = new int?[64];
     private static readonly int?[] Trails = new int?[64];
     private static readonly int?[] NadeEnable = new int?[64];
@@ -90,7 +96,6 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     private static readonly int?[] armor = new int?[64];
     private static readonly string?[] damaged_player = new string?[64];
     private static readonly int?[] UserHit = new int?[64];
-
     private static readonly int?[] J = new int?[64];
     private static readonly PlayerFlags[] LF = new PlayerFlags[64];
     private static readonly CounterStrikeSharp.API.PlayerButtons[] LB = new CounterStrikeSharp.API.PlayerButtons[64];
@@ -111,8 +116,14 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        StoreApi = IStoreApi.Capability.Get() ?? throw new Exception("StoreApi could not be located.");
-        tagApi = ITagApi.Capability.Get() ?? throw new Exception("Tags Api not found!");
+        if (Config.More_Credit || Config.More_Credit2 || Config.More_Credit3)
+        {
+            StoreApi = IStoreApi.Capability.Get() ?? throw new Exception("StoreApi could not be located.");
+        }
+        if (Config.EnabledTags)
+        {
+            tagApi = ITagApi.Capability.Get() ?? throw new Exception("Tags Api not found!");
+        }
     }
     public override void Load(bool hotReload)
     {
@@ -199,10 +210,11 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
 
 
 
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `healthshot` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `tag` INT(11) NOT NULL, `tag2` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11), `bomb` INT(11) NOT NULL, `health` INT(11) NOT NULL, NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_models` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) UNIQUE NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
+            MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_tags` (`id` INT AUTO_INCREMENT PRIMARY KEY, `tag` VARCHAR(32) NOT NULL, `permission` VARCHAR(32) NOT NULL, `type` VARCHAR(32) NOT NULL, UNIQUE (`id`));");
 
         }
         catch (Exception ex)
@@ -330,6 +342,205 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         }
         return true;
     }
+    [ConsoleCommand("css_models", "Set Trails color")]
+    public void Models_command(CCSPlayerController? player, CommandInfo info)
+    {
+        open_Models(player);
+    }
+    public void open_Models(CCSPlayerController player)
+    {
+        if (player == null) return;
+        if (!Config.ModelsEnabled) return;
+
+        MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+
+        MySqlQueryResult result = MySql!
+            .Table("deadswim_models")
+            .Select();
+        ScreenMenu menu = new("Models", this);
+        menu.AddItem("OFF", (p, option) =>
+        {
+            SelectedModel[player.Index] = 0;
+            player.PrintToChat($" {Config.Prefix} {Localizer["SkinNextRound", "OFF"]} ");
+            SaveSettings(player);
+        });
+
+        for (int i = 0; i < result.Rows; i++)
+        {
+            var row = result[i];
+            if (row == null) return;
+
+
+            string id_model = row["id"].ToString();
+            string name_model = row["name"].ToString();
+            string permission = row["permission"].ToString();
+            string path = row["path"].ToString();
+            string side = row["side"].ToString();
+
+            var get_permission = AdminManager.PlayerHasPermissions(player, permission);
+            var get_playerteam = player.Team;
+            var team = "none";
+
+            if (get_playerteam == CsTeam.Terrorist) { team = "t"; }
+            if (get_playerteam == CsTeam.CounterTerrorist) { team = "ct"; }
+
+            if (get_permission && side == team)
+            {
+                menu.AddItem($"{name_model} - {side}", (p, option) =>
+                {
+                    SelectedModel[player.Index] = Convert.ToInt32(id_model);
+                    player.PrintToChat($" {Config.Prefix} {Localizer["SkinNextRound", name_model]} ");
+                    SaveSettings(player);
+                });
+            }
+            else if (get_permission && side == "all")
+            {
+                menu.AddItem($"{name_model} - {side}", (p, option) =>
+                {
+                    SelectedModel[player.Index] = Convert.ToInt32(id_model);
+                    player.PrintToChat($" {Config.Prefix} {Localizer["SkinNextRound", name_model]} ");
+                    SaveSettings(player);
+                });
+            }
+
+        }
+        menu.Display(player, 0);
+
+    }
+    public void SettingsMenu(CCSPlayerController player, CommandInfo info)
+    {
+        if (player == null) return;
+
+        var client = player.Index;
+
+        var guns_status = "-";
+        var Trails_status = "-";
+        var shots_status = "-";
+        var nade_status = "-";
+        var bhop_status = "-";
+        var jump_status = "-";
+        var health_status = "-";
+        var bomb_status = "-";
+
+        if (Selected[client] >= 1) { guns_status = $"{Localizer["TurnOn"]} !guns_off"; } else { guns_status = $"{Localizer["TurnOff"]} !guns"; }
+        if (UserTrialColor[client] == 0) { Trails_status = Localizer["TurnOff"]; } else { Trails_status = Localizer["TurnOn"]; }
+        if (ShotsEnable[client] == 0) { shots_status = Localizer["TurnOff"]; } else { shots_status = Localizer["TurnOn"]; }
+        if (BhopEnable[client] == 0) { bhop_status = Localizer["TurnOff"]; } else { bhop_status = Localizer["TurnOn"]; }
+        if (NadeEnable[client] == 0) { nade_status = Localizer["TurnOff"]; } else { nade_status = Localizer["TurnOn"]; }
+        if (JumpEnable[client] == 0) { jump_status = Localizer["TurnOff"]; } else { jump_status = Localizer["TurnOn"]; }
+        if (BombEnable[client] == 0) { bomb_status = Localizer["TurnOff"]; } else { bomb_status = Localizer["TurnOn"]; }
+        if (HealthEnable[client] == 0) { health_status = Localizer["TurnOff"]; } else { health_status = Localizer["TurnOn"]; }
+
+        ScreenMenu menu = new("Settings\r\n", this);
+        if (Config.EnabledGuns && Guns[player.Index] == 1)
+        {
+            menu.AddItem($"Weapon Menu", (p, option) => { });
+        }
+        if (Config.ModelsEnabled && Models[player.Index] == 1)
+        {
+            menu.AddItem($"Models Menu", (p, option) => { open_Models(player); });
+        }
+        if (Config.EnabledTags && Tag[player.Index] == 1)
+        {
+            menu.AddItem($"Tag Menu\r\n___________", (p, option) => { open_Tags(player); });
+        }
+
+        if (Config.EnabledShotTrails && LaserShot[player.Index] == 1)
+        {
+            menu.AddItem($"Shots - {shots_status}", (p, option) =>
+            {
+                if (ShotsEnable[client] == 0)
+                {
+                    ShotsEnable[client] = 1;
+                }
+                else if (ShotsEnable[client] == 1)
+                {
+                    ShotsEnable[client] = 0;
+                }
+                SaveSettings(player);
+            });
+        }
+
+        if (Config.EnabledBhop && Bhop[player.Index] == 1)
+        {
+            menu.AddItem($"Bhop - {bhop_status}", (p, option) =>
+            {
+                if (BhopEnable[client] == 0)
+                {
+                    BhopEnable[client] = 1;
+                }
+                else if (BhopEnable[client] == 1)
+                {
+                    BhopEnable[client] = 0;
+                }
+                SaveSettings(player);
+            });
+        }
+
+        if (Config.NadeEnable && NadeTrails[player.Index] == 1)
+        {
+            menu.AddItem($"Nade's Trails - {nade_status}", (p, option) =>
+            {
+                if (NadeEnable[client] == 0)
+                {
+                    NadeEnable[client] = 1;
+                }
+                else if (NadeEnable[client] == 1)
+                {
+                    NadeEnable[client] = 0;
+                }
+                SaveSettings(player);
+            });
+        }
+        if (Config.EnabledDoubbleJump && DJump[player.Index] == 1)
+        {
+            menu.AddItem($"Doubble Jump - {jump_status}", (p, option) =>
+            {
+                if (JumpEnable[client] == 0)
+                {
+                    JumpEnable[client] = 1;
+                }
+                else if (JumpEnable[client] == 1)
+                {
+                    JumpEnable[client] = 0;
+                }
+                SaveSettings(player);
+            });
+        }
+
+        if (Bomb_a[player.Index] == 1)
+        {
+            menu.AddItem($"Bomb Info - {bomb_status}", (p, option) =>
+            {
+                if (BombEnable[client] == 0)
+                {
+                    BombEnable[client] = 1;
+                }
+                else if (BombEnable[client] == 1)
+                {
+                    BombEnable[client] = 0;
+                }
+                SaveSettings(player);
+            });
+        }
+        if (Healthshot[player.Index] == 1)
+        {
+            menu.AddItem($"HealthShot - {health_status}", (p, option) =>
+            {
+                if (HealthEnable[client] == 0)
+                {
+                    HealthEnable[client] = 1;
+                }
+                else if (HealthEnable[client] == 1)
+                {
+                    HealthEnable[client] = 0;
+                }
+                SaveSettings(player);
+            });
+        }
+
+        menu.Display(player, 0);
+    }
     [ConsoleCommand("css_generatevip", "Generate token for VIP")]
     public void generatevip(CCSPlayerController? player, CommandInfo info)
     {
@@ -384,7 +595,66 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
 
         }
     }
+    [ConsoleCommand("css_addmodel", "Add Model IN DB")]
+    public void addmodel(CCSPlayerController? player, CommandInfo info)
+    {
+        var Name = info.GetArg(4);
+        var Permission = info.GetArg(3);
+        var Side = info.GetArg(2);
+        var Path = info.GetArg(1);
 
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            info.ReplyToCommand($" {Config.Prefix} This command are only for admins!");
+            return;
+        }
+        else if (Path == null || Path == "" || Side == null || Side == "" || Permission == null || Permission == "" || Name == null || Name == "")
+        {
+            info.ReplyToCommand($" {Config.Prefix} /addmodel <Path> <Side(t,ct,all)> <@vip/basic> <Name>");
+            return;
+        }
+        else
+        {
+            MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+            MySqlQueryValue values = new MySqlQueryValue()
+            .Add("name", $"{Name}")
+            .Add("permission", $"{Permission}")
+            .Add("path", $"{Path}")
+            .Add("side", $"{Side}");
+            MySql.Table("deadswim_models").Insert(values);
+            info.ReplyToCommand($" {Config.Prefix} Model added in DTB");
+        }
+
+    }
+    [ConsoleCommand("css_addtag", "Add Tag IN DB")]
+    public void addtag(CCSPlayerController? player, CommandInfo info)
+    {
+        var Name = info.GetArg(3);
+        var Permission = info.GetArg(2);
+        var Type = info.GetArg(1);
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            info.ReplyToCommand($" {Config.Prefix} This command are only for admins!");
+            return;
+        }
+        else if (Name == null || Permission == null || Type == null || Name == "" || Permission == "" || Type == "")
+        {
+            info.ReplyToCommand($" {Config.Prefix} /addtag <Type (1=ScoreBoard, 2=Chat)> <Permission/SteamID> <Name/Tag>");
+            return;
+        }
+        else
+        {
+            MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+            MySqlQueryValue values = new MySqlQueryValue()
+            .Add("tag", $"{Name}")
+            .Add("permission", $"{Permission}")
+            .Add("type", $"{Type}");
+            MySql.Table("deadswim_tags").Insert(values);
+            info.ReplyToCommand($" {Config.Prefix} Tag added in DTB");
+        }
+
+    }
 
     [ConsoleCommand("css_activator", "Activate VIP from Tokens")]
     public void CommandActivator(CCSPlayerController? player, CommandInfo info)
@@ -646,17 +916,65 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     }
     public void ChangeTag(CCSPlayerController player)
     {
-        if (Bhop[player.Index] == 1)
+        if (!Config.EnabledTags) return;
+        MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+
+        MySqlQueryResult result = MySql!
+            .Table("deadswim_tags")
+            .Select();
+        for (int i = 0; i < result.Rows; i++)
         {
-            player.Clan = Config.VIPTag_Score;
-            Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
-            tagApi.SetAttribute(player, Tags.TagType.ChatTag, Config.VIPTag_Chat);
-        }
-        if (MVIP[player.Index] == 1)
-        {
-            player.Clan = Config.MVIPTag_Score;
-            Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
-            tagApi.SetAttribute(player, Tags.TagType.ChatTag, Config.MVIPTag_Chat);
+            var row = result[i];
+            if (row == null) return;
+
+
+            string id_tag = row["id"].ToString();
+            string name_tag = row["tag"].ToString();
+            string permission = row["permission"].ToString();
+            string type = row["type"].ToString();
+
+            if (IsInt(permission))
+            {
+                var Get_Player_ID = player.SteamID.ToString();
+                if (permission == Get_Player_ID && SelectedTag[player.Index] == Convert.ToInt32(id_tag))
+                {
+                    if (Convert.ToInt32(type) == 1)
+                    {
+                        // Scoreboard
+                        player.Clan = name_tag;
+                        Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+                    }
+                }
+                if (permission == Get_Player_ID && SelectedTag2[player.Index] == Convert.ToInt32(id_tag))
+                {
+                    if (Convert.ToInt32(type) == 2)
+                    {
+                        // Chat - pomocí tagApi
+                        tagApi.SetAttribute(player, TagType.ChatTag, $"{name_tag} ");
+                    }
+                }
+            }
+            else
+            {
+                var get_permission = AdminManager.PlayerHasPermissions(player, permission);
+                if (get_permission && SelectedTag[player.Index] == Convert.ToInt32(id_tag))
+                {
+                    if (Convert.ToInt32(type) == 1)
+                    {
+                        // Scoreboard
+                        player.Clan = name_tag;
+                        Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+                    }
+                }
+                if (get_permission && SelectedTag2[player.Index] == Convert.ToInt32(id_tag))
+                {
+                    if (Convert.ToInt32(type) == 2)
+                    {
+                        // Chat - pomocí tagApi
+                        tagApi.SetAttribute(player, TagType.ChatTag, $"{name_tag} ");
+                    }
+                }
+            }
         }
     }
     [GameEventHandler]
@@ -741,7 +1059,11 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         .Add("shots", $"{ShotsEnable[client]}")
         .Add("enable_djump", $"{JumpEnable[client]}")
         .Add("model", $"{SelectedModel[client]}")
-        .Add("credits", $"{CreditEnable[client]}");
+        .Add("credits", $"{CreditEnable[client]}")
+        .Add("bomb", $"{BombEnable[client]}")
+        .Add("health", $"{HealthEnable[client]}")
+        .Add("tag", $"{SelectedTag[client]}")
+        .Add("tag2", $"{SelectedTag2[client]}");
         int rowsAffected = MySql.Table("deadswim_settings").Where($"steamid = '{player.SteamID.ToString()}'").Update(values);
 
     }
@@ -758,7 +1080,9 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                 Server.PrintToConsole($"CustomPlugins - *[Hráč {player.PlayerName} nemá aktivní VIP/MVIP!]*");
             }
 
+
             Healthshot[player.Index] = result.Get<int>(0, "healthshot");
+            Tag[player.Index] = result.Get<int>(0, "tag");
             CSStore[player.Index] = result.Get<int>(0, "store_credit");
             Trails[player.Index] = result.Get<int>(0, "trials");
             LaserShot[player.Index] = result.Get<int>(0, "shotlaser");
@@ -797,6 +1121,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                     .Add("mvip", "0")
                     .Add("jump", "0")
                     .Add("reloading", "0")
+                    .Add("tag", "0")
                     .Add("timestamp", "-1");
                     int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{player.SteamID.ToString()}'").Update(values);
                     UnLoadVIP(player);
@@ -827,6 +1152,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             .Add("mvip", "0")
             .Add("jump", "0")
             .Add("reloading", "0")
+            .Add("tag", "0")
             .Add("timestamp", "-1");
             MySql.Table("deadswim_vip").Insert(values);
         }
@@ -852,6 +1178,10 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             QuakeEnable[player.Index] = result.Get<int>(0, "enable_quake");
             Selected[player.Index] = result.Get<int>(0, "guns");
             SelectedModel[player.Index] = result.Get<int>(0, "model");
+            BombEnable[player.Index] = result.Get<int>(0, "bomb");
+            HealthEnable[player.Index] = result.Get<int>(0, "health");
+            SelectedTag[player.Index] = result.Get<int>(0, "tag");
+            SelectedTag2[player.Index] = result.Get<int>(0, "tag2");
         }
         else
         {
@@ -868,6 +1198,10 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             .Add("free_vip", "0")
             .Add("model", "0")
             .Add("credits", "1")
+            .Add("bomb", "0")
+            .Add("health", "0")
+            .Add("tag", "0")
+            .Add("tag2", "0")
             .Add("guns", "0");
             MySql.Table("deadswim_settings").Insert(values);
         }

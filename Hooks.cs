@@ -54,15 +54,6 @@ namespace CustomPlugin
                 GiveWeapon(player, weapon_s); 
             });
         }
-        [GameEventHandler]
-        public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
-        {
-            timer_ex?.Kill();
-            Bomb = false;
-            bombtime = 0.0f;
-            Server.PrintToConsole("MadGames.eu BOMB INFO - Ukončuji, je konec kola");
-            return HookResult.Continue;
-        }
         public bool PlayerHasWeapon(CCSPlayerController player, string designerName)
         {
             if (player == null || !player.PlayerPawn.IsValid)
@@ -162,6 +153,54 @@ namespace CustomPlugin
                             }
                         }
                     }
+                }
+            }
+
+            return HookResult.Continue;
+        }
+        [GameEventHandler]
+        public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+        {
+            if (@event.Userid == null) return HookResult.Continue;
+            CCSPlayerController player = @event.Userid;
+
+            CCSPlayerPawn? pawn = player.PlayerPawn.Value;
+
+            ChangeTag(player);
+
+            int id;
+            if (!Config.ModelsEnabled) return HookResult.Continue;
+            if (SelectedModel[player.Index].HasValue)
+            {
+                id = SelectedModel[player.Index].Value;
+            }
+            else
+            {
+                id = 0;
+            }
+            if (id != 0)
+            {
+                MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+                MySqlQueryResult result = MySql!
+                    .Table("deadswim_models")
+                    .Where($"id = {id}")
+                    .Select();
+                string path = "-";
+                string name = "-";
+                string permission = "-";
+                for (int i = 0; i < result.Rows; i++)
+                {
+                    var row = result[i];
+                    if (row == null) return HookResult.Continue;
+                    path = row["path"].ToString();
+                    name = row["name"].ToString();
+                    permission = row["permission"].ToString();
+                }
+                var get_permission = AdminManager.PlayerHasPermissions(player, permission);
+
+                if (get_permission)
+                {
+                    SetModel(player, path, name);
                 }
             }
 

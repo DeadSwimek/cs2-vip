@@ -19,6 +19,8 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("DBHost")] public string DBHost { get; set; } = "localhost";
     [JsonPropertyName("DBPort")] public int DBPort { get; set; } = 3306;
 
+    [JsonPropertyName("SettingsCommand")] public string SettingsCommand { get; set; } = "css_settings";
+
     [JsonPropertyName("VIPTag_Chat")] public string VIPTag_Chat { get; set; } = "{Green} VIP{Grey}» ";
     [JsonPropertyName("VIPTag_Score")] public string VIPTag_Score { get; set; } = "★";
     [JsonPropertyName("MVIPTag_Chat")] public string MVIPTag_Chat { get; set; } = "{Green} MVIP{Grey}» ";
@@ -35,6 +37,7 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("Enable_Credits_Defuse")] public bool More_Credit3 { get; set; } = true;
     [JsonPropertyName("Credits_Defuse")] public int Credits_For_Defuse { get; set; } = 50;
 
+    [JsonPropertyName("EnabledTags")] public bool EnabledTags { get; set; } = true;
     [JsonPropertyName("EnabledBhop")] public bool EnabledBhop { get; set; } = true;
     [JsonPropertyName("EnabledTrails")] public bool EnabledTrails { get; set; } = true;
     [JsonPropertyName("EnabledShotTrails")] public bool EnabledShotTrails { get; set; } = true;
@@ -45,6 +48,7 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("EnabledModels")] public bool ModelsEnabled { get; set; } = true;
     [JsonPropertyName("EnabledDoubbleJump")] public bool EnabledDoubbleJump { get; set; } = true;
     [JsonPropertyName("EnabledInstantReload")] public bool EnabledInstantReload { get; set; } = true;
+    [JsonPropertyName("AllowPreCacheResources")] public bool Precache { get; set; } = true;
     [JsonPropertyName("QuakeTeamKiller")] public string QuakeTeamKiller { get; set; } = "sounds/madgamessounds/quake/teamkiller.vsnd_c";
     [JsonPropertyName("QuakeHeadShot")] public string QuakeHeadShot { get; set; } = "sounds/madgamessounds/quake/headshot.vsnd_c";
 
