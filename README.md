@@ -32,6 +32,7 @@ https://github.com/schwarper/cs2-store
 - No Fall Damage
 - Kill's quake
 - Models in database can select by /models
+- Tags in database can selected by /settings
 
 
 # Donators
@@ -42,6 +43,7 @@ https://github.com/schwarper/cs2-store
 | `css_generatevip`    | @css/root     |
 | `css_addmodel`    | @css/root     |
 | `css_addvip`    | @css/root     |
+| `css_addtag`   | @css/root      | 
 | `css_guns`    | Database add     |
 | `css_vip`    | Database add     |
 | `css_settings`    | Database add     |
@@ -61,6 +63,9 @@ https://github.com/schwarper/cs2-store
   "DBPassword": "password",
   "DBHost": "localhost",
   "DBPort": 3306,
+
+  "SettingsCommand": "css_settings",
+
   "VIPTag_Chat": "{Green} VIP{Grey}\u00BB ",
   "VIPTag_Score": "\u2605",
   "MVIPTag_Chat": "{Green} MVIP{Grey}\u00BB ",
@@ -78,6 +83,7 @@ https://github.com/schwarper/cs2-store
   "Enable_Credits_Defuse": true,
   "Credits_Defuse": 50,
 
+  "EnabledTags": true,
   "EnabledBhop": true,
   "EnabledTrials": true,
   "EnabledShotTrials": true,
@@ -87,6 +93,8 @@ https://github.com/schwarper/cs2-store
   "EnabledModels": true,
   "EnabledDoubbleJump": true,
   "EnabledInstantReload": true,
+
+  "AllowPreCacheResources": true,
 
   "EnabledQuake": false,
   "QuakeTeamKiller": "sounds/madgamessounds/quake/teamkiller.vsnd_c",
