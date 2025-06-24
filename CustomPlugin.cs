@@ -133,6 +133,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             Capabilities.RegisterPluginCapability(APICapability, () => CoreAPI);
         }
         CreateDatabase();
+        AddCommand(Config.SettingsCommand, "Open settings menu for VIP", SettingsMenu);
         Console.WriteLine("VIP System, created by DeadSwim");
         RegisterListener<Listeners.OnMapStart>(name =>
         {
