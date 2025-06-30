@@ -113,6 +113,68 @@ https://github.com/schwarper/cs2-store
         "path": "sounds/madgamessounds/quake/triplekill.vsnd_c"
       }
   ],
+  "VIPs": [
+    {
+      "permission": "healthshot",
+      "value": 1
+    },
+    {
+      "permission": "store_credit",
+      "value": 1
+    },
+    {
+      "permission": "shotlaser",
+      "value": 0
+    },
+    {
+      "permission": "trials",
+      "value": 1
+    },
+    {
+      "permission": "nade",
+      "value": 0
+    },
+    {
+      "permission": "guns",
+      "value": 1
+    },
+    {
+      "permission": "bhop",
+      "value": 1
+    },
+    {
+      "permission": "bomb",
+      "value": 1
+    },
+    {
+      "permission": "health",
+      "value": 1
+    },
+    {
+      "permission": "falldmg",
+      "value": 1
+    },
+    {
+      "permission": "knife",
+      "value": 1
+    },
+    {
+      "permission": "jump",
+      "value": 1
+    },
+    {
+      "permission": "mvip",
+      "value": 0
+    },
+    {
+      "permission": "tag",
+      "value": 1
+    },
+    {
+      "permission": "reloading",
+      "value": 0
+    }
+  ],
 
   "StartHealth": 110,
 
