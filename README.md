@@ -73,6 +73,7 @@ https://github.com/schwarper/cs2-store
 
   "NadeEnable": true,
   "NadeModel": "particles/ui/hud/ui_map_def_utility_trail.vpcf",
+  "TrailParticle": "particles/ui/status_levels/ui_status_level_8_energycirc.vpcf",
   // red, green, blue
   "NadeColor": "red",
 
