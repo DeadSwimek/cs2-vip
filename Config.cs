@@ -28,6 +28,7 @@ public class ConfigBan : BasePluginConfig
 
     [JsonPropertyName("NadeEnable")] public bool NadeEnable { get; set; } = true;
     [JsonPropertyName("NadeModel")] public string NadeModel { get; set; } = "particles/ui/hud/ui_map_def_utility_trail.vpcf";
+    [JsonPropertyName("TrailParticle")] public string ParticleModel { get; set; } = "particles/ui/hud/ui_map_def_utility_trail.vpcf";
     [JsonPropertyName("NadeColor")] public string NadeColor { get; set; } = "red";
 
     [JsonPropertyName("Enable_Credits")] public bool More_Credit { get; set; } = true;
@@ -53,11 +54,29 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("QuakeHeadShot")] public string QuakeHeadShot { get; set; } = "sounds/madgamessounds/quake/headshot.vsnd_c";
 
     public List<Sound> Sounds { get; set; } = new List<Sound>
-        {
-            new Sound { Kill = 1, Path = "sounds/madgamessounds/quake/firstblood.vsnd_c" },
-            new Sound { Kill = 2, Path = "sounds/madgamessounds/quake/doublekill.vsnd_c" },
-            new Sound { Kill = 3, Path = "sounds/madgamessounds/quake/triplekill.vsnd_c" },
-        };
+    {
+        new Sound { Kill = 1, Path = "sounds/madgamessounds/quake/firstblood.vsnd_c" },
+        new Sound { Kill = 2, Path = "sounds/madgamessounds/quake/doublekill.vsnd_c" },
+        new Sound { Kill = 3, Path = "sounds/madgamessounds/quake/triplekill.vsnd_c" },
+    };
+    public List<VIP> VIPs { get; set; } = new List<VIP>
+    {
+        new VIP { value = 1, permission = "healthshot" },
+        new VIP { value = 1, permission = "store_credit" },
+        new VIP { value = 0, permission = "shotlaser" },
+        new VIP { value = 1, permission = "trials" },
+        new VIP { value = 0, permission = "nade" },
+        new VIP { value = 1, permission = "guns" },
+        new VIP { value = 1, permission = "bhop" },
+        new VIP { value = 1, permission = "bomb" },
+        new VIP { value = 1, permission = "health" },
+        new VIP { value = 1, permission = "falldmg" },
+        new VIP { value = 1, permission = "knife" },
+        new VIP { value = 1, permission = "jump" },
+        new VIP { value = 0, permission = "mvip" },
+        new VIP { value = 1, permission = "tag" },
+        new VIP { value = 0, permission = "reloading" },
+    };
 
     [JsonPropertyName("StartHealth")] public int StartHealth { get; set; } = 110;
     [JsonPropertyName("MinRoundForGuns")] public int MinRoundForGuns { get; set; } = 2;
@@ -70,4 +89,12 @@ public class Sound
 
     [JsonPropertyName("path")]
     public required string Path { get; init; }
+}
+public class VIP
+{
+    [JsonPropertyName("permission")]
+    public required string permission { get; init; }
+
+    [JsonPropertyName("value")]
+    public required int value { get; init; }
 }

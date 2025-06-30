@@ -209,12 +209,10 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         {
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-
-
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `tag` INT(11) NOT NULL, `tag2` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11), `bomb` INT(11) NOT NULL, `health` INT(11) NOT NULL, NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `tag` INT(11) NOT NULL, `tag2` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `health` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
-            MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_models` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) UNIQUE NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
+            MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_models` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_tags` (`id` INT AUTO_INCREMENT PRIMARY KEY, `tag` VARCHAR(32) NOT NULL, `permission` VARCHAR(32) NOT NULL, `type` VARCHAR(32) NOT NULL, UNIQUE (`id`));");
 
         }
@@ -690,35 +688,38 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
 
             if(group_int == 1)
             {
-                MySqlQueryValue values = new MySqlQueryValue()
-                    .Add("healthshot", "1")
-                    .Add("store_credit", "1")
-                    .Add("guns", "1")
-                    .Add("bhop", "1")
-                    .Add("health", "1")
-                    .Add("bomb", "1")
-                    .Add("knife", "1")
-                    .Add("timestamp", $"{timeofvip}");
-                int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{SteamIDC}'").Update(values);
+                var values = new Func<MySqlQueryValue>(() =>
+                {
+                    var v = new MySqlQueryValue();
+                    foreach (var per in Config.VIPs)
+                        v.Add(per.permission, per.value.ToString());
+                    v.Add("timestamp", $"{timeofvip}");
+                    return v;
+                })();
+
+                int rowsAffected = MySql.Table("deadswim_vip")
+                    .Where($"steamid = '{SteamIDC}'")
+                    .Update(values);
             }
             if (group_int == 2)
             {
                 MySqlQueryValue values = new MySqlQueryValue()
-                    .Add("healthshot", "1")
-                    .Add("store_credit", "1")
-                    .Add("shotlaser", "1")
-                    .Add("trials", "1")
-                    .Add("guns", "1")
-                    .Add("nade", "1")
-                    .Add("bhop", "1")
-                    .Add("health", "1")
-                    .Add("bomb", "1")
-                    .Add("falldmg", "1")
-                    .Add("knife", "1")
-                    .Add("mvip", "1")
-                    .Add("jump", "1")
-                    .Add("reloading", "1")
-                    .Add("timestamp", $"{timeofvip}");
+                        .Add("healthshot", "1")
+                        .Add("store_credit", "1")
+                        .Add("shotlaser", "1")
+                        .Add("trials", "1")
+                        .Add("nade", "1")
+                        .Add("guns", "1")
+                        .Add("bhop", "1")
+                        .Add("health", "1")
+                        .Add("bomb", "1")
+                        .Add("mvip", "1")
+                        .Add("falldmg", "1")
+                        .Add("knife", "1")
+                        .Add("jump", "1")
+                        .Add("reloading", "1")
+                        .Add("tag", "1")
+                        .Add("timestamp", $"{timeofvip}");
                 int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{SteamIDC}'").Update(values);
             }
             if (group_int == 3)
@@ -794,36 +795,39 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                 }
                 if (Type == "1")
                 {
-                    MySqlQueryValue values = new MySqlQueryValue()
-                    .Add("healthshot", "1")
-                    .Add("store_credit", "1")
-                    .Add("guns", "1")
-                    .Add("bhop", "1")
-                    .Add("health", "1")
-                    .Add("bomb", "1")
-                    .Add("knife", "1")
-                    .Add("timestamp", $"{timeofvip}");
-                    int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{SteamIDC}'").Update(values);
+                    var values = new Func<MySqlQueryValue>(() =>
+                    {
+                        var v = new MySqlQueryValue();
+                        foreach (var per in Config.VIPs)
+                            v.Add(per.permission, per.value.ToString());
+                        v.Add("timestamp", $"{timeofvip}");
+                        return v;
+                    })();
+
+                    int rowsAffected = MySql.Table("deadswim_vip")
+                        .Where($"steamid = '{SteamIDC}'")
+                        .Update(values);
                     info.ReplyToCommand($" {Config.Prefix} VIP has been activated on SteamID {SteamIDC}");
                 }
                 else if (Type == "2")
                 {
                     MySqlQueryValue values = new MySqlQueryValue()
-                    .Add("healthshot", "1")
-                    .Add("store_credit", "1")
-                    .Add("shotlaser", "1")
-                    .Add("trials", "1")
-                    .Add("nade", "1")
-                    .Add("guns", "1")
-                    .Add("bhop", "1")
-                    .Add("health", "1")
-                    .Add("bomb", "1")
-                    .Add("mvip", "1")
-                    .Add("falldmg", "1")
-                    .Add("knife", "1")
-                    .Add("jump", "1")
-                    .Add("reloading", "1")
-                    .Add("timestamp", $"{timeofvip}");
+                        .Add("healthshot", "1")
+                        .Add("store_credit", "1")
+                        .Add("shotlaser", "1")
+                        .Add("trials", "1")
+                        .Add("nade", "1")
+                        .Add("guns", "1")
+                        .Add("bhop", "1")
+                        .Add("health", "1")
+                        .Add("bomb", "1")
+                        .Add("mvip", "1")
+                        .Add("falldmg", "1")
+                        .Add("knife", "1")
+                        .Add("jump", "1")
+                        .Add("reloading", "1")
+                        .Add("tag", "1")
+                        .Add("timestamp", $"{timeofvip}");
                     int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{SteamIDC}'").Update(values);
                     info.ReplyToCommand($" {Config.Prefix} VIP has been ativated on SteamID {SteamIDC}");
                 }
@@ -891,7 +895,10 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     }
     public void OnTick(CCSPlayerController controller)
     {
-        if (StoreApi == null) throw new Exception("StoreApi could not be located.");
+        if (Config.More_Credit || Config.More_Credit2 || Config.More_Credit3)
+        {
+            if (StoreApi == null) throw new Exception("StoreApi could not be located.");
+        }
 
         if (!controller.PawnIsAlive)
             return;
@@ -1032,6 +1039,10 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             AdminManager.AddPlayerPermissions(player, "@vip/text");
             ChangeTag(player);
         }
+        if (MVIP[client] == 1)
+        {
+            AdminManager.AddPlayerPermissions(player, "@vip/mvip");
+        }
         if (Models[client] == 1)
         {
             AdminManager.AddPlayerPermissions(player, "@vip/specials");
@@ -1153,6 +1164,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             .Add("mvip", "0")
             .Add("jump", "0")
             .Add("reloading", "0")
+            .Add("reload", "0")
             .Add("tag", "0")
             .Add("timestamp", "-1");
             MySql.Table("deadswim_vip").Insert(values);
