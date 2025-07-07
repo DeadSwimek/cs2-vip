@@ -23,9 +23,14 @@ namespace CustomPlugin
     {
         public void SetModel(CCSPlayerController? player, string path, string name)
         {
-            var pawn = player.Pawn.Value!;
+            if (player == null) return;
+            if (path == null) return;
+            if (name == null) return;
+
+            var pawn = player?.Pawn.Value!;
             var originalRender = pawn?.Render;
-            if (SelectedModel[player.Index] == 0)
+            uint index = player!.Index;
+            if (SelectedModel[index] == 0)
             {
                 return;
             }
@@ -33,7 +38,7 @@ namespace CustomPlugin
             {
                 if (path != null || SelectedModel[player.Index] >= 1)
                 {
-                    pawn.SetModel(path);
+                    pawn?.SetModel(path!);
                     //pawn.Render = Color.FromArgb(255, originalRender.Value.R, originalRender.Value.G, originalRender.Value.B);
                     //Utilities.SetStateChanged(pawn, "CBaseModelEntity", "m_clrRender");
                     //Utilities.SetStateChanged(pawn, "CBaseEntity", "m_CBodyComponent");
@@ -54,7 +59,7 @@ namespace CustomPlugin
             {
                 var row = result[i];
                 if (row == null) return;
-                string path = row["path"].ToString();
+                string path = Convert.ToString(row["path"]) ?? string.Empty;
 
                 Resource.Add(path);
                 mainfest.AddResource(path);

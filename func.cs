@@ -28,6 +28,72 @@ namespace CustomPlugin
             }
             return res.ToString();
         }
+        private string ReplaceColorTags(string input)
+        {
+            string[] colorPatterns =
+            {
+                "{DEFAULT}", "{RED}", "{LIGHTPURPLE}", "{GREEN}", "{LIME}", "{LIGHTGREEN}", "{LIGHTRED}", "{GRAY}",
+                "{LIGHTOLIVE}", "{OLIVE}", "{LIGHTBLUE}", "{BLUE}", "{PURPLE}", "{GRAYBLUE}"
+            };
+            string[] colorReplacements =
+            {
+                "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07", "\x08", "\x09", "\x10", "\x0B", "\x0C", "\x0E",
+                "\x0A"
+            };
+
+            for (var i = 0; i < colorPatterns.Length; i++)
+                input = input.Replace(colorPatterns[i], colorReplacements[i]);
+
+            return input;
+        }
+        public void LoadOnTick()
+        {
+            for (int i = 1; i < Server.MaxPlayers; i++)
+            {
+                var ent = NativeAPI.GetEntityFromIndex(i);
+                if (ent == 0)
+                    continue;
+                var client = new CCSPlayerController(ent);
+                TryBhop(client);
+                OnTick(client);
+                if (Bomb_a[client.Index] == 1)
+                {
+                    if (Bomb)
+                    {
+                        if (bombtime >= 25)
+                        {
+                            client.PrintToCenterHtml(
+                            $"<font color='gray'>{Localizer["Detonation"]}: </font> <font class='fontSize-l' color='green'>{bombtime} s</font><br>" +
+                            $"<font color='gray'>{Localizer["PlacedOn"]}</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>");
+                        }
+                        else if (bombtime >= 10)
+                        {
+                            client.PrintToCenterHtml(
+                            $"<font color='gray'>{Localizer["Detonation"]}: </font> <font class='fontSize-l' color='green'>{bombtime} s</font><br>" +
+                            $"<font color='gray'>{Localizer["PlacedOn"]}</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>");
+                        }
+                        else if (bombtime >= 5)
+                        {
+                            client.PrintToCenterHtml(
+                            $"<font color='gray'>{Localizer["Detonation"]}: </font> <font class='fontSize-l' color='green'>{bombtime} s</font><br>" +
+                            $"<font class='fontSize-l' color='red'> >>>> TIK TAK! {bombtime} s <<<< </font><br>" +
+                            $"<font color='gray'>{Localizer["PlacedOn"]}</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>");
+                        }
+                        else if (bombtime >= 2)
+                        {
+                            client.PrintToCenterHtml(
+                            $"<font class='fontSize-m' color='red'> >>>> !KABOOOM! <<<< </font><br>" +
+                            $"<font class='fontSize-m' color='red'> >>>> !BOOOOOM! <<<< </font><br>" +
+                            $"<font class='fontSize-m' color='red'> >>>> !KABOOOM! <<<< </font><br>");
+                        }
+                        else if (bombtime == 0)
+                        {
+                            Bomb = false;
+                        }
+                    }
+                }
+            }
+        }
         public bool IsPlayerVip(CCSPlayerController player)
         {
             if (player == null)

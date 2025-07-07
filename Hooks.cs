@@ -27,7 +27,6 @@ using System.Net.Http;
 using System.Reflection.Metadata;
 using System.Numerics;
 using static StoreApi.Store;
-using WASDSharedAPI;
 using CounterStrikeSharp.API.Core.Capabilities;
 using TagsApi;
 
@@ -39,14 +38,6 @@ namespace CustomPlugin
         public static CustomPlugin ?It;
         public readonly string[] projectiles = ["hegrenade_projectile", "flashbang_projectile", "smokegrenade_projectile", "decoy_projectile", "molotov_projectile"];
 
-        public static IWasdMenuManager? MenuManager;
-        public IWasdMenuManager? GetMenuManager()
-        {
-            if (MenuManager == null)
-                MenuManager = new PluginCapability<IWasdMenuManager>("wasdmenu:manager").Get();
-
-            return MenuManager;
-        }
         internal void replace_weapon(CCSPlayerController player, string weapon_s)
         {
             AddTimer(0.1f, () =>
@@ -82,31 +73,7 @@ namespace CustomPlugin
 
             return false;
         }
-        [GameEventHandler]
-        public HookResult KillPlayer(EventPlayerDeath @event, GameEventInfo info)
-        {
-            var attacker = @event.Attacker;
-            var victin = @event.Userid;
-
-            if (attacker == null) return HookResult.Continue;
-
-
-            if (Config.More_Credit)
-            {
-                if (CSStore[attacker.Index] == 1)
-                {
-                    if (StoreApi == null) throw new Exception("StoreApi could not be located.");
-                    int credits = Config.Credits_For_Kill;
-
-                    StoreApi.GivePlayerCredits(attacker, credits);
-
-                    attacker.PrintToChat($" {Config.Prefix} {Localizer["GiveMoneyForKill", credits]}");
-                }
-            }
-
-            return HookResult.Continue;
-        }
-        public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
+        HookResult EventPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
         {
             if (@event == null) return HookResult.Continue;
 
@@ -119,6 +86,18 @@ namespace CustomPlugin
             if (att == null) return HookResult.Continue;
             if (att.IsBot) return HookResult.Continue;
             if (vic == att) return HookResult.Continue;
+            if (Config.More_Credit)
+            {
+                if (CSStore[att.Index] == 1)
+                {
+                    if (StoreApi == null) throw new Exception("StoreApi could not be located.");
+                    int credits = Config.Credits_For_Kill;
+
+                    StoreApi.GivePlayerCredits(att, credits);
+
+                    att.PrintToChat($" {Config.Prefix} {Localizer["GiveMoneyForKill", credits]}");
+                }
+            }
             if (att != vic)
             {
                 if (Config.EnabledQuake)
@@ -158,8 +137,7 @@ namespace CustomPlugin
 
             return HookResult.Continue;
         }
-        [GameEventHandler]
-        public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+        HookResult EventPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
         {
             if (@event.Userid == null) return HookResult.Continue;
             CCSPlayerController player = @event.Userid;
@@ -168,7 +146,7 @@ namespace CustomPlugin
 
             ChangeTag(player);
 
-            int id;
+            int id = 0;
             if (!Config.ModelsEnabled) return HookResult.Continue;
             if (SelectedModel[player.Index].HasValue)
             {
@@ -192,9 +170,9 @@ namespace CustomPlugin
                 {
                     var row = result[i];
                     if (row == null) return HookResult.Continue;
-                    path = row["path"].ToString();
-                    name = row["name"].ToString();
-                    permission = row["permission"].ToString();
+                    path = Convert.ToString(row["path"]) ?? string.Empty;
+                    name = Convert.ToString(row["name"]) ?? string.Empty;
+                    permission = Convert.ToString(row["permission"]) ?? string.Empty;
                 }
                 var get_permission = AdminManager.PlayerHasPermissions(player, permission);
 
@@ -206,12 +184,15 @@ namespace CustomPlugin
 
             return HookResult.Continue;
         }
-        [GameEventHandler]
-        public HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
+        HookResult EventPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
         {
             var attacker = @event.Attacker;
             var victim = @event.Userid;
             var weapon = @event.Weapon;
+
+            if (victim == null) return HookResult.Continue;
+            if (attacker == null) return HookResult.Continue;
+
             if (weapon.Contains("knife"))
             {
                 if (Config.NoKnifeDamage)
@@ -241,8 +222,7 @@ namespace CustomPlugin
 
             return HookResult.Continue;
         }
-        [GameEventHandler]
-        public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+        HookResult EventRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             timer_ex?.Kill();
             Bomb = false;
@@ -280,8 +260,7 @@ namespace CustomPlugin
 
             return HookResult.Continue;
         }
-        [GameEventHandler]
-        public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
+        HookResult EventBombPlanted(EventBombPlanted @event, GameEventInfo info)
         {
             var c4list = Utilities.FindAllEntitiesByDesignerName<CC4>("weapon_c4");
             var c4 = c4list.FirstOrDefault();
@@ -334,16 +313,16 @@ namespace CustomPlugin
             }
             bombtime = bombtime - 1.0f;
         }
-        [GameEventHandler]
-        public HookResult OnBombDetonate(EventBombDefused @event, GameEventInfo info)
+        HookResult EventBombExploded(EventBombExploded @event, GameEventInfo info)
         {
             Bomb = false;
             timer_ex?.Kill();
             return HookResult.Continue;
         }
-        [GameEventHandler]
-        public HookResult OnBombDefused(EventBombDefused @event, GameEventInfo info)
+        HookResult EventBombDefused(EventBombDefused @event, GameEventInfo info)
         {
+
+
             var player = @event.Userid;
             if (player == null) return HookResult.Continue;
 

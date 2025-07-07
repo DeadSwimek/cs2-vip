@@ -133,8 +133,22 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             Capabilities.RegisterPluginCapability(APICapability, () => CoreAPI);
         }
         CreateDatabase();
+            #pragma warning disable CS8622
         AddCommand(Config.SettingsCommand, "Open settings menu for VIP", SettingsMenu);
+            #pragma warning restore CS8622
         Console.WriteLine("VIP System, created by DeadSwim");
+        RegisterEventHandler<EventBombDefused>(EventBombDefused);
+        RegisterEventHandler<EventBombExploded>(EventBombExploded);
+        RegisterEventHandler<EventBombPlanted>(EventBombPlanted);
+        RegisterEventHandler<EventRoundStart>(EventRoundStart);
+        RegisterEventHandler<EventPlayerHurt>(EventPlayerHurt);
+        RegisterEventHandler<EventPlayerSpawn>(EventPlayerSpawn);
+        RegisterEventHandler<EventPlayerDeath>(EventPlayerDeath);
+        RegisterListener<Listeners.OnMapEnd>(() => {
+            timer_ac?.Kill();
+            timer_ex?.Kill();
+        });
+
         RegisterListener<Listeners.OnMapStart>(name =>
         {
             //change_cvar("bot_quota", "2");
@@ -143,54 +157,22 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             Round = 0;
         });
         //RegisterListener<OnEntityCreated>(OnEntityCreated); Only in Prémium
-        RegisterListener<Listeners.OnTick>(() =>
-        {
-            for (int i = 1; i < Server.MaxPlayers; i++)
-            {
-                var ent = NativeAPI.GetEntityFromIndex(i);
-                if (ent == 0)
-                    continue;
-                var client = new CCSPlayerController(ent);
-                TryBhop(client);
-                OnTick(client);
-                if (Bomb_a[client.Index] == 1)
-                {
-                    if (Bomb)
-                    {
-                        if (bombtime >= 25)
-                        {
-                            client.PrintToCenterHtml(
-                            $"<font color='gray'>{Localizer["Detonation"]}: </font> <font class='fontSize-l' color='green'>{bombtime} s</font><br>" +
-                            $"<font color='gray'>{Localizer["PlacedOn"]}</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>");
-                        }
-                        else if (bombtime >= 10)
-                        {
-                            client.PrintToCenterHtml(
-                            $"<font color='gray'>{Localizer["Detonation"]}: </font> <font class='fontSize-l' color='green'>{bombtime} s</font><br>" +
-                            $"<font color='gray'>{Localizer["PlacedOn"]}</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>");
-                        }
-                        else if (bombtime >= 5)
-                        {
-                            client.PrintToCenterHtml(
-                            $"<font color='gray'>{Localizer["Detonation"]}: </font> <font class='fontSize-l' color='green'>{bombtime} s</font><br>" +
-                            $"<font class='fontSize-l' color='red'> >>>> TIK TAK! {bombtime} s <<<< </font><br>" +
-                            $"<font color='gray'>{Localizer["PlacedOn"]}</font> <font class='fontSize-m' color='green'>[{SitePlant}]</font>");
-                        }
-                        else if (bombtime >= 2)
-                        {
-                            client.PrintToCenterHtml(
-                            $"<font class='fontSize-m' color='red'> >>>> !KABOOOM! <<<< </font><br>" +
-                            $"<font class='fontSize-m' color='red'> >>>> !BOOOOOM! <<<< </font><br>" +
-                            $"<font class='fontSize-m' color='red'> >>>> !KABOOOM! <<<< </font><br>");
-                        }
-                        else if (bombtime == 0)
-                        {
-                            Bomb = false;
-                        }
-                    }
-                }
-            }
-        });
+        RegisterListener<Listeners.OnTick>(LoadOnTick);
+    }
+    public override void Unload(bool hotReload)
+    {
+        DeregisterEventHandler<EventBombDefused>(EventBombDefused);
+        DeregisterEventHandler<EventBombExploded>(EventBombExploded);
+        DeregisterEventHandler<EventBombPlanted>(EventBombPlanted);
+        DeregisterEventHandler<EventRoundStart>(EventRoundStart);
+        DeregisterEventHandler<EventPlayerHurt>(EventPlayerHurt);
+        DeregisterEventHandler<EventPlayerSpawn>(EventPlayerSpawn);
+        DeregisterEventHandler<EventPlayerDeath>(EventPlayerDeath);
+
+        RemoveListener<Listeners.OnTick>(LoadOnTick);
+
+        timer_ac?.Kill();
+        timer_ex?.Kill();
     }
     static public bool change_cvar(string cvar, string value)
     {
@@ -344,6 +326,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     [ConsoleCommand("css_models", "Set Trails color")]
     public void Models_command(CCSPlayerController? player, CommandInfo info)
     {
+        if (player == null) return;
         open_Models(player);
     }
     public void open_Models(CCSPlayerController player)
@@ -370,11 +353,11 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             if (row == null) return;
 
 
-            string id_model = row["id"].ToString();
-            string name_model = row["name"].ToString();
-            string permission = row["permission"].ToString();
-            string path = row["path"].ToString();
-            string side = row["side"].ToString();
+            string id_model = Convert.ToString(row["id"]) ?? string.Empty;
+            string name_model = Convert.ToString(row["name"]) ?? string.Empty;
+            string permission = Convert.ToString(row["permission"]) ?? string.Empty;
+            string path = Convert.ToString(row["path"]) ?? string.Empty;
+            string side = Convert.ToString(row["side"]) ?? string.Empty;
 
             var get_permission = AdminManager.PlayerHasPermissions(player, permission);
             var get_playerteam = player.Team;
@@ -936,10 +919,10 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             if (row == null) return;
 
 
-            string id_tag = row["id"].ToString();
-            string name_tag = row["tag"].ToString();
-            string permission = row["permission"].ToString();
-            string type = row["type"].ToString();
+            string id_tag = Convert.ToString(row["id"]) ?? string.Empty;
+            string name_tag = Convert.ToString(row["tag"]) ?? string.Empty;
+            string permission = Convert.ToString(row["permission"]) ?? string.Empty;
+            string type = Convert.ToString(row["type"]) ?? string.Empty;
 
             if (IsInt(permission))
             {
@@ -1032,7 +1015,6 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         player.PrintToChat($" {Config.Prefix} {Localizer["VIPRemaining"]} : {ChatColors.Lime}{timeRemainingFormatted}");
         player.PrintToChat($" {Config.Prefix} {ChatColors.Red}------------------------");
 
-        Server.PrintToConsole($"CustomPlugins - Hráč {player.PlayerName} Má = HS = {Healthshot[player.Index]} TR = {Trails[player.Index]}, Bhop = {Bhop[player.Index]}");
         if (Guns[client] == 1)
         {
             AdminManager.AddPlayerPermissions(player, "@vip/basic");
@@ -1059,6 +1041,8 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     }
     public void SaveSettings(CCSPlayerController player)
     {
+        if (player == null) return;
+
         var client = player.Index;
         MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 

@@ -59,10 +59,10 @@ namespace CustomPlugin
                 if (row == null) return;
 
 
-                string id_tag = row["id"].ToString();
-                string name_tag = row["tag"].ToString();
-                string permission = row["permission"].ToString();
-                string type = row["type"].ToString();
+                string id_tag = Convert.ToString(row["id"]) ?? string.Empty;
+                string name_tag = Convert.ToString(row["tag"]) ?? string.Empty;
+                string permission = Convert.ToString(row["permission"]) ?? string.Empty;
+                string type = Convert.ToString(row["type"]) ?? string.Empty;
 
                 string type_ = "";
                 string Active = "";
@@ -130,13 +130,12 @@ namespace CustomPlugin
                 if (row == null) return;
 
 
-                string id_tag = row["id"].ToString();
-                string name_tag = row["tag"].ToString();
-                string permission = row["permission"].ToString();
-                string type = row["type"].ToString();
+                string id_tag = Convert.ToString(row["id"]) ?? string.Empty;
+                string name_tag = Convert.ToString(row["tag"]) ?? string.Empty;
+                string permission = Convert.ToString(row["permission"]) ?? string.Empty;
+                string type = Convert.ToString(row["type"]) ?? string.Empty;
 
                 string type_ = "";
-                string Active = "";
                 string Active2 = "";
 
                 if (Convert.ToInt32(id_tag) == SelectedTag2[player.Index]) { Active2 = "✔️"; }
