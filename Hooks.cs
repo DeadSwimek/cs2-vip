@@ -319,6 +319,24 @@ namespace CustomPlugin
             timer_ex?.Kill();
             return HookResult.Continue;
         }
+        HookResult EventPlayerBlind(EventPlayerBlind @event, GameEventInfo info)
+        {
+            var attacker = @event.Attacker;
+            var victim = @event.Userid;
+            if (attacker == null) return HookResult.Continue;
+            if (victim == null) return HookResult.Continue;
+            var sTeam = attacker.Team == victim.Team;
+
+            if (sTeam)
+            {
+                if (AntiFlash[victim.Index] == 1)
+                {
+                    victim.PlayerPawn.Value!.FlashDuration = 0.0f;
+                }
+            }
+
+            return HookResult.Continue;
+        }
         HookResult EventBombDefused(EventBombDefused @event, GameEventInfo info)
         {
 

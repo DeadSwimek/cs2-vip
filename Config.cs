@@ -76,6 +76,7 @@ public class ConfigBan : BasePluginConfig
         new VIP { value = 0, permission = "mvip" },
         new VIP { value = 1, permission = "tag" },
         new VIP { value = 0, permission = "reloading" },
+        new VIP { value = 0, permission = "antiflash" },
     };
 
     [JsonPropertyName("StartHealth")] public int StartHealth { get; set; } = 110;

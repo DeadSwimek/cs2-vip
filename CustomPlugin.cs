@@ -1,31 +1,32 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
-using System.Reflection;
-using static CounterStrikeSharp.API.Core.Listeners;
-using System;
-using System.Drawing;
-using System.Text;
-using Nexd.MySQL;
-using Microsoft.Extensions.Logging;
-using CounterStrikeSharp.API.Modules.Cvars;
-using System.Numerics;
-using StoreApi;
-using TagsApi;
-using static StoreApi.Store;
-using System.Net;
-using Newtonsoft.Json;
-using System.Text.RegularExpressions;
 using CS2MenuManager.API.Enum;
 using CS2MenuManager.API.Menu;
+using Microsoft.Extensions.Logging;
+using MySqlConnector;
+using Newtonsoft.Json;
+using Nexd.MySQL;
+using StoreApi;
+using System;
+using System.Drawing;
+using System.Net;
+using System.Numerics;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using TagsApi;
 using VIPAPI;
-using CounterStrikeSharp.API.Core.Capabilities;
+using static CounterStrikeSharp.API.Core.Listeners;
+using static StoreApi.Store;
 using static TagsApi.Tags;
 
 namespace CustomPlugin;
@@ -88,6 +89,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     private static readonly int?[] Models = new int?[64];
     private static readonly int?[] Bomb_a = new int?[64];
     private static readonly int?[] MVIP = new int?[64];
+    private static readonly int?[] AntiFlash = new int?[64];
     private static readonly int?[] Timestamp = new int?[64];
 
 
@@ -144,6 +146,9 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         RegisterEventHandler<EventPlayerHurt>(EventPlayerHurt);
         RegisterEventHandler<EventPlayerSpawn>(EventPlayerSpawn);
         RegisterEventHandler<EventPlayerDeath>(EventPlayerDeath);
+
+        RegisterEventHandler<EventPlayerBlind>(EventPlayerBlind);
+
         RegisterListener<Listeners.OnMapEnd>(() => {
             timer_ac?.Kill();
             timer_ex?.Kill();
@@ -156,7 +161,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             active_bool = false;
             Round = 0;
         });
-        //RegisterListener<OnEntityCreated>(OnEntityCreated); Only in Prémium
+        //RegisterListener<OnEntityCreated>(OnEntityCreated); Only in Premium
         RegisterListener<Listeners.OnTick>(LoadOnTick);
     }
     public override void Unload(bool hotReload)
@@ -168,6 +173,9 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         DeregisterEventHandler<EventPlayerHurt>(EventPlayerHurt);
         DeregisterEventHandler<EventPlayerSpawn>(EventPlayerSpawn);
         DeregisterEventHandler<EventPlayerDeath>(EventPlayerDeath);
+
+        DeregisterEventHandler<EventPlayerBlind>(EventPlayerBlind);
+
 
         RemoveListener<Listeners.OnTick>(LoadOnTick);
 
@@ -185,6 +193,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         Server.ExecuteCommand($"{cvar} {value}");
         return true;
     }
+
     public void CreateDatabase()
     {
         try
@@ -192,15 +201,67 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `tag` INT(11) NOT NULL, `tag2` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `health` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `antiflash` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_models` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_tags` (`id` INT AUTO_INCREMENT PRIMARY KEY, `tag` VARCHAR(32) NOT NULL, `permission` VARCHAR(32) NOT NULL, `type` VARCHAR(32) NOT NULL, UNIQUE (`id`));");
-
+            
+            using (var connection = new MySqlConnection($"Server={Config.DBHost};Database={Config.DBDatabase};Uid={Config.DBUser};Pwd={Config.DBPassword};"))
+            {
+                connection.Open();
+                EnsureColumns(connection, Config.DBDatabase);
+            }
         }
         catch (Exception ex)
         {
             Server.PrintToConsole($"CustomPlugins - *[MYSQL ERROR WHILE LOADING: {ex.Message}]*");
+        }
+    }
+    public static void EnsureColumns(MySqlConnection connection, string db)
+    {
+        string databaseName = $"{db}";
+        string tableName = "deadswim_vip";
+
+        var columnsToEnsure = new Dictionary<string, string>
+        {
+            { "tag", "INT(11) NOT NULL DEFAULT 0" },
+            { "healthshot", "INT(11) NOT NULL DEFAULT 0" },
+            { "reloading", "INT(11) NOT NULL DEFAULT 0" },
+            { "antiflash", "INT(11) NOT NULL DEFAULT 0" },
+            { "reload", "INT(11) NOT NULL DEFAULT 0" },
+            { "jump", "INT(11) NOT NULL DEFAULT 0" },
+            { "falldmg", "INT(11) NOT NULL DEFAULT 0" },
+            { "knife", "INT(11) NOT NULL DEFAULT 0" },
+            { "nade", "INT(11) NOT NULL DEFAULT 0" }
+        };
+
+        var existingColumns = new HashSet<string>();
+
+        string columnQuery = $@"
+            SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = '{databaseName}' AND TABLE_NAME = '{tableName}';
+        ";
+
+        using (var cmd = new MySqlCommand(columnQuery, connection))
+        using (var reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                existingColumns.Add(reader.GetString(0));
+            }
+        }
+
+        foreach (var column in columnsToEnsure)
+        {
+            if (!existingColumns.Contains(column.Key))
+            {
+                string alterSql = $"ALTER TABLE `{tableName}` ADD COLUMN `{column.Key}` {column.Value};";
+                using (var alterCmd = new MySqlCommand(alterSql, connection))
+                {
+                    alterCmd.ExecuteNonQuery();
+                    Console.WriteLine($"✅ Adding in database: {column.Key}");
+                }
+            }
         }
     }
     public static void TryBhop(CCSPlayerController controller)
@@ -702,6 +763,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                         .Add("jump", "1")
                         .Add("reloading", "1")
                         .Add("tag", "1")
+                        .Add("antiflash", "1")
                         .Add("timestamp", $"{timeofvip}");
                 int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{SteamIDC}'").Update(values);
             }
@@ -810,6 +872,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                         .Add("jump", "1")
                         .Add("reloading", "1")
                         .Add("tag", "1")
+                        .Add("antiflash", "1")
                         .Add("timestamp", $"{timeofvip}");
                     int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{SteamIDC}'").Update(values);
                     info.ReplyToCommand($" {Config.Prefix} VIP has been ativated on SteamID {SteamIDC}");
@@ -1093,6 +1156,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             falldmg[player.Index] = result.Get<int>(0, "falldmg");
             DJump[player.Index] = result.Get<int>(0, "jump");
             IReload[player.Index] = result.Get<int>(0, "reloading");
+            AntiFlash[player.Index] = result.Get<int>(0, "antiflash");
             Timestamp[player.Index] = result.Get<int>(0, "timestamp");
 
             LoadVIP(player);
@@ -1118,6 +1182,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                     .Add("jump", "0")
                     .Add("reloading", "0")
                     .Add("tag", "0")
+                    .Add("antiflash", "0")
                     .Add("timestamp", "-1");
                     int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{player.SteamID.ToString()}'").Update(values);
                     UnLoadVIP(player);
@@ -1150,6 +1215,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             .Add("reloading", "0")
             .Add("reload", "0")
             .Add("tag", "0")
+            .Add("antiflash", "0")
             .Add("timestamp", "-1");
             MySql.Table("deadswim_vip").Insert(values);
         }
