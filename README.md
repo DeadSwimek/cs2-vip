@@ -87,6 +87,11 @@ https://github.com/schwarper/cs2-store
   "Enable_Credits_Defuse": true,
   "Credits_Defuse": 50,
 
+  "AllowTestVIP": true,
+  "ReservedSlotys": 1,
+  "ReservedType": 1 // 0 = Number of slots be reserved, 1 = After VIP joined, NonVIP is kicked
+  "DaysTestVIP": 7,
+
   "EnabledTags": true,
   "EnabledBhop": true,
   "EnabledTrials": true,
