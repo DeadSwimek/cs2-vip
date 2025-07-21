@@ -68,6 +68,7 @@ https://github.com/schwarper/cs2-store
   "DBPort": 3306,
 
   "SettingsCommand": "css_settings",
+  "AdminPermissions": "@css/root",
 
   "VIPTag_Chat": "{Green} VIP{Grey}\u00BB ",
   "VIPTag_Score": "\u2605",
