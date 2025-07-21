@@ -194,6 +194,14 @@ https://github.com/schwarper/cs2-store
     {
       "permission": "reloading",
       "value": 0
+    },
+    {
+      "permission": "antiflash",
+      "value": 0
+    },
+    {
+      "permission": "wings",
+      "value": 0
     }
   ],
 
