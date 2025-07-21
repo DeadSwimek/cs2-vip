@@ -29,6 +29,9 @@
   "GiveMoneyForPlant": "Právě jsi získal {0} creditů za položení bomby.",
   "SkinNextRound": "Právě jsi zvolil model {0}, na začátku kola se aktivuje.",
   "LoadedModel": "Právě ti byl aktivován model {0}.",
+  "HaveVIP": "{RED}JIŽ MÁŠ AKTIVNÍ VIP!",
+  "TryedVIP": "{RED}JIŽ JSI VYUŽIL TESTVIP!",
+  "UsedTestVIP": "Právě jsi použil příkaz {GREEN}/testvip{DEFAULT} aktuálně máš VIP na {GREEN}{0} Dnů{DEFAULT}.",
 
   "VIPInActive": "VIP není aktivní",
   "VIPLoading": "Právě obnovuji tvůj status VIP..",

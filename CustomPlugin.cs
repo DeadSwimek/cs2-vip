@@ -47,7 +47,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     public override string ModuleName => "VIP";
     public override string ModuleAuthor => "DeadSwim";
     public override string ModuleDescription => "VIP";
-    public override string ModuleVersion => "V. 1.0.0";
+    public override string ModuleVersion => "V. 2.0.0";
 
     public bool Bomb;
     public bool active_bool;
@@ -201,7 +201,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `tag` INT(11) NOT NULL, `tag2` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `health` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `antiflash` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `reserved` INT(11) NOT NULL,`tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `antiflash` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_models` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_tags` (`id` INT AUTO_INCREMENT PRIMARY KEY, `tag` VARCHAR(32) NOT NULL, `permission` VARCHAR(32) NOT NULL, `type` VARCHAR(32) NOT NULL, UNIQUE (`id`));");
@@ -232,7 +232,8 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             { "jump", "INT(11) NOT NULL DEFAULT 0" },
             { "falldmg", "INT(11) NOT NULL DEFAULT 0" },
             { "knife", "INT(11) NOT NULL DEFAULT 0" },
-            { "nade", "INT(11) NOT NULL DEFAULT 0" }
+            { "nade", "INT(11) NOT NULL DEFAULT 0" },
+            { "reserved", "INT(11) NOT NULL DEFAULT 0" }
         };
 
         var existingColumns = new HashSet<string>();
@@ -383,6 +384,56 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                 return false;
         }
         return true;
+    }
+    [ConsoleCommand("css_testvip", "Test VIP")]
+    public void testvip(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null) return;
+        if (Config.AllowTestVIP == false) return;
+        if (TryedVIP(player))
+        {
+            player.PrintToChat($" {Config.Prefix} {Localizer["TryedVIP"]}");
+            return;
+        }
+        if (IsPlayerVip(player))
+        {
+            player.PrintToChat($" {Config.Prefix} {Localizer["HaveVIP"]}");
+            return;
+        }
+        else
+        {
+            MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+
+            var SteamIDC = player.SteamID.ToString();
+            var TimeSec = Config.DaysTestVIP;
+
+            MySqlQueryResult result = MySql!.Table("deadswim_vip").Where(MySqlQueryCondition.New("steamid", "=", SteamIDC)).Select();
+            if (result.Rows == 1)
+            {
+                int timeofvip;
+                var TimeToUTC = DateTime.UtcNow.AddDays(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                timeofvip = DateTime.UtcNow.AddDays(Convert.ToInt32(TimeSec)).GetUnixEpoch();
+                var values = new Func<MySqlQueryValue>(() =>
+                {
+                    var v = new MySqlQueryValue();
+                    foreach (var per in Config.VIPs)
+                        v.Add(per.permission, per.value.ToString());
+                    v.Add("timestamp", $"{timeofvip}");
+                    return v;
+                })();
+
+                int rowsAffected = MySql.Table("deadswim_vip")
+                        .Where($"steamid = '{SteamIDC}'")
+                        .Update(values);
+
+                MySqlQueryValue values2 = new MySqlQueryValue()
+                .Add("free_vip", "1");
+                int rowsAffected2 = MySql.Table("deadswim_settings")
+                        .Where($"steamid = '{SteamIDC}'")
+                        .Update(values2);
+                player.PrintToChat($" {Config.Prefix} {Localizer["UsedTestVIP", Config.DaysTestVIP]}");
+            }
+        }
     }
     [ConsoleCommand("css_models", "Set Trails color")]
     public void Models_command(CCSPlayerController? player, CommandInfo info)

@@ -38,6 +38,11 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("Enable_Credits_Defuse")] public bool More_Credit3 { get; set; } = true;
     [JsonPropertyName("Credits_Defuse")] public int Credits_For_Defuse { get; set; } = 50;
 
+    [JsonPropertyName("AllowTestVIP")] public bool AllowTestVIP { get; set; } = true;
+    [JsonPropertyName("ReservedSlots")] public int ReservedSlots { get; set; } = 1;
+    [JsonPropertyName("ReservedType")] public int ReservedType { get; set; } = 1;
+    [JsonPropertyName("DaysTestVIP")] public int DaysTestVIP { get; set; } = 7;
+
     [JsonPropertyName("EnabledTags")] public bool EnabledTags { get; set; } = true;
     [JsonPropertyName("EnabledBhop")] public bool EnabledBhop { get; set; } = true;
     [JsonPropertyName("EnabledTrails")] public bool EnabledTrails { get; set; } = true;
@@ -75,6 +80,7 @@ public class ConfigBan : BasePluginConfig
         new VIP { value = 1, permission = "jump" },
         new VIP { value = 0, permission = "mvip" },
         new VIP { value = 1, permission = "tag" },
+        new VIP { value = 0, permission = "reserved"},
         new VIP { value = 0, permission = "reloading" },
         new VIP { value = 0, permission = "antiflash" },
     };

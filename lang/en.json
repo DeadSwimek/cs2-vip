@@ -1,12 +1,12 @@
 {
   "Guns": "Guns",
-  "AllowedFor": "Allowed only for Type: {GREEN}{0}",
+  "AllowedFor": "Allowed only for Type: {0}",
   "Yes": "Yes",
   "No": "No",
-  "TurnOff": "{RED}Off",
-  "TurnOn": "{GREEN}On",
+  "TurnOff": "Off",
+  "TurnOn": "On",
   "JustNow": "Just now",
-  "MustBeAlive": "To use the {GREEN}{0}{DEFAULT} command, you must be alive!",
+  "MustBeAlive": "To use the {0} command, you must be alive!",
   "Detonation": "Bomb will detonate",
   "PlacedOn": "Placed on",
 
@@ -16,11 +16,14 @@
   "SelectedTag": "Vybral si Tag do {1} s názvem {0}",
 
   "VIPBuy": "Get VIP at https://xxx.xxx",
-  "VIPYouChoose": "You just selected the {GREEN}{0} weapon",
-  "VIPUseGuns": "You have activated auto guns. To deactivate, type {GREEN}!guns_off",
-  "VIPUsedGuns": "You've already used the {GREEN}!guns{DEFAULT} command this round!",
-  "VIPNoMoreGuns": "You will no longer have auto {GREEN}!guns{DEFAULT} active. To activate again, type {GREEN}!guns",
-  "VIPRound": "To activate {GREEN}!guns{DEFAULT}, the round must be {RED}{0}{DEFAULT} or higher",
+  "VIPYouChoose": "You just selected the {0} weapon",
+  "VIPUseGuns": "You have activated auto guns. To deactivate, type !guns_off",
+  "VIPUsedGuns": "You've already used the !guns command this round!",
+  "VIPNoMoreGuns": "You will no longer have auto !guns active. To activate again, type !guns",
+  "VIPRound": "To activate !guns, the round must be {0} or higher",
+  "HaveVIP": "{RED}YOU HAVE ACTIVE VIP!",
+  "TryedVIP": "{RED}YOU USED TESTVIP!",
+  "UsedTestVIP": "You used {GREEN}/testvip{DEFAULT} you have VIP for {GREEN}{0} days{DEFAULT}!",
 
 
   "GiveMoneyForKill": "You just earned {0} credits for a kill.",

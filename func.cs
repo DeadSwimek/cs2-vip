@@ -1,16 +1,17 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
+using CS2MenuManager.API.Enum;
+using CS2MenuManager.API.Menu;
+using Nexd.MySQL;
 using System.Drawing;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using CS2MenuManager.API.Enum;
-using CS2MenuManager.API.Menu;
-using CounterStrikeSharp.API.Modules.Admin;
 
 
 namespace CustomPlugin
@@ -103,6 +104,31 @@ namespace CustomPlugin
 
             if (MVIP[client] == 1) return true;
             else if (Guns[client] == 1) return true;
+
+            return false;
+        }
+        public bool TryedVIP(CCSPlayerController player)
+        {
+            if (player == null)
+                return false;
+
+            var client = player.Index;
+
+            MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
+
+            MySqlQueryResult result = MySql!.Table($"deadswim_settings").Where(MySqlQueryCondition.New("steamid", "=", $"{player.SteamID.ToString()}")).Select();
+
+            if (result.Rows == 1)
+            {
+                for (int i = 0; i < result.Rows; i++)
+                {
+                    var row = result[i];
+                    if (row == null) return false;
+                    string freevip = row["free_vip"].ToString();
+                    if (freevip == "1") { return true; }
+                    if (freevip == "0") { return false; }
+                }
+            }
 
             return false;
         }
