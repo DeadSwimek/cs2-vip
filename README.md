@@ -6,7 +6,18 @@
 > [New Gift Collector!](https://github.com/DeadSwimek/cs2-gifts)
 
 
-                
+<details>
+  <summary>📦 Previews Free and Premium version</summary>
+- <img width="1237" height="741" alt="8" src="https://github.com/user-attachments/assets/e84cc295-243d-4d44-b3c0-058ad31930e4" />
+- <img width="834" height="767" alt="7" src="https://github.com/user-attachments/assets/d3b52086-e7d7-461c-88cf-78cd5daa1895" />
+- <img width="351" height="449" alt="6" src="https://github.com/user-attachments/assets/f80d855c-a2ec-420f-b3e2-eee6e954521b" />
+- <img width="256" height="454" alt="9" src="https://github.com/user-attachments/assets/c9ca741f-b6d3-4cc0-aeac-a79e6df00788" />
+- <img width="719" height="480" alt="3" src="https://github.com/user-attachments/assets/60b12dd7-742d-42eb-9e78-d75629f2ed45" />
+- <img width="482" height="467" alt="2" src="https://github.com/user-attachments/assets/de37a0b3-5f52-41cd-99d4-2c6a03598be2" />
+- <img width="789" height="537" alt="1" src="https://github.com/user-attachments/assets/76d5756a-04d9-4bd6-8f34-50b5847c5b03" />
+- <img width="428" height="344" alt="5" src="https://github.com/user-attachments/assets/9959bfbb-16c2-47f0-868f-1d46156b7d21" />
+- <img width="435" height="386" alt="4" src="https://github.com/user-attachments/assets/1045adbb-cfae-4300-8a2e-95bc3c65a542" />
+</details>
 
 
 **PREMIUM VERSION https://github.com/DeadSwimek/cs2-vip-premium** / [MY DISCORD SERVER](https://discord.gg/WNK777rhwg)
