@@ -20,6 +20,7 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("DBPort")] public int DBPort { get; set; } = 3306;
 
     [JsonPropertyName("SettingsCommand")] public string SettingsCommand { get; set; } = "css_settings";
+    [JsonPropertyName("AdminPermissions")] public string AdminPermissions { get; set; } = "@css/root";
 
     [JsonPropertyName("VIPTag_Chat")] public string VIPTag_Chat { get; set; } = "{Green} VIP{Grey}» ";
     [JsonPropertyName("VIPTag_Score")] public string VIPTag_Score { get; set; } = "★";
@@ -83,6 +84,7 @@ public class ConfigBan : BasePluginConfig
         new VIP { value = 0, permission = "reserved"},
         new VIP { value = 0, permission = "reloading" },
         new VIP { value = 0, permission = "antiflash" },
+        new VIP { value = 0, permission = "wings"},
     };
 
     [JsonPropertyName("StartHealth")] public int StartHealth { get; set; } = 110;

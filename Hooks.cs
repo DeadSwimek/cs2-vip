@@ -222,6 +222,11 @@ namespace CustomPlugin
 
             return HookResult.Continue;
         }
+        private HookResult EventWarmupEnd(EventWarmupEnd @event, GameEventInfo info)
+        {
+            Round = 0;
+            return HookResult.Continue;
+        }
         HookResult EventRoundStart(EventRoundStart @event, GameEventInfo info)
         {
             timer_ex?.Kill();

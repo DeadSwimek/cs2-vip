@@ -144,6 +144,30 @@ namespace CustomPlugin
 
             return "None";
         }
+        public void OpenVIPMenu(CCSPlayerController player)
+        {
+            if (player == null)
+                return;
+
+            open_Settings(player);
+        }
+        public void OpenModelsMenu(CCSPlayerController player)
+        {
+            if (player == null) return;
+            open_Models(player);
+        }
+        public void OpenTagMenu(CCSPlayerController player)
+        {
+            if (player == null) return;
+            open_Tags(player);
+        }
+        public void quake(CCSPlayerController player)
+        {
+            if (player == null) return;
+            var client = player.Index;
+            if (QuakeEnable[client] == 1) { QuakeEnable[client] = 0; }
+            if (QuakeEnable[client] == 0) { QuakeEnable[client] = 1; }
+        }
         public void CreateNadeTrail(Vector start, CBaseGrenade grenade)
         {
             // Only in VIP Prémium

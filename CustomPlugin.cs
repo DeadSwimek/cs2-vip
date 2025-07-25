@@ -79,14 +79,17 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     private static readonly int?[] NadeTrails = new int?[64];
     private static readonly int?[] CSStore = new int?[64];
     private static readonly int?[] SelectedModel = new int?[64];
+    private static readonly int?[] SelectedWings = new int?[64];
     private static readonly int?[] LaserShot = new int?[64];
     private static readonly int?[] Healthshot = new int?[64];
+    private static readonly int?[] Reserved = new int?[64];
     private static readonly int?[] Guns = new int?[64];
     private static readonly int?[] falldmg = new int?[64];
     private static readonly int?[] knife = new int?[64];
     private static readonly int?[] Bhop = new int?[64];
     private static readonly int?[] Health = new int?[64];
     private static readonly int?[] Models = new int?[64];
+    private static readonly int?[] Wings = new int?[64];
     private static readonly int?[] Bomb_a = new int?[64];
     private static readonly int?[] MVIP = new int?[64];
     private static readonly int?[] AntiFlash = new int?[64];
@@ -146,6 +149,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         RegisterEventHandler<EventPlayerHurt>(EventPlayerHurt);
         RegisterEventHandler<EventPlayerSpawn>(EventPlayerSpawn);
         RegisterEventHandler<EventPlayerDeath>(EventPlayerDeath);
+        RegisterEventHandler<EventWarmupEnd>(EventWarmupEnd);
 
         RegisterEventHandler<EventPlayerBlind>(EventPlayerBlind);
 
@@ -200,16 +204,18 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         {
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `tag` INT(11) NOT NULL, `tag2` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `health` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `reserved` INT(11) NOT NULL,`tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `antiflash` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `wings` INT(11) NOT NULL,`tag` INT(11) NOT NULL, `tag2` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `health` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `wings` INT(11) NOT NULL, `reserved` INT(11) NOT NULL,`tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `antiflash` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_models` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
+            MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_wings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_tags` (`id` INT AUTO_INCREMENT PRIMARY KEY, `tag` VARCHAR(32) NOT NULL, `permission` VARCHAR(32) NOT NULL, `type` VARCHAR(32) NOT NULL, UNIQUE (`id`));");
             
             using (var connection = new MySqlConnection($"Server={Config.DBHost};Database={Config.DBDatabase};Uid={Config.DBUser};Pwd={Config.DBPassword};"))
             {
                 connection.Open();
                 EnsureColumns(connection, Config.DBDatabase);
+                EnsureColumns_Settings(connection, Config.DBDatabase);
             }
         }
         catch (Exception ex)
@@ -233,7 +239,47 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             { "falldmg", "INT(11) NOT NULL DEFAULT 0" },
             { "knife", "INT(11) NOT NULL DEFAULT 0" },
             { "nade", "INT(11) NOT NULL DEFAULT 0" },
-            { "reserved", "INT(11) NOT NULL DEFAULT 0" }
+            { "reserved", "INT(11) NOT NULL DEFAULT 0" },
+            { "wings", "INT(11) NOT NULL DEFAULT 0" }
+        };
+
+        var existingColumns = new HashSet<string>();
+
+        string columnQuery = $@"
+            SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = '{databaseName}' AND TABLE_NAME = '{tableName}';
+        ";
+
+        using (var cmd = new MySqlCommand(columnQuery, connection))
+        using (var reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                existingColumns.Add(reader.GetString(0));
+            }
+        }
+
+        foreach (var column in columnsToEnsure)
+        {
+            if (!existingColumns.Contains(column.Key))
+            {
+                string alterSql = $"ALTER TABLE `{tableName}` ADD COLUMN `{column.Key}` {column.Value};";
+                using (var alterCmd = new MySqlCommand(alterSql, connection))
+                {
+                    alterCmd.ExecuteNonQuery();
+                    Console.WriteLine($"✅ Adding in database: {column.Key}");
+                }
+            }
+        }
+    }
+    public static void EnsureColumns_Settings(MySqlConnection connection, string db)
+    {
+        string databaseName = $"{db}";
+        string tableName = "deadswim_settings";
+
+        var columnsToEnsure = new Dictionary<string, string>
+        {
+            { "wings", "INT(11) NOT NULL DEFAULT 0" }
         };
 
         var existingColumns = new HashSet<string>();
@@ -504,6 +550,11 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     public void SettingsMenu(CCSPlayerController player, CommandInfo info)
     {
         if (player == null) return;
+        open_Settings(player);
+    }
+    public void open_Settings(CCSPlayerController player)
+    {
+        if (player == null) return;
 
         var client = player.Index;
 
@@ -539,22 +590,6 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             menu.AddItem($"Tag Menu\r\n___________", (p, option) => { open_Tags(player); });
         }
 
-        if (Config.EnabledShotTrails && LaserShot[player.Index] == 1)
-        {
-            menu.AddItem($"Shots - {shots_status}", (p, option) =>
-            {
-                if (ShotsEnable[client] == 0)
-                {
-                    ShotsEnable[client] = 1;
-                }
-                else if (ShotsEnable[client] == 1)
-                {
-                    ShotsEnable[client] = 0;
-                }
-                SaveSettings(player);
-            });
-        }
-
         if (Config.EnabledBhop && Bhop[player.Index] == 1)
         {
             menu.AddItem($"Bhop - {bhop_status}", (p, option) =>
@@ -566,22 +601,6 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                 else if (BhopEnable[client] == 1)
                 {
                     BhopEnable[client] = 0;
-                }
-                SaveSettings(player);
-            });
-        }
-
-        if (Config.NadeEnable && NadeTrails[player.Index] == 1)
-        {
-            menu.AddItem($"Nade's Trails - {nade_status}", (p, option) =>
-            {
-                if (NadeEnable[client] == 0)
-                {
-                    NadeEnable[client] = 1;
-                }
-                else if (NadeEnable[client] == 1)
-                {
-                    NadeEnable[client] = 0;
                 }
                 SaveSettings(player);
             });
@@ -641,7 +660,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         var Time = info.GetArg(1);
         var Type = info.GetArg(2);
 
-        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        if (!AdminManager.PlayerHasPermissions(player, Config.AdminPermissions))
         {
             info.ReplyToCommand($" {Config.Prefix} This command are only for admins!");
             return;
@@ -697,7 +716,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         var Side = info.GetArg(2);
         var Path = info.GetArg(1);
 
-        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        if (!AdminManager.PlayerHasPermissions(player, Config.AdminPermissions))
         {
             info.ReplyToCommand($" {Config.Prefix} This command are only for admins!");
             return;
@@ -727,7 +746,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         var Permission = info.GetArg(2);
         var Type = info.GetArg(1);
 
-        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        if (!AdminManager.PlayerHasPermissions(player, Config.AdminPermissions))
         {
             info.ReplyToCommand($" {Config.Prefix} This command are only for admins!");
             return;
@@ -852,7 +871,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         var SteamIDC = info.GetArg(2);
         var TimeSec = info.GetArg(1);
 
-        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        if (!AdminManager.PlayerHasPermissions(player, Config.AdminPermissions))
         {
             info.ReplyToCommand($" {Config.Prefix} This command are only for admins!");
             return;
@@ -1016,6 +1035,23 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                 //DrawTrials(player_vec, end_pos, controller); Only in Prémium
             }
         }
+        if (JumpEnable[client] == 1 && Config.EnabledDoubbleJump && DJump[client] == 1)
+        {
+            if ((LF[client] & PlayerFlags.FL_ONGROUND) != 0 && (flags & PlayerFlags.FL_ONGROUND) == 0 &&
+            (buttons & PlayerButtons.Jump) == 0 && (buttons & PlayerButtons.Jump) != 0)
+            {
+                J[client]++;
+            }
+            else if ((flags & PlayerFlags.FL_ONGROUND) != 0)
+            {
+                J[client] = 0;
+            }
+            else if ((LB[client] & PlayerButtons.Jump) == 0 && (buttons & PlayerButtons.Jump) != 0 && J[client] <= 1)
+            {
+                J[client]++;
+                pawn.AbsVelocity.Z = 320;
+            }
+        }
         LF[client] = flags;
         LB[client] = buttons;
     }
@@ -1169,6 +1205,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         .Add("shots", $"{ShotsEnable[client]}")
         .Add("enable_djump", $"{JumpEnable[client]}")
         .Add("model", $"{SelectedModel[client]}")
+        .Add("wings", $"{SelectedWings[client]}")
         .Add("credits", $"{CreditEnable[client]}")
         .Add("bomb", $"{BombEnable[client]}")
         .Add("health", $"{HealthEnable[client]}")
@@ -1201,12 +1238,14 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             Bhop[player.Index] = result.Get<int>(0, "bhop");
             Health[player.Index] = result.Get<int>(0, "health");
             Models[player.Index] = result.Get<int>(0, "models");
+            Wings[player.Index] = result.Get<int>(0, "wings");
             Bomb_a[player.Index] = result.Get<int>(0, "bomb");
             MVIP[player.Index] = result.Get<int>(0, "mvip");
             knife[player.Index] = result.Get<int>(0, "knife");
             falldmg[player.Index] = result.Get<int>(0, "falldmg");
             DJump[player.Index] = result.Get<int>(0, "jump");
             IReload[player.Index] = result.Get<int>(0, "reloading");
+            Reserved[player.Index] = result.Get<int>(0, "reserved");
             AntiFlash[player.Index] = result.Get<int>(0, "antiflash");
             Timestamp[player.Index] = result.Get<int>(0, "timestamp");
 
@@ -1228,8 +1267,10 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                     .Add("health", "0")
                     .Add("bomb", "0")
                     .Add("knife", "0")
+                    .Add("wings", "0")
                     .Add("falldmg", "0")
                     .Add("mvip", "0")
+                    .Add("reserved", "0")
                     .Add("jump", "0")
                     .Add("reloading", "0")
                     .Add("tag", "0")
@@ -1260,10 +1301,12 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             .Add("models", "0")
             .Add("bomb", "0")
             .Add("knife", "0")
+            .Add("wings", "0")
             .Add("falldmg", "0")
             .Add("mvip", "0")
             .Add("jump", "0")
             .Add("reloading", "0")
+            .Add("reserved", "0")
             .Add("reload", "0")
             .Add("tag", "0")
             .Add("antiflash", "0")
@@ -1292,6 +1335,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             QuakeEnable[player.Index] = result.Get<int>(0, "enable_quake");
             Selected[player.Index] = result.Get<int>(0, "guns");
             SelectedModel[player.Index] = result.Get<int>(0, "model");
+            SelectedWings[player.Index] = result.Get<int>(0, "wings");
             BombEnable[player.Index] = result.Get<int>(0, "bomb");
             HealthEnable[player.Index] = result.Get<int>(0, "health");
             SelectedTag[player.Index] = result.Get<int>(0, "tag");
@@ -1303,17 +1347,18 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             Selected[player.Index] = 0;
             MySqlQueryValue values = new MySqlQueryValue()
             .Add("steamid", player.SteamID.ToString())
-            .Add("shots", "0")
+            .Add("shots", "1")
             .Add("trials", "0")
-            .Add("bhop", "0")
-            .Add("enable_djump", "0")
-            .Add("enable_nade", "0")
-            .Add("enable_quake", "0")
+            .Add("bhop", "1")
+            .Add("enable_djump", "1")
+            .Add("enable_nade", "1")
+            .Add("enable_quake", "1")
             .Add("free_vip", "0")
             .Add("model", "0")
             .Add("credits", "1")
-            .Add("bomb", "0")
-            .Add("health", "0")
+            .Add("bomb", "1")
+            .Add("wings", "0")
+            .Add("health", "1")
             .Add("tag", "0")
             .Add("tag2", "0")
             .Add("guns", "0");
