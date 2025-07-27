@@ -77,6 +77,7 @@ https://github.com/schwarper/cs2-store
   "DBUser": "user",
   "DBPassword": "password",
   "DBHost": "localhost",
+  "DBPrefix": "deadswim",
   "DBPort": 3306,
 
   "SettingsCommand": "css_settings",
