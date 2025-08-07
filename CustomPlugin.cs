@@ -50,6 +50,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     public override string ModuleVersion => "V. 2.0.0";
 
     public bool Bomb;
+    public bool Tags = false;
     public bool active_bool;
     public float bombtime;
     public int Round;
@@ -125,7 +126,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         {
             StoreApi = IStoreApi.Capability.Get() ?? throw new Exception("StoreApi could not be located.");
         }
-        if (Config.EnabledTags)
+        if (Config.EnabledTags || Tags)
         {
             tagApi = ITagApi.Capability.Get() ?? throw new Exception("Tags Api not found!");
         }
@@ -497,7 +498,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         MySqlQueryResult result = MySql!
             .Table("deadswim_models")
             .Select();
-        ScreenMenu menu = new("Models", this);
+        ChatMenu menu = new("Models", this);
         menu.AddItem("OFF", (p, option) =>
         {
             SelectedModel[player.Index] = 0;
@@ -576,7 +577,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         if (BombEnable[client] == 0) { bomb_status = Localizer["TurnOff"]; } else { bomb_status = Localizer["TurnOn"]; }
         if (HealthEnable[client] == 0) { health_status = Localizer["TurnOff"]; } else { health_status = Localizer["TurnOn"]; }
 
-        ScreenMenu menu = new("Settings\r\n", this);
+        ChatMenu menu = new("Settings\r\n", this);
         if (Config.EnabledGuns && Guns[player.Index] == 1)
         {
             menu.AddItem($"Weapon Menu", (p, option) => { });
@@ -585,7 +586,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         {
             menu.AddItem($"Models Menu", (p, option) => { open_Models(player); });
         }
-        if (Config.EnabledTags && Tag[player.Index] == 1)
+        if (Config.EnabledTags || Tags && Tag[player.Index] == 1)
         {
             menu.AddItem($"Tag Menu\r\n___________", (p, option) => { open_Tags(player); });
         }
@@ -1057,7 +1058,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     }
     public void ChangeTag(CCSPlayerController player)
     {
-        if (!Config.EnabledTags) return;
+        if (!Config.EnabledTags || !Tags) return;
         MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
         MySqlQueryResult result = MySql!

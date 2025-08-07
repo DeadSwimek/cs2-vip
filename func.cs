@@ -196,7 +196,7 @@ namespace CustomPlugin
 
             if (Guns[player.Index] == 0) { return; }
 
-            ScreenMenu menu = new($"-> {Localizer["Guns"]} <-", this);
+            CS2MenuManager.API.Menu.ChatMenu menu = new($"-> {Localizer["Guns"]} <-", this);
             menu.AddItem("M4A1", (p, option) =>
             {
                 player.GiveNamedItem("weapon_m4a1");

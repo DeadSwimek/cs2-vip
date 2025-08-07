@@ -17,8 +17,8 @@ namespace CustomPlugin
         public void open_Tags(CCSPlayerController player)
         {
             if (player == null) return;
-            if (!Config.EnabledTags) return;
-            ScreenMenu menu = new("Tags Menu\r\n", this);
+            if (!Config.EnabledTags || !Tags) return;
+            ChatMenu menu = new("Tags Menu\r\n", this);
             menu.AddItem("OFF - Chat", (p, option) =>
             {
                 SelectedTag2[player.Index] = 0;
@@ -44,14 +44,14 @@ namespace CustomPlugin
         public void open_STags(CCSPlayerController player)
         {
             if (player == null) return;
-            if (!Config.EnabledTags) return;
+            if (!Config.EnabledTags || !Tags) return;
 
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
             MySqlQueryResult result = MySql!
                 .Table("deadswim_tags")
                 .Select();
-            ScreenMenu menu = new("ScoreBoard Tags", this);
+            ChatMenu menu = new("ScoreBoard Tags", this);
 
             for (int i = 0; i < result.Rows; i++)
             {
@@ -115,14 +115,14 @@ namespace CustomPlugin
         public void open_CTags(CCSPlayerController player)
         {
             if (player == null) return;
-            if (!Config.EnabledTags) return;
+            if (!Config.EnabledTags || !Tags) return;
 
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
             MySqlQueryResult result = MySql!
                 .Table("deadswim_tags")
                 .Select();
-            ScreenMenu menu = new("Chat Tags", this);
+            ChatMenu menu = new("Chat Tags", this);
 
             for (int i = 0; i < result.Rows; i++)
             {
