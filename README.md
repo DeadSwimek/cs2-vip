@@ -100,6 +100,8 @@ https://github.com/schwarper/cs2-store
   "Credits_Plant": 50,
   "Enable_Credits_Defuse": true,
   "Credits_Defuse": 50,
+  "EnabledVampirism": true,
+  "VampirismCountHealth": 10,
 
   "AllowTestVIP": true,
   "ReservedSlotys": 1,
