@@ -50,7 +50,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     public override string ModuleVersion => "V. 2.0.0";
 
     public bool Bomb;
-    public bool Tags = false;
+    public bool Tags = true;
     public bool active_bool;
     public float bombtime;
     public int Round;
