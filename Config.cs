@@ -45,6 +45,7 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("DaysTestVIP")] public int DaysTestVIP { get; set; } = 7;
 
     [JsonPropertyName("EnabledTags")] public bool EnabledTags { get; set; } = true;
+    [JsonPropertyName("StartItems")] public bool EnabledStartItems { get; set; } = true;
     [JsonPropertyName("EnabledBhop")] public bool EnabledBhop { get; set; } = true;
     [JsonPropertyName("EnabledTrails")] public bool EnabledTrails { get; set; } = true;
     [JsonPropertyName("EnabledShotTrails")] public bool EnabledShotTrails { get; set; } = true;
@@ -64,6 +65,18 @@ public class ConfigBan : BasePluginConfig
         new Sound { Kill = 1, Path = "sounds/madgamessounds/quake/firstblood.vsnd_c" },
         new Sound { Kill = 2, Path = "sounds/madgamessounds/quake/doublekill.vsnd_c" },
         new Sound { Kill = 3, Path = "sounds/madgamessounds/quake/triplekill.vsnd_c" },
+    };
+    public List<StartItems> StartIs { get; set; } = new List<StartItems>
+    {
+         new StartItems { team = "CT", weapons = new List<string> { "weapon_hegrenade", "weapon_smokegrenade" } },
+         new StartItems { team = "T", weapons = new List<string> { "weapon_hegrenade", "weapon_smokegrenade" } },
+    };
+    public List<Gun> Guns { get; set; } = new List<Gun>
+    {
+        new Gun { permission = "vip", weapon = "weapon_ak47", name = "AK-47", id = 1 },
+        new Gun { permission = "vip", weapon = "weapon_m4a1", name = "M4A4", id = 2 },
+        new Gun { permission = "vip", weapon = "weapon_m4a1_silence", name = "M4A1-S", id = 3 },
+        new Gun { permission = "mvip", weapon = "weapon_awp", name = "AWP", id = 4 },
     };
     public List<VIP> VIPs { get; set; } = new List<VIP>
     {
@@ -85,6 +98,7 @@ public class ConfigBan : BasePluginConfig
         new VIP { value = 0, permission = "reloading" },
         new VIP { value = 0, permission = "antiflash" },
         new VIP { value = 0, permission = "wings"},
+        new VIP { value = 0, permission = "starting_items"},
     };
 
     [JsonPropertyName("StartHealth")] public int StartHealth { get; set; } = 110;
@@ -106,4 +120,16 @@ public class VIP
 
     [JsonPropertyName("value")]
     public required int value { get; init; }
+}
+public class StartItems
+{
+    public required string team { get; set; }
+    public required List<string> weapons { get; set; }
+}
+public class Gun
+{
+    public required string permission { get; set; }
+    public required string weapon { get; set; }
+    public required string name { get; set; }
+    public required int id { get; set; }
 }

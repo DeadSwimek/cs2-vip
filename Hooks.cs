@@ -146,11 +146,32 @@ namespace CustomPlugin
 
             ChangeTag(player);
 
+            if (StartItems[player.Index] == 1 && Config.EnabledStartItems)
+            {
+                var get_playerteam = player.Team;
+                var team = "none";
+
+                if (get_playerteam == CsTeam.Terrorist) { team = "T"; }
+                if (get_playerteam == CsTeam.CounterTerrorist) { team = "CT"; }
+
+
+                foreach (var startItem in Config.StartIs)
+                {
+                    if(startItem.team == team)
+                    {
+                        foreach (var item in startItem.weapons)
+                        {
+                            player.GiveNamedItem(item);
+                        }
+                    }
+                }
+            }
+
             int id = 0;
             if (!Config.ModelsEnabled) return HookResult.Continue;
             if (SelectedModel[player.Index].HasValue)
             {
-                id = SelectedModel[player.Index].Value;
+                id = SelectedModel[player.Index]!.Value;
             }
             else
             {
@@ -240,7 +261,28 @@ namespace CustomPlugin
                 Server.NextFrame(() =>
                 {
                     if (client == null || !client.IsValid || client.IsBot || !client.PawnIsAlive) return;
-                    Selected_round[client.Index] = 0;
+                    var index = client.Index;
+                    if (Round >= 2)
+                    {
+                        if (Selected[index] == 0)
+                        {
+                            Selected_round[index] = 0;
+                        }
+                        foreach (var gun in Config.Guns)
+                        {
+                            if (gun.id == Selected[index])
+                            {
+                                //GiveWeapon(player, gun.name);
+                                client.GiveNamedItem(gun.weapon);
+                                Selected_round[index] = 1;
+                            }
+                        }
+                        if (Selected[index] >= 1)
+                        {
+                            client.PrintToChat($" {Config.Prefix} {Localizer["VIPUseGuns"]}");
+                        }
+                    }
+
                     if (Timestamp[client.Index] == null) { Timestamp[client.Index] = -1; }
                     if (Health[client.Index] == 1)
                     {
@@ -259,7 +301,6 @@ namespace CustomPlugin
                     }
                     CreditEnable[client.Index] = 1;
                     AddTimer(4.0f, () => { CreditEnable[client.Index] = 0; });
-                    It?.GiveWeapon_round(client);
                 });
             }
 

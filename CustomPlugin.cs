@@ -80,6 +80,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
     private static readonly int?[] NadeTrails = new int?[64];
     private static readonly int?[] CSStore = new int?[64];
     private static readonly int?[] SelectedModel = new int?[64];
+    private static readonly int?[] StartItems = new int?[64];
     private static readonly int?[] SelectedWings = new int?[64];
     private static readonly int?[] LaserShot = new int?[64];
     private static readonly int?[] Healthshot = new int?[64];
@@ -206,7 +207,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             MySqlDb MySql = new MySqlDb(Config.DBHost, Config.DBUser, Config.DBPassword, Config.DBDatabase);
 
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_settings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `enable_quake` INT(11) NOT NULL, `wings` INT(11) NOT NULL,`tag` INT(11) NOT NULL, `tag2` INT(11) NOT NULL, `enable_djump` INT(11) NOT NULL, `model` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `health` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `free_vip` INT(11) NOT NULL, `shots` INT(11) NOT NULL, `enable_nade` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `guns` INT(11) NOT NULL,  `credits` VARCHAR(255) NOT NULL, UNIQUE (`steamid`));");
-            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `wings` INT(11) NOT NULL, `reserved` INT(11) NOT NULL,`tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `antiflash` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
+            MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `steamid` VARCHAR(32) UNIQUE NOT NULL, `starting_items` INT(11) NOT NULL,`wings` INT(11) NOT NULL, `reserved` INT(11) NOT NULL,`tag` INT(11) NOT NULL, `healthshot` INT(11) NOT NULL, `reloading` INT(11) NOT NULL, `antiflash` INT(11) NOT NULL, `reload` INT(11) NOT NULL, `jump` INT(11) NOT NULL, `falldmg` INT(11) NOT NULL, `knife` INT(11) NOT NULL, `nade` INT(11) NOT NULL, `store_credit` INT(11) NOT NULL, `trials` INT(11) NOT NULL, `shotlaser` INT(11) NOT NULL, `guns` INT(11) NOT NULL, `bhop` INT(11) NOT NULL, `models` INT(11) NOT NULL,  `health` INT(11) NOT NULL, `bomb` INT(11) NOT NULL, `mvip` INT(11) NOT NULL, `timestamp` INT(11) NOT NULL, UNIQUE (`steamid`));");
             MySql.ExecuteNonQueryAsync(@"CREATE TABLE IF NOT EXISTS `deadswim_users_key_vip` (`id` INT AUTO_INCREMENT PRIMARY KEY, `token` VARCHAR(32) UNIQUE NOT NULL, `end` INT(11) NOT NULL, `group` INT(11) NOT NULL, UNIQUE (`token`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_models` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
             MySql.ExecuteNonQueryAsync(@$"CREATE TABLE IF NOT EXISTS `deadswim_wings` (`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(32) UNIQUE NOT NULL, `permission` VARCHAR(32) NOT NULL, `side` VARCHAR(32) NOT NULL, `path` VARCHAR(128) UNIQUE NOT NULL, UNIQUE (`id`));");
@@ -241,7 +242,8 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             { "knife", "INT(11) NOT NULL DEFAULT 0" },
             { "nade", "INT(11) NOT NULL DEFAULT 0" },
             { "reserved", "INT(11) NOT NULL DEFAULT 0" },
-            { "wings", "INT(11) NOT NULL DEFAULT 0" }
+            { "wings", "INT(11) NOT NULL DEFAULT 0" },
+            { "starting_items", "INT(11) NOT NULL DEFAULT 0"}
         };
 
         var existingColumns = new HashSet<string>();
@@ -344,48 +346,6 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
         {
             player.GiveNamedItem($"weapon_{weapon}");
         });
-    }
-    public void GiveWeapon_round(CCSPlayerController player)
-    {
-        var client = player.Index;
-        if (Round >= 2)
-        {
-            if (player.PawnIsAlive)
-            {
-                if (Selected[client] == 0)
-                {
-                    Selected_round[client] = 0;
-                }
-                if (Selected[client] == 1)
-                {
-                    player.GiveNamedItem("weapon_m4a1");
-                    Selected_round[client] = 1;
-                }
-                if (Selected[client] == 2)
-                {
-                    player.GiveNamedItem("weapon_m4a1_silence");
-                    Selected_round[client] = 1;
-                }
-                if (Selected[client] == 3)
-                {
-                    player.GiveNamedItem("weapon_ak47"); 
-                    Selected_round[client] = 1;
-                }
-                if (Selected[client] == 4)
-                {
-                    player.GiveNamedItem("weapon_awp");
-                    Selected_round[client] = 1;
-                }
-                if (Selected[client] >= 1)
-                {
-                    player.PrintToChat($" {Config.Prefix} {Localizer["VIPUseGuns"]}");
-                }
-            }
-            else
-            {
-                player.PrintToChat($" {Config.Prefix} {Localizer["MustBeAlive", "!guns"]}");
-            }
-        }
     }
     [ConsoleCommand("css_guns", "Set gun")]
     public void open_guns(CCSPlayerController? player, CommandInfo info)
@@ -1248,6 +1208,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             IReload[player.Index] = result.Get<int>(0, "reloading");
             Reserved[player.Index] = result.Get<int>(0, "reserved");
             AntiFlash[player.Index] = result.Get<int>(0, "antiflash");
+            StartItems[player.Index] = result.Get<int>(0, "starting_items");
             Timestamp[player.Index] = result.Get<int>(0, "timestamp");
 
             LoadVIP(player);
@@ -1276,6 +1237,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
                     .Add("reloading", "0")
                     .Add("tag", "0")
                     .Add("antiflash", "0")
+                    .Add("starting_items", "0")
                     .Add("timestamp", "-1");
                     int rowsAffected = MySql.Table("deadswim_vip").Where($"steamid = '{player.SteamID.ToString()}'").Update(values);
                     UnLoadVIP(player);
@@ -1311,6 +1273,7 @@ public partial class CustomPlugin : BasePlugin, IPluginConfig<ConfigBan>
             .Add("reload", "0")
             .Add("tag", "0")
             .Add("antiflash", "0")
+            .Add("starting_items", "0")
             .Add("timestamp", "-1");
             MySql.Table("deadswim_vip").Insert(values);
         }

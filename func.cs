@@ -124,7 +124,7 @@ namespace CustomPlugin
                 {
                     var row = result[i];
                     if (row == null) return false;
-                    string freevip = row["free_vip"].ToString();
+                    string freevip = row["free_vip"]!.ToString();
                     if (freevip == "1") { return true; }
                     if (freevip == "0") { return false; }
                 }
@@ -197,41 +197,45 @@ namespace CustomPlugin
             if (Guns[player.Index] == 0) { return; }
 
             CS2MenuManager.API.Menu.ChatMenu menu = new($"-> {Localizer["Guns"]} <-", this);
-            menu.AddItem("M4A1", (p, option) =>
+
+            bool vip = false;
+            bool mvip = false;
+            if (Guns[client] == 1) { vip = true; }
+            if (MVIP[client] == 1) { mvip = true; }
+
+            foreach (var gun in Config.Guns)
             {
-                player.GiveNamedItem("weapon_m4a1");
-                Selected[client] = 1;
-                Selected_round[client] = 1;
-                player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", "M4A1"]} ");
-            });
-            menu.AddItem("M4A1-S", (p, option) =>
-            {
-                player.GiveNamedItem("weapon_m4a1_silence");
-                Selected[client] = 2;
-                Selected_round[client] = 1;
-                player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", "M4A1-S"]}");
-            });
-            menu.AddItem("AK-47", (p, option) =>
-            {
-                player.GiveNamedItem("weapon_ak47");
-                Selected[client] = 3;
-                Selected_round[client] = 1;
-                player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", "AK-47"]}");
-            });
-            menu.AddItem("AWP [ M-VIP ]", (p, option) =>
-            {
-                if (AdminManager.PlayerHasPermissions(player, "@vip/mvip"))
+                if (gun.permission == "vip")
                 {
-                    player.GiveNamedItem("weapon_awp");
-                    Selected[client] = 4;
-                    Selected_round[client] = 1;
-                    player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", "AWP"]}");
+                    if (vip)
+                    {
+                        menu.AddItem(gun.name, (p, option) =>
+                        {
+                            player.GiveNamedItem(gun.weapon);
+                            Selected[client] = gun.id;
+                            Selected_round[client] = 1;
+                            player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", gun.name]} ");
+                            player.PrintToChat($" {gun.id} -- {Selected[client]}");
+                            SaveSettings(player);
+                        });
+                    }
                 }
-                else
+                if (gun.permission == "mvip")
                 {
-                    player.PrintToChat($" {Config.Prefix} {Localizer["AllowedFor", "MVIP"]}");
+                    if (mvip)
+                    {
+                        menu.AddItem(gun.name, (p, option) =>
+                        {
+                            player.GiveNamedItem(gun.weapon);
+                            Selected[client] = gun.id;
+                            Selected_round[client] = 1;
+                            player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", gun.name]} ");
+                            SaveSettings(player);
+                        });
+                    }
                 }
-            });
+            }
+
 
             menu.Display(player, 0);
         }
