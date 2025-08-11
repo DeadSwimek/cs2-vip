@@ -138,6 +138,48 @@ https://github.com/schwarper/cs2-store
         "path": "sounds/madgamessounds/quake/triplekill.vsnd_c"
       }
   ],
+    "StartIs": [
+    {
+      "team": "CT",
+      "weapons": [
+        "weapon_hegrenade",
+        "weapon_smokegrenade"
+      ]
+    },
+    {
+      "team": "T",
+      "weapons": [
+        "weapon_hegrenade",
+        "weapon_smokegrenade"
+      ]
+    }
+  ],
+  "Guns": [
+    {
+      "permission": "vip",
+      "weapon": "weapon_ak47",
+      "name": "AK-47",
+      "id": 1
+    },
+    {
+      "permission": "vip",
+      "weapon": "weapon_m4a1",
+      "name": "M4A4",
+      "id": 2
+    },
+    {
+      "permission": "vip",
+      "weapon": "weapon_m4a1_silence",
+      "name": "M4A1-S",
+      "id": 3
+    },
+    {
+      "permission": "mvip",
+      "weapon": "weapon_awp",
+      "name": "AWP",
+      "id": 4
+    }
+  ],
   "VIPs": [
     {
       "permission": "healthshot",
@@ -200,11 +242,7 @@ https://github.com/schwarper/cs2-store
       "value": 0
     },
     {
-      "permission": "antiflash",
-      "value": 0
-    },
-    {
-      "permission": "wings",
+      "permission": "vampirism",
       "value": 0
     }
   ],
