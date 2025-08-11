@@ -242,7 +242,7 @@ https://github.com/schwarper/cs2-store
       "value": 0
     },
     {
-      "permission": "vampirism",
+      "permission": "starting_items",
       "value": 0
     }
   ],
