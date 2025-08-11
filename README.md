@@ -109,6 +109,7 @@ https://github.com/schwarper/cs2-store
   "DaysTestVIP": 7,
 
   "EnabledTags": true,
+  "StartItems": true,
   "EnabledBhop": true,
   "EnabledTrials": true,
   "EnabledShotTrials": true,
