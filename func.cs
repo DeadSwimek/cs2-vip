@@ -215,7 +215,6 @@ namespace CustomPlugin
                             Selected[client] = gun.id;
                             Selected_round[client] = 1;
                             player.PrintToChat($" {Config.Prefix} {Localizer["VIPYouChoose", gun.name]} ");
-                            player.PrintToChat($" {gun.id} -- {Selected[client]}");
                             SaveSettings(player);
                         });
                     }

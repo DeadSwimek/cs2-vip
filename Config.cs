@@ -39,6 +39,9 @@ public class ConfigBan : BasePluginConfig
     [JsonPropertyName("Enable_Credits_Defuse")] public bool More_Credit3 { get; set; } = true;
     [JsonPropertyName("Credits_Defuse")] public int Credits_For_Defuse { get; set; } = 50;
 
+    [JsonPropertyName("EnabledVampirism")] public bool VampirismEnabled { get; set; } = true;
+    [JsonPropertyName("VampirismCountHealth")] public int VampirismCountHealth { get; set; } = 10;
+
     [JsonPropertyName("AllowTestVIP")] public bool AllowTestVIP { get; set; } = true;
     [JsonPropertyName("ReservedSlots")] public int ReservedSlots { get; set; } = 1;
     [JsonPropertyName("ReservedType")] public int ReservedType { get; set; } = 1;

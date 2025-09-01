@@ -86,6 +86,17 @@ namespace CustomPlugin
             if (att == null) return HookResult.Continue;
             if (att.IsBot) return HookResult.Continue;
             if (vic == att) return HookResult.Continue;
+
+            if (Config.VampirismEnabled)
+            {
+                if (Health[att.Index] == 1)
+                {
+                    int Health_V = Config.VampirismCountHealth;
+                    int Health_P = att.PlayerPawn!.Value!.Health;
+
+                    att.PlayerPawn.Value!.Health = Health_V + Health_P;
+                }
+            }
             if (Config.More_Credit)
             {
                 if (CSStore[att.Index] == 1)
